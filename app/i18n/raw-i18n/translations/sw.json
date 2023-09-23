@@ -434,7 +434,10 @@
             "noBackup": "No backup option",
             "sendingLimit": "Reduced daily sending limit",
             "noOnchain": "No receiving bitcoin onchain"
-        }
+        },
+        "createAccount": "Tengeneza akaunti mpya",
+        "exploreWallet": "Gundua pochi",
+        "logBackInWith": "Ingia tena kwa kutumia"
     },
     "MapScreen": {
         "locationPermissionMessage": "Washa eneo lako ili ujue ulipo kwenye ramani",
@@ -504,7 +507,27 @@
         "useALightningInvoice": "Tumia ankara ya Lighting",
         "setANote": "seti Noti ",
         "invoiceAmount": "Kiasi cha ankara",
-        "fees": "{minBankFee: string} sats fees for onchain payment below {minBankFeeThreshold: string} sats"
+        "fees": "{minBankFee: string} sats fees for onchain payment below {minBankFeeThreshold: string} sats",
+        "copyClipboardPaycode": "Msimbo wa Malipo/LNURL umenakiliwa kwenye ubao wa kunakili",
+        "regenerateInvoiceButtonTitle": "Tengeneza tena ankara",
+        "setUsernameButtonTitle": "Wekea Jina la Mtumiaji",
+        "invoiceHasExpired": "Ankara imeisha muda",
+        "setUsernameToAcceptViaPaycode": "Wekea jina la mtumiaji ili kupokea kupitia Paycode QR (LNURL) na Anwani ya Lightning",
+        "singleUse": "Matumizi ya mara moja",
+        "invoiceExpired": "Ankara imeisha muda",
+        "invoiceValidity": {
+            "validFor1Day": "Halali kwa siku 1",
+            "validForNext": "Halali kwa {duration: string} inayofuata",
+            "validBefore": "Halali kabla ya {time: string}",
+            "expiresIn": "Inaisha muda katika {duration: string}",
+            "expiresNow": "Inaisha muda sasa"
+        },
+        "invoiceHasBeenPaid": "Ankara imelipwa",
+        "onChainAddress": "Anwani ya Onchain",
+        "receiveViaInvoice": "Pokea kupitia Ankara ya Lightning",
+        "receiveViaPaycode": "Pokea kupitia Paycode",
+        "receiveViaOnchain": "Pokea kupitia Onchain",
+        "payCodeOrLNURL": "Paycode / LNURL"
     },
     "RedeemBitcoinScreen": {
         "title": "Badilisha Bitcoin ",
@@ -601,7 +624,9 @@
         "title": "Tuma Bitcoin",
         "failedToFetchLnurlInvoice": "Imeshindwa kupata ankara ya malipo ya lnurl",
         "lnurlInvoiceIncorrectAmount": "Seva ya lnurl ilijibu na ankara ya malipo yenye kiasi batili",
-        "lnurlInvoiceIncorrectDescription": "Seva ya lnurl ilijibu na ankara ya malipo yenye hashi ya maelezo batili."
+        "lnurlInvoiceIncorrectDescription": "Seva ya lnurl ilijibu na ankara ya malipo yenye hashi ya maelezo batili.",
+        "placeholder": "Weka nafasi",
+        "suggestionInput": "Ingiza mapendekezo"
     },
     "SettingsScreen": {
         "activated": "Imewezeshwa",
@@ -625,7 +650,8 @@
         "nfcNotCompatible": "The information fetch from the card is not a compatible lnurl-withdraw link.",
         "nfcOnlyReceive": "Only receive from NFC is available for now",
         "nfcScanNow": "Scan NFC Now",
-        "nfcNotSupported": "NFC is not supported on this device"
+        "nfcNotSupported": "NFC is not supported on this device",
+        "logInOrCreateAccount": "Ingia au Tengeneza Akaunti"
     },
     "AccountScreen": {
         "accountLevel": "Account Level",
@@ -637,7 +663,33 @@
         "logoutAlertContent": "You will need to re-enter your phone number to log back in.\nyour phone number is {phoneNumber: string} so make sure to have access to it to log back in",
         "usdBalanceWarning": "You have a Stablesats balance of {balance: string}.",
         "btcBalanceWarning": "You have a bitcoin balance of {balance: string}.",
-        "secureYourAccount": "Register to secure your account"
+        "secureYourAccount": "Register to secure your account",
+        "logoutAlertContentPhone": "Una uhakika unataka kutoka kwenye simu yako?",
+        "logoutAlertContentEmail": "Una uhakika unataka kutoka kwenye barua pepe yako?",
+        "logoutAlertContentPhoneEmail": "Una uhakika unataka kutoka kwenye simu na barua pepe yako?",
+        "tapToAdd": "Gusa kuongeza",
+        "deleteEmailPromptTitle": "Futa Barua Pepe",
+        "deleteEmailPromptContent": "Una uhakika unataka kufuta barua pepe hii?",
+        "deletePhonePromptTitle": "Futa Namba ya Simu",
+        "deletePhonePromptContent": "Una uhakika unataka kufuta namba hii ya simu?",
+        "addEmailFirst": "Ongeza barua pepe kwanza",
+        "addPhoneFirst": "Ongeza namba ya simu kwanza",
+        "phoneNumberAuthentication": "Uthibitisho wa namba ya simu",
+        "emailAuthentication": "Uthibitisho wa barua pepe",
+        "removePhone": "Ondoa namba ya simu",
+        "removeEmail": "Ondoa barua pepe",
+        "unverified": "Haijathibitishwa",
+        "unverifiedContent": "Yaliyomo haijathibitishwa",
+        "confirmEmail": "Thibitisha barua pepe",
+        "emailUnverified": "Barua pepe haijathibitishwa",
+        "emailUnverifiedContent": "Yaliyomo ya barua pepe haijathibitishwa",
+        "totp": "TOTP",
+        "totpDeactivated": "TOTP imezimwa",
+        "totpDeleteAlertTitle": "Onyo la kufuta TOTP",
+        "totpDeleteAlertContent": "Una uhakika unataka kufuta TOTP?",
+        "copiedAccountId": "ID ya akaunti imenakiliwa",
+        "yourAccountId": "ID ya akaunti yako",
+        "copy": "Nakili"
     },
     "DefaultWalletScreen": {
         "title": "Default Account",
@@ -828,7 +880,13 @@
         "thisMonth": "Mwezi huu",
         "prevMonths": "Miezi iliyopita",
         "problemMaybeReauth": "There was a problem with your request. Please retry in one minute. If the problem persist, we recommend that you log out and log back in. You can log out by going into Settings > Account > Log out",
-        "warning": "Warning"
+        "warning": "Warning",
+        "codeConfirmation": "Thibitisho la Kodi",
+        "errorAuthToken": "Kosa la Tokeni ya Uthibitisho",
+        "or": "au",
+        "phone": "Simu",
+        "submit": "Wasilisha",
+        "stablesatsUsd": "StableSats/USD"
     },
     "errors": {
         "generic": "Kumekuwa na kosa.\nTafadhali jaribu tena.",
@@ -848,32 +906,13 @@
         "clearAppData": "Clear App Data and Logout"
     },
     "notifications": {
-        "payment": {
-            "body": "Umepokea sats {value: string} saa hii.",
-            "title": "Malipo yamepokewa"
-        }
+        "title": "Arifa",
+        "settings": "Mipangilio"
     },
     "support": {
-        "contactUs": "Need help? Contact us.",
-        "joinTheCommunity": "Join the community",
-        "whatsapp": "WhatsApp",
-        "email": "Barua pepe",
-        "statusPage": "Status Page",
-        "telegram": "Telegram",
-        "mattermost": "Mattermost",
-        "defaultEmailSubject": "{bankName: string} - Usaidizi",
-        "defaultSupportMessage": "Hujambo! Nahitaji usaidizi wa {bankName: string}, ninatumia toleo la {version: string} kwenye {os: string}.",
-        "emailCopied": "Barua pepe {email: string} imenakiliwa kwenye ubao wa kunakili",
-        "deleteAccount": "Delete account",
-        "delete": "delete",
-        "typeDelete": "Please type \"{delete: string}\" to confirm account deletion",
-        "finalConfirmationAccountDeletionTitle": "Final Confirmation Required",
-        "finalConfirmationAccountDeletionMessage": "Are you sure you want to delete your account? This action is irreversible.",
-        "deleteAccountBalanceWarning": "Deleting your account will cause you to lose access to your current balance. Are you sure you want to proceed?",
-        "deleteAccountConfirmation": "Your account has been written for deletion.\n\nWhen the probation period related to regulatory requirement is over, the remaining data related to your account will be permanently deleted.",
-        "deleteAccountFromPhone": "Hey there!, please delete my account. My phone number is {phoneNumber: string}.",
-        "deleteAccountError": "Something went wrong. Contact {email: string} for further assistance.",
-        "bye": "Bye!"
+        "title": "Usaidizi",
+        "faq": "Maswali Yanayoulizwa Sana",
+        "contact": "Wasiliana"
     },
     "lnurl": {
         "overLimit": "Huwezi kutuma zaidi ya kiasi cha juu",
@@ -899,5 +938,337 @@
         "updateMandatory": "Usasishaji ni wa lazima",
         "tapHereUpdate": "Guza hapa ili kusasisha sasa",
         "contactSupport": "Wasiliana na Usaidizi"
+    },
+    "SetAccountModal": {
+        "title": "Wekea akaunti chaguo-msingi",
+        "description": "Akaunti hii itachaguliwa kwanza kwa kutuma na kupokea malipo. Inaweza kubadilishwa wakati wowote.",
+        "stablesatsTag": "Chagua hii ili kudumisha thamani thabiti ya USD.",
+        "bitcoinTag": "Chagua hii kuwa kwenye kiwango cha Bitcoin."
+    },
+    "NoteInput": {
+        "addNote": "Ongeza kumbuka"
+    },
+    "PeopleScreen": {
+        "title": "Watu",
+        "copy": "Nakili",
+        "noContactsTitle": "Hakuna Mawasiliano Yalipopatikana",
+        "noContactsYet": "Tuma au pokea malipo kwa kutumia jina la mtumiaji na mawasiliano yataongezwa hapa kiotomatiki",
+        "noMatchingContacts": "Hakuna mawasiliano yanayolingana na utafutaji wako yalipopatikana.",
+        "allContacts": "Mawasiliano Yote",
+        "viewAllContacts": "Tazama mawasiliano yote",
+        "frequentContacts": "Mawasiliano Yanayotumika Mara kwa Mara"
+    },
+    "TotpRegistrationInitiateScreen": {
+        "title": "Anzisha Usajili wa TOTP",
+        "content": "Yaliyomo"
+    },
+    "TotpRegistrationValidateScreen": {
+        "title": "Thibitisha Usajili wa TOTP",
+        "enter6digitCode": "Ingiza kodi ya tarakimu 6",
+        "success": "Mafanikio"
+    },
+    "TotpLoginValidateScreen": {
+        "title": "Thibitisha Usajili wa TOTP",
+        "content": "Yaliyomo"
+    },
+    "CopySecretComponent": {
+        "button": "Nakili Siri",
+        "toastMessage": "Siri imenakiliwa"
+    },
+    "PhoneRegistrationInitiateScreen": {
+        "title": "Anzisha Usajili wa Simu",
+        "header": "Anzisha Usajili",
+        "headerVerify": "Thibitisha Usajili",
+        "errorRequestingCode": "Kosa katika Kuomba Kodi",
+        "errorInvalidPhoneNumber": "Namba ya Simu Batili",
+        "errorUnsupportedCountry": "Nchi Isiyosaidiwa",
+        "placeholder": "Weka Namba ya Simu",
+        "verify": "Thibitisha",
+        "sms": "SMS",
+        "whatsapp": "WhatsApp"
+    },
+    "PhoneRegistrationValidateScreen": {
+        "successTitle": "Usajili Umefanikiwa"
+    },
+    "EmailRegistrationInitiateScreen": {
+        "title": "Anzisha Usajili wa Barua Pepe",
+        "header": "Anzisha Usajili",
+        "invalidEmail": "Barua Pepe Batili",
+        "send": "Tuma",
+        "missingEmailRegistrationId": "Kukosa ID ya Usajili wa Barua Pepe",
+        "placeholder": "Weka Barua Pepe"
+    },
+    "EmailRegistrationValidateScreen": {
+        "header": "Thibitisha Usajili wa Barua Pepe"
+    },
+    "EmailLoginInitiateScreen": {
+        "title": "Anzisha Ingia kwa Barua Pepe",
+        "header": "Ingia kwa Barua Pepe",
+        "invalidEmail": "Barua Pepe Batili",
+        "send": "Tuma"
+    },
+    "EmailLoginValidateScreen": {
+        "header": "Thibitisha Ingia kwa Barua Pepe",
+        "success": "Mafanikio"
+    },
+    "Circles": {
+        "title": "Vikundi",
+        "titleBlinkCircles": "Vikundi vya Blink",
+        "fetchingLatestCircles": "Inapakua vikundi vya hivi karibuni",
+        "circles": "Vikundi",
+        "circlesExplainer": "Maelezo ya vikundi",
+        "viewMyCircles": "Tazama vikundi vyangu",
+        "introducingCircles": "Tunatambulisha Vikundi",
+        "copiedInviteLink": "Kiungo cha mwaliko kimenakiliwa",
+        "inviteFriendToBlink": "Mwalike rafiki kwa Blink",
+        "shareCircles": "Shiriki Vikundi",
+        "share": "Shiriki",
+        "circlesGrowingSatsExplainer": "Maelezo ya ukuaji wa vikundi vya SATs",
+        "circlesGrowingKeepGoing": "Vikundi vinaendelea kukua, endelea!",
+        "points": "Alama",
+        "innerCircleGrow": "Kukuza Duara la Ndani",
+        "calculatingYourCircles": "Kuhesabu vikundi vyako",
+        "innerCircleExplainer": "Maelezo ya Duara la Ndani",
+        "innerCircleExplainerCard": "Kadi ya Maelezo ya Duara la Ndani",
+        "innerCircle": "Duara la Ndani",
+        "peopleYouWelcomed": "Watu uliowakaribisha",
+        "peopleIWelcomed": "Watu niliowakaribisha",
+        "thisMonth": "Mwezi huu",
+        "outerCircle": "Duara la Nje",
+        "peopleWelcomedByYourCircle": "Watu walioalikwa na kikundi chako",
+        "peopleWelcomedByMyCircle": "Watu walioalikwa na kikundi changu",
+        "yourSphere": "Duru yako",
+        "mySphere": "Duru yangu",
+        "yourRankMessage": "Ujumbe wa Cheo chako",
+        "rankMessage": "Ujumbe wa Cheo",
+        "inviteFriends": "Mwalike Marafiki",
+        "buildYourCircle": "Jenga Kikundi chako",
+        "myBlinkCircles": "Vikundi vyangu vya Blink",
+        "someones": "Mtu fulani",
+        "groupEffort": "Juhudi za Kikundi",
+        "drivingAdoption": "Kuendesha Ufikiaji",
+        "septChallenge": "Changamoto ya Septemba"
+    },
+    "security": {
+        "title": "Usalama",
+        "password": "Neno la Siri",
+        "changePassword": "Badilisha Neno la Siri",
+        "changePin": "Badilisha PIN",
+        "biometric": "Biometri",
+        "biometricEnable": "Wezesha Biometri",
+        "biometricDisable": "Zima Biometri",
+        "biometricLogin": "Ingia kwa Biometri",
+        "biometricPaymentConfirmation": "Thibitisho la Malipo kwa Biometri",
+        "biometricLimit": "Kikomo cha Biometri",
+        "enterPasswordToChange": "Ingiza Neno la Siri kubadilisha",
+        "enterPinToChange": "Ingiza PIN kubadilisha",
+        "passwordDoesNotMatch": "Neno la Siri halilingani",
+        "pinDoesNotMatch": "PIN haifanani",
+        "biometricLimitExplainer": "Maelezo ya Kikomo cha Biometri",
+        "wrongPassword": "Neno la Siri potovu",
+        "wrongPin": "PIN potovu",
+        "passwordChanged": "Neno la Siri limebadilishwa",
+        "pinChanged": "PIN imebadilishwa",
+        "biometricLimitChanged": "Kikomo cha Biometri kimebadilishwa",
+        "biometricPaymentConfirmationChanged": "Thibitisho la Malipo kwa Biometri limebadilishwa"
+    },
+    "paymentConfirmation": {
+        "confirmationRequired": "Thibitisho linahitajika",
+        "biometric": "Biometri",
+        "password": "Neno la Siri",
+        "pin": "PIN",
+        "enterPassword": "Ingiza Neno la Siri",
+        "enterPin": "Ingiza PIN",
+        "wrongPassword": "Neno la Siri potovu",
+        "wrongPin": "PIN potovu"
+    },
+    "fiatUnitScreen": {
+        "title": "Chagua Kipimo cha Fiat",
+        "usd": "USD",
+        "eur": "EUR",
+        "gbp": "GBP"
+    },
+    "bitcoinUnitScreen": {
+        "title": "Chagua Kipimo cha Bitcoin",
+        "sats": "Sats",
+        "btc": "BTC"
+    },
+    "currencyScreen": {
+        "title": "Chagua Sarafu",
+        "fiat": "Fiat",
+        "bitcoin": "Bitcoin"
+    },
+    "themeSelection": {
+        "title": "Chagua Mandhari",
+        "dark": "Giza"
+    },
+    "popupMessages": {
+        "title": "Ujumbe wa Dirisha",
+        "ok": "Sawa",
+        "cancel": "Ghairi"
+    },
+    "personalInfo": {
+        "firstName": "Jina la Kwanza",
+        "lastName": "Jina la Mwisho",
+        "email": "Barua Pepe",
+        "phone": "Simu"
+    },
+    "address": {
+        "street": "Mtaa",
+        "city": "Jiji",
+        "state": "Jimbo",
+        "zipCode": "Kodi ya Posta"
+    },
+    "navigation": {
+        "home": "Nyumbani",
+        "settings": "Mipangilio",
+        "profile": "Profaili",
+        "logout": "Toka"
+    },
+    "homeScreen": {
+        "title": "Nyumbani",
+        "welcome": "Karibu"
+    },
+    "settingsScreen": {
+        "title": "Mipangilio",
+        "language": "Lugha",
+        "theme": "Mandhari"
+    },
+    "languageSelection": {
+        "title": "Chagua Lugha",
+        "english": "Kiingereza",
+        "swahili": "Kiswahili"
+    },
+    "account": {
+        "title": "Akaunti",
+        "details": "Maelezo",
+        "balance": "Usawa"
+    },
+    "accountScreen": {
+        "title": "Skrini ya Akaunti",
+        "transactions": "Miamala"
+    },
+    "transactionDetail": {
+        "title": "Maelezo ya Muamala",
+        "date": "Tarehe",
+        "amount": "Kiasi",
+        "status": "Hali"
+    },
+    "transactionStatus": {
+        "completed": "Imekamilika",
+        "pending": "Inasubiri",
+        "failed": "Imeshindikana"
+    },
+    "transactionType": {
+        "deposit": "Amana",
+        "withdrawal": "Utoaji"
+    },
+    "reportsScreen": {
+        "title": "Skrini ya Ripoti",
+        "monthly": "Kila Mwezi",
+        "annual": "Kila Mwaka"
+    },
+    "reportDetail": {
+        "title": "Maelezo ya Ripoti",
+        "summary": "Muhtasari"
+    },
+    "feedback": {
+        "title": "Maoni",
+        "feedback": "Maoni",
+        "submit": "Wasilisha"
+    },
+    "feedbackScreen": {
+        "title": "Skrini ya Maoni",
+        "feedback": "Maoni",
+        "submit": "Wasilisha"
+    },
+    "supportScreen": {
+        "title": "Skrini ya Usaidizi",
+        "faq": "Maswali Yanayoulizwa Sana",
+        "contact": "Wasiliana"
+    },
+    "contactScreen": {
+        "title": "Skrini ya Mawasiliano",
+        "email": "Barua Pepe",
+        "phone": "Simu"
+    },
+    "faqScreen": {
+        "title": "Skrini ya Maswali",
+        "search": "Tafuta",
+        "categories": "Jamii"
+    },
+    "categoryScreen": {
+        "title": "Skrini ya Jamii",
+        "general": "Jumla",
+        "technical": "Kiufundi"
+    },
+    "profileUpdate": {
+        "title": "Sasisha Profaili",
+        "update": "Sasisha"
+    },
+    "changePassword": {
+        "title": "Badilisha Nenosiri",
+        "currentPassword": "Nenosiri la Sasa",
+        "newPassword": "Nenosiri Jipya",
+        "confirmPassword": "Thibitisha Nenosiri"
+    },
+    "changePasswordScreen": {
+        "title": "Skrini ya Kubadilisha Nenosiri"
+    },
+    "logoutScreen": {
+        "title": "Skrini ya Kutoka",
+        "logout": "Toka"
+    },
+    "notificationSettings": {
+        "title": "Mipangilio ya Arifa",
+        "emailNotifications": "Arifa za Barua Pepe",
+        "smsNotifications": "Arifa za SMS"
+    },
+    "notificationScreen": {
+        "title": "Skrini ya Arifa",
+        "clearAll": "Futa Zote"
+    },
+    "alerts": {
+        "title": "Onyo",
+        "settings": "Mipangilio"
+    },
+    "alertSettings": {
+        "title": "Mipangilio ya Onyo",
+        "emailAlerts": "Onyo za Barua Pepe",
+        "smsAlerts": "Onyo za SMS"
+    },
+    "alertScreen": {
+        "title": "Skrini ya Onyo",
+        "clearAll": "Futa Zote"
+    },
+    "errorMessages": {
+        "title": "Ujumbe wa Kosa",
+        "error": "Kosa",
+        "retry": "Jaribu Tena"
+    },
+    "successMessages": {
+        "title": "Ujumbe wa Mafanikio",
+        "success": "Mafanikio",
+        "continue": "Endelea"
+    },
+    "warningMessages": {
+        "title": "Ujumbe wa Onyo",
+        "warning": "Onyo",
+        "proceed": "Endelea"
+    },
+    "informationMessages": {
+        "title": "Ujumbe wa Taarifa",
+        "information": "Taarifa",
+        "acknowledge": "Thibitisha"
+    },
+    "confirmationMessages": {
+        "title": "Ujumbe wa Thibitisho",
+        "confirm": "Thibitisha",
+        "cancel": "Ghairi"
+    },
+    "updateMessages": {
+        "title": "Ujumbe wa Sasisho",
+        "update": "Sasisha",
+        "later": "Baadaye"
     }
 }
