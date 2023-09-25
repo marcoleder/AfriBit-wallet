@@ -8,6 +8,8 @@ import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { useDisplayCurrency } from "@app/hooks/use-display-currency"
 import { toBtcMoneyAmount, toUsdMoneyAmount } from "@app/types/amounts"
 import { makeStyles, Text, useTheme } from "@rneui/themed"
+import { useNavigation } from "@react-navigation/native"
+import { StackNavigationProp } from "@react-navigation/stack"
 
 import { GaloyCurrencyBubble } from "../atomic/galoy-currency-bubble"
 import { GaloyIcon } from "../atomic/galoy-icon"
@@ -15,6 +17,8 @@ import HideableArea from "../hideable-area/hideable-area"
 import { useI18nContext } from "@app/i18n/i18n-react"
 import { testProps } from "@app/utils/testProps"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
+import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
+import { RootStackParamList } from "@app/navigation/stack-param-lists"
 
 const Loader = () => {
   const styles = useStyles()
@@ -52,14 +56,12 @@ gql`
 type Props = {
   loading: boolean
   isContentVisible: boolean
-  setIsContentVisible: React.Dispatch<React.SetStateAction<boolean>>
   setIsStablesatModalVisible: (value: boolean) => void
 }
 
 const WalletOverview: React.FC<Props> = ({
   loading,
   isContentVisible,
-  setIsContentVisible,
   setIsStablesatModalVisible,
 }) => {
   const { LL } = useI18nContext()
@@ -69,6 +71,8 @@ const WalletOverview: React.FC<Props> = ({
   } = useTheme()
   const styles = useStyles()
   const { data } = useWalletOverviewScreenQuery({ skip: !isAuthed })
+
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
 
   const { formatMoneyAmount, displayCurrency, moneyAmountToDisplayCurrencyString } =
     useDisplayCurrency()
@@ -103,19 +107,18 @@ const WalletOverview: React.FC<Props> = ({
     }
   }
 
-  const toggleIsContentVisible = () => {
-    setIsContentVisible((prevState) => !prevState)
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.myAccounts}>
         <Text type="p1" bold {...testProps(LL.HomeScreen.myAccounts())}>
           {LL.HomeScreen.myAccounts()}
         </Text>
-        <Pressable onPress={toggleIsContentVisible}>
-          <GaloyIcon name={isContentVisible ? "eye" : "eye-slash"} size={24} />
-        </Pressable>
+        <GaloyIconButton
+          onPress={() => navigation.navigate("priceHistory")}
+          size={"medium"}
+          name="graph"
+          iconOnly={true}
+        />
       </View>
       <View style={[styles.separator, styles.titleSeparator]}></View>
       <View style={styles.displayTextView}>

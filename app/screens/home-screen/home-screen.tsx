@@ -1,5 +1,5 @@
 import * as React from "react"
-import { RefreshControl, ScrollView, View } from "react-native"
+import { RefreshControl, ScrollView, View, Pressable } from "react-native"
 import { TouchableWithoutFeedback } from "react-native-gesture-handler"
 import Modal from "react-native-modal"
 import Icon from "react-native-vector-icons/Ionicons"
@@ -7,7 +7,7 @@ import { LocalizedString } from "typesafe-i18n"
 
 import { gql } from "@apollo/client"
 import { AppUpdate } from "@app/components/app-update/app-update"
-import { icons } from "@app/components/atomic/galoy-icon"
+import { GaloyIcon, icons } from "@app/components/atomic/galoy-icon"
 import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
 import { StableSatsModal } from "@app/components/stablesats-modal"
 import WalletOverview from "@app/components/wallet-overview/wallet-overview"
@@ -292,6 +292,10 @@ export const HomeScreen: React.FC = () => {
     </Modal>
   )
 
+  const toggleIsContentVisible = () => {
+    setIsContentVisible((prevState) => !prevState)
+  }
+
   return (
     <Screen>
       {AccountCreationNeededModal}
@@ -304,12 +308,9 @@ export const HomeScreen: React.FC = () => {
         setIsVisible={setIsStablesatModalVisible}
       />
       <View style={[styles.header, styles.container]}>
-        <GaloyIconButton
-          onPress={() => navigation.navigate("priceHistory")}
-          size={"medium"}
-          name="graph"
-          iconOnly={true}
-        />
+        <Pressable onPress={toggleIsContentVisible}>
+          <GaloyIcon name={isContentVisible ? "eye" : "eye-slash"} size={24} />
+        </Pressable>
         <BalanceHeader
           isContentVisible={isContentVisible}
           setIsContentVisible={setIsContentVisible}
@@ -335,7 +336,6 @@ export const HomeScreen: React.FC = () => {
       >
         <WalletOverview
           isContentVisible={isContentVisible}
-          setIsContentVisible={setIsContentVisible}
           loading={loading}
           setIsStablesatModalVisible={setIsStablesatModalVisible}
         />
