@@ -3,7 +3,6 @@ import { RefreshControl, ScrollView, View, Pressable } from "react-native"
 import { TouchableWithoutFeedback } from "react-native-gesture-handler"
 import Modal from "react-native-modal"
 import Icon from "react-native-vector-icons/Ionicons"
-import { LocalizedString } from "typesafe-i18n"
 
 import { gql } from "@apollo/client"
 import { AppUpdate } from "@app/components/app-update/app-update"
@@ -27,9 +26,7 @@ import { Text, makeStyles, useTheme } from "@rneui/themed"
 
 import { BalanceHeader } from "../../components/balance-header"
 import { Screen } from "../../components/screen"
-import { TransactionItem } from "../../components/transaction-item"
 import { RootStackParamList } from "../../navigation/stack-param-lists"
-import { testProps } from "../../utils/testProps"
 import { GaloyErrorBox } from "@app/components/atomic/galoy-error-box"
 import { GaloyPrimaryButton } from "@app/components/atomic/galoy-primary-button"
 import { isIos } from "@app/utils/helper"
@@ -145,9 +142,6 @@ export const HomeScreen: React.FC = () => {
     }
   }, [isAuthed, refetchAuthed, refetchRealtimePrice, refetchUnauthed])
 
-  const transactionsEdges =
-    dataAuthed?.me?.defaultAccount?.transactions?.edges ?? undefined
-
   const [modalVisible, setModalVisible] = React.useState(false)
   const [isIntroducingCirclesModalVisible, setIsIntroducingCirclesModalVisible] =
     React.useState(false)
@@ -197,39 +191,6 @@ export const HomeScreen: React.FC = () => {
       console.error("Wallets count is not 2")
     }
   }, [dataAuthed])
-
-  let recentTransactionsData:
-    | {
-        title: LocalizedString
-        details: React.ReactNode
-      }
-    | undefined = undefined
-
-  const TRANSACTIONS_TO_SHOW = 2
-
-  if (isAuthed && transactionsEdges?.length) {
-    recentTransactionsData = {
-      title: LL.TransactionScreen.title(),
-      details: (
-        <>
-          {transactionsEdges
-            .slice(0, TRANSACTIONS_TO_SHOW)
-            .map(
-              ({ node }, index, array) =>
-                node && (
-                  <TransactionItem
-                    key={`transaction-${node.id}`}
-                    txid={node.id}
-                    subtitle
-                    isOnHomeScreen={true}
-                    isLast={index === array.length - 1}
-                  />
-                ),
-            )}
-        </>
-      ),
-    }
-  }
 
   type Target =
     | "scanningQRCode"
@@ -357,19 +318,6 @@ export const HomeScreen: React.FC = () => {
           ))}
         </View>
 
-        {recentTransactionsData ? (
-          <>
-            <TouchableWithoutFeedback
-              style={styles.recentTransaction}
-              onPress={() => onMenuClick("transactionHistory")}
-            >
-              <Text type="p1" bold {...testProps(recentTransactionsData.title)}>
-                {recentTransactionsData?.title}
-              </Text>
-            </TouchableWithoutFeedback>
-            {recentTransactionsData?.details}
-          </>
-        ) : null}
         <AppUpdate />
         <SetDefaultAccountModal
           isVisible={setDefaultAccountModalVisible}
@@ -426,19 +374,6 @@ const useStyles = makeStyles(({ colors }) => ({
   openWalletContainer: {
     alignSelf: "stretch",
     marginTop: 20,
-  },
-  recentTransaction: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    columnGap: 10,
-    backgroundColor: colors.grey5,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    borderColor: colors.grey5,
-    borderBottomWidth: 2,
-    paddingVertical: 14,
   },
   button: {
     display: "flex",

@@ -1,9 +1,15 @@
 import React from "react"
 import ContentLoader, { Rect } from "react-content-loader/native"
 import { Pressable, View } from "react-native"
+import { LocalizedString } from "typesafe-i18n"
+import { useI18nContext } from "@app/i18n/i18n-react"
 
 import { gql } from "@apollo/client"
-import { useWalletOverviewScreenQuery, WalletCurrency } from "@app/graphql/generated"
+import {
+  useWalletOverviewScreenQuery,
+  WalletCurrency,
+  useHomeAuthedQuery,
+} from "@app/graphql/generated"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { useDisplayCurrency } from "@app/hooks/use-display-currency"
 import { toBtcMoneyAmount, toUsdMoneyAmount } from "@app/types/amounts"
@@ -14,11 +20,10 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { GaloyCurrencyBubble } from "../atomic/galoy-currency-bubble"
 import { GaloyIcon } from "../atomic/galoy-icon"
 import HideableArea from "../hideable-area/hideable-area"
-import { useI18nContext } from "@app/i18n/i18n-react"
-import { testProps } from "@app/utils/testProps"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
 import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
+import { TransactionItem } from "../../components/transaction-item"
 
 const Loader = () => {
   const styles = useStyles()
@@ -64,7 +69,6 @@ const WalletOverview: React.FC<Props> = ({
   isContentVisible,
   setIsStablesatModalVisible,
 }) => {
-  const { LL } = useI18nContext()
   const isAuthed = useIsAuthed()
   const {
     theme: { colors },
@@ -72,15 +76,114 @@ const WalletOverview: React.FC<Props> = ({
   const styles = useStyles()
   const { data } = useWalletOverviewScreenQuery({ skip: !isAuthed })
 
+  type Target = "transactionHistory"
+
+  const onMenuClick = (target: Target) => {
+    if (isAuthed) {
+      // we are using any because Typescript complain on the fact we are not passing any params
+      // but there is no need for a params and the types should not necessitate it
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      navigation.navigate(target as any)
+    }
+  }
+
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
+
+  const { LL } = useI18nContext()
 
   const { formatMoneyAmount, displayCurrency, moneyAmountToDisplayCurrencyString } =
     useDisplayCurrency()
+
+  const [isBtcTransactionsVisible, setIsBtcTransactionsVisible] = React.useState(false)
+  const [isUsdTransactionsVisible, setIsUsdTransactionsVisible] = React.useState(false)
 
   let btcInDisplayCurrencyFormatted: string | undefined = "$0.00"
   let usdInDisplayCurrencyFormatted: string | undefined = "$0.00"
   let btcInUnderlyingCurrency: string | undefined = "0 sat"
   let usdInUnderlyingCurrency: string | undefined = undefined
+
+  const { data: dataAuthed } = useHomeAuthedQuery({
+    skip: !isAuthed,
+    fetchPolicy: "network-only",
+    errorPolicy: "all",
+
+    // this enables offline mode use-case
+    nextFetchPolicy: "cache-and-network",
+  })
+
+  type TransactionData =
+    | {
+        title: LocalizedString
+        details: React.ReactNode
+      }
+    | undefined
+
+  let recentBtcTransactionsData: TransactionData = undefined
+  let recentUsdTransactionsData: TransactionData = undefined
+
+  const TRANSACTIONS_TO_SHOW = 3
+  const transactionsEdges =
+    dataAuthed?.me?.defaultAccount?.transactions?.edges ?? undefined
+
+  if (isAuthed && transactionsEdges?.length) {
+    const btcTransactions = transactionsEdges.filter(
+      ({ node }) => node?.settlementCurrency === "BTC",
+    )
+
+    if (btcTransactions.length) {
+      recentBtcTransactionsData = {
+        title: LL.TransactionScreen.title(),
+        details: (
+          <>
+            {btcTransactions
+              .slice(0, TRANSACTIONS_TO_SHOW)
+              .map(
+                ({ node }, index, array) =>
+                  node && (
+                    <TransactionItem
+                      key={`transaction-${node.id}`}
+                      txid={node.id}
+                      subtitle
+                      isOnHomeScreen={true}
+                      isLast={index === array.length - 1}
+                      isBalanceHidden={isContentVisible}
+                    />
+                  ),
+              )}
+          </>
+        ),
+      }
+    }
+
+    const usdTransactions = transactionsEdges.filter(
+      ({ node }) => node?.settlementCurrency === "USD",
+    )
+
+    if (usdTransactions.length) {
+      recentUsdTransactionsData = {
+        title: LL.TransactionScreen.title(),
+        details: (
+          <>
+            {usdTransactions
+              .slice(0, TRANSACTIONS_TO_SHOW)
+              .map(
+                ({ node }, index, array) =>
+                  node && (
+                    <TransactionItem
+                      key={`transaction-${node.id}`}
+                      txid={node.id}
+                      subtitle
+                      isOnHomeScreen={true}
+                      isLast={index === array.length - 1}
+                      isBalanceHidden={isContentVisible}
+                    />
+                  ),
+              )}
+          </>
+        ),
+      }
+    }
+  }
 
   if (isAuthed) {
     const btcWallet = getBtcWallet(data?.me?.defaultAccount?.wallets)
@@ -107,68 +210,95 @@ const WalletOverview: React.FC<Props> = ({
     }
   }
 
+  const toggleIsBtcTransactionsVisible = () => {
+    setIsBtcTransactionsVisible((prevState) => !prevState)
+  }
+
+  const toggleIsUsdTransactionsVisible = () => {
+    setIsUsdTransactionsVisible((prevState) => !prevState)
+  }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.myAccounts}>
-        <Text type="p1" bold {...testProps(LL.HomeScreen.myAccounts())}>
-          {LL.HomeScreen.myAccounts()}
-        </Text>
-        <GaloyIconButton
-          onPress={() => navigation.navigate("priceHistory")}
-          size={"medium"}
-          name="graph"
-          iconOnly={true}
-        />
-      </View>
-      <View style={[styles.separator, styles.titleSeparator]}></View>
-      <View style={styles.displayTextView}>
-        <View style={styles.currency}>
-          <GaloyCurrencyBubble currency="BTC" />
-          <Text type="p1">Bitcoin</Text>
-        </View>
-        {loading ? (
-          <Loader />
-        ) : (
-          <View style={styles.hideableArea}>
-            <HideableArea isContentVisible={isContentVisible}>
-              <Text type="p1" bold>
-                {btcInUnderlyingCurrency}
-              </Text>
-              <Text type="p3">{btcInDisplayCurrencyFormatted}</Text>
-            </HideableArea>
+    <>
+      <Pressable onPress={() => onMenuClick("transactionHistory")}>
+        <View style={styles.container}>
+          <View style={styles.displayTextView}>
+            <View style={styles.currency}>
+              <GaloyCurrencyBubble currency="BTC" />
+              <Text type="p1">Bitcoin</Text>
+              <GaloyIconButton
+                onPress={() => navigation.navigate("priceHistory")}
+                size={"medium"}
+                name="graph"
+                iconOnly={true}
+              />
+            </View>
+            <Pressable onPress={toggleIsBtcTransactionsVisible} style={styles.pressable}>
+              {loading ? (
+                <Loader />
+              ) : (
+                <View style={styles.hideableArea}>
+                  <HideableArea isContentVisible={isContentVisible}>
+                    <Text type="p1" bold>
+                      {btcInUnderlyingCurrency}
+                    </Text>
+                    <Text type="p3">{btcInDisplayCurrencyFormatted}</Text>
+                  </HideableArea>
+                </View>
+              )}
+              <GaloyIcon
+                name={isBtcTransactionsVisible ? "caret-up" : "caret-down"}
+                size={24}
+              />
+            </Pressable>
           </View>
-        )}
-      </View>
-      <View style={styles.separator}></View>
-      <View style={styles.displayTextView}>
-        <View style={styles.currency}>
-          <GaloyCurrencyBubble currency="USD" />
-          <Text type="p1">Stablesats</Text>
-          <Pressable onPress={() => setIsStablesatModalVisible(true)}>
-            <GaloyIcon color={colors.grey1} name="question" size={18} />
-          </Pressable>
+          {recentBtcTransactionsData && isBtcTransactionsVisible ? (
+            <>{recentBtcTransactionsData?.details}</>
+          ) : null}
         </View>
-        {loading ? (
-          <Loader />
-        ) : (
-          <View style={styles.hideableArea}>
-            <HideableArea isContentVisible={isContentVisible}>
-              {usdInUnderlyingCurrency ? (
-                <Text type="p1" bold>
-                  {usdInUnderlyingCurrency}
-                </Text>
-              ) : null}
-              <Text
-                type={usdInUnderlyingCurrency ? "p3" : "p1"}
-                bold={!usdInUnderlyingCurrency}
-              >
-                {usdInDisplayCurrencyFormatted}
-              </Text>
-            </HideableArea>
+      </Pressable>
+      <Pressable onPress={() => onMenuClick("transactionHistory")}>
+        <View style={styles.container}>
+          <View style={styles.displayTextView}>
+            <View style={styles.currency}>
+              <GaloyCurrencyBubble currency="USD" />
+              <Text type="p1">Stablesats</Text>
+              <Pressable onPress={() => setIsStablesatModalVisible(true)}>
+                <GaloyIcon color={colors.grey1} name="question" size={18} />
+              </Pressable>
+            </View>
+            <Pressable onPress={toggleIsUsdTransactionsVisible} style={styles.pressable}>
+              {loading ? (
+                <Loader />
+              ) : (
+                <View style={styles.hideableArea}>
+                  <HideableArea isContentVisible={isContentVisible}>
+                    {usdInUnderlyingCurrency ? (
+                      <Text type="p1" bold>
+                        {usdInUnderlyingCurrency}
+                      </Text>
+                    ) : null}
+                    <Text
+                      type={usdInUnderlyingCurrency ? "p3" : "p1"}
+                      bold={!usdInUnderlyingCurrency}
+                    >
+                      {usdInDisplayCurrencyFormatted}
+                    </Text>
+                  </HideableArea>
+                </View>
+              )}
+              <GaloyIcon
+                name={isUsdTransactionsVisible ? "caret-up" : "caret-down"}
+                size={24}
+              />
+            </Pressable>
           </View>
-        )}
-      </View>
-    </View>
+          {recentUsdTransactionsData && isUsdTransactionsVisible ? (
+            <>{recentUsdTransactionsData?.details}</>
+          ) : null}
+        </View>
+      </Pressable>
+    </>
   )
 }
 
@@ -202,7 +332,7 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "center",
     height: 45,
     marginVertical: 4,
-    marginTop: 5,
+    marginTop: 0,
   },
   separator: {
     height: 1,
@@ -227,5 +357,11 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "flex-end",
     height: 45,
     marginTop: 5,
+  },
+  pressable: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: 4,
   },
 }))

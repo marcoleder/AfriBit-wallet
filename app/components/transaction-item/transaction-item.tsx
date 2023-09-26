@@ -8,7 +8,6 @@ import {
   TransactionFragment,
   TransactionFragmentDoc,
   WalletCurrency,
-  useHideBalanceQuery,
 } from "@app/graphql/generated"
 import { useDisplayCurrency } from "@app/hooks/use-display-currency"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
@@ -59,28 +58,13 @@ export const useDescriptionDisplay = ({
   }
 }
 
-const AmountDisplayStyle = ({
-  isReceive,
-  isPending,
-}: {
-  isReceive: boolean
-  isPending: boolean
-}) => {
-  const styles = useStyles()
-
-  if (isPending) {
-    return styles.pending
-  }
-
-  return isReceive ? styles.receive : styles.send
-}
-
 type Props = {
   txid: string
   subtitle?: boolean
   isFirst?: boolean
   isLast?: boolean
   isOnHomeScreen?: boolean
+  isBalanceHidden?: boolean
 }
 
 export const TransactionItem: React.FC<Props> = ({
@@ -89,6 +73,7 @@ export const TransactionItem: React.FC<Props> = ({
   isFirst = false,
   isLast = false,
   isOnHomeScreen = false,
+  isBalanceHidden = false,
 }) => {
   const styles = useStyles({
     isFirst,
@@ -111,8 +96,6 @@ export const TransactionItem: React.FC<Props> = ({
     appConfig: { galoyInstance },
   } = useAppConfig()
   const { formatMoneyAmount, formatCurrency } = useDisplayCurrency()
-  const { data: { hideBalance } = {} } = useHideBalanceQuery()
-  const isBalanceVisible = hideBalance ?? false
 
   const description = useDescriptionDisplay({
     tx,
@@ -123,10 +106,32 @@ export const TransactionItem: React.FC<Props> = ({
     return null
   }
 
+  const walletCurrency = tx.settlementCurrency as WalletCurrency
+
+  const AmountDisplayStyle = ({
+    isReceive,
+    isPending,
+  }: {
+    isReceive: boolean
+    isPending: boolean
+  }) => {
+    const styles = useStyles()
+
+    if (isPending) {
+      return styles.pending
+    }
+
+    if (walletCurrency === WalletCurrency.Btc) {
+      return isReceive ? styles.receiveBtc : styles.send
+    } else if (walletCurrency === WalletCurrency.Usd) {
+      return isReceive ? styles.receiveUsd : styles.send
+    }
+
+    return isReceive ? styles.receive : styles.send
+  }
+
   const isReceive = tx.direction === "RECEIVE"
   const isPending = tx.status === "PENDING"
-
-  const walletCurrency = tx.settlementCurrency as WalletCurrency
 
   const formattedSettlementAmount = formatMoneyAmount({
     moneyAmount: toWalletAmount({
@@ -175,7 +180,7 @@ export const TransactionItem: React.FC<Props> = ({
       </ListItem.Content>
 
       <HideableArea
-        isContentVisible={isBalanceVisible}
+        isContentVisible={isBalanceHidden}
         hiddenContent={<Icon style={styles.hiddenBalanceContainer} name="eye" />}
       >
         <View>
@@ -202,6 +207,8 @@ type UseStyleProps = {
 const useStyles = makeStyles(({ colors }, props: UseStyleProps) => ({
   container: {
     height: 60,
+    paddingLeft: 5,
+    paddingRight: 30,
     paddingVertical: 9,
     borderColor: colors.grey4,
     overflow: "hidden",
@@ -215,12 +222,22 @@ const useStyles = makeStyles(({ colors }, props: UseStyleProps) => ({
     color: colors.grey0,
   },
   pending: {
-    color: colors.grey1,
+    color: colors.grey3,
+    textAlign: "right",
+    flexWrap: "wrap",
+  },
+  receiveBtc: {
+    color: colors.primary,
+    textAlign: "right",
+    flexWrap: "wrap",
+  },
+  receiveUsd: {
+    color: colors.green,
     textAlign: "right",
     flexWrap: "wrap",
   },
   receive: {
-    color: colors.green,
+    color: colors.white,
     textAlign: "right",
     flexWrap: "wrap",
   },
