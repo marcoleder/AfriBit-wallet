@@ -21,7 +21,6 @@ import { GaloyCurrencyBubble } from "../atomic/galoy-currency-bubble"
 import { GaloyIcon } from "../atomic/galoy-icon"
 import HideableArea from "../hideable-area/hideable-area"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
-import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
 import { TransactionItem } from "../../components/transaction-item"
 
@@ -226,12 +225,9 @@ const WalletOverview: React.FC<Props> = ({
             <View style={styles.currency}>
               <GaloyCurrencyBubble currency="BTC" />
               <Text type="p1">Bitcoin</Text>
-              <GaloyIconButton
-                onPress={() => navigation.navigate("priceHistory")}
-                size={"medium"}
-                name="graph"
-                iconOnly={true}
-              />
+              <Pressable onPress={() => navigation.navigate("priceHistory")}>
+                <GaloyIcon color={colors.grey1} name="graph" size={18} />
+              </Pressable>
             </View>
             <Pressable onPress={toggleIsBtcTransactionsVisible} style={styles.pressable}>
               {loading ? (

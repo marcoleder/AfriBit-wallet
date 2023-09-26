@@ -277,12 +277,9 @@ export const HomeScreen: React.FC = () => {
           setIsContentVisible={setIsContentVisible}
           loading={loading}
         />
-        <GaloyIconButton
-          onPress={() => navigation.navigate("settings")}
-          size={"medium"}
-          name="menu"
-          iconOnly={true}
-        />
+        <Pressable onPress={() => navigation.navigate("settings")}>
+          <GaloyIcon name={"menu"} size={24} />
+        </Pressable>
       </View>
       <ScrollView
         contentContainerStyle={[styles.scrollView, styles.container]}
