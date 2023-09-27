@@ -332,8 +332,10 @@ const useStyles = makeStyles(({ colors }) => ({
   listItemsContainer: {
     paddingHorizontal: 15,
     paddingVertical: 15,
-    marginBottom: 20,
-    borderRadius: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    marginHorizontal: 20,
+    marginTop: 20,
     backgroundColor: colors.grey5,
     display: "flex",
     flexDirection: "row",

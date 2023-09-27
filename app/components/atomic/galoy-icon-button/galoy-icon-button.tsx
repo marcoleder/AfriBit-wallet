@@ -76,12 +76,10 @@ export const GaloyIconButton = ({
       case !iconOnly && pressed:
         return {
           opacity: 0.7,
-          color: colors.primary,
           backgroundColor: colors.grey4,
         }
       case !iconOnly && !pressed:
         return {
-          color: colors.primary,
           backgroundColor: colors.grey4,
         }
       default:
