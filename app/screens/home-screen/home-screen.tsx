@@ -302,18 +302,6 @@ export const HomeScreen: React.FC = () => {
             <GaloyErrorBox errorMessage={getErrorMessages(error)} />
           </View>
         )}
-        <View style={styles.listItemsContainer}>
-          {buttons.map((item) => (
-            <View key={item.icon} style={styles.button}>
-              <GaloyIconButton
-                name={item.icon}
-                size="large"
-                text={item.title}
-                onPress={() => onMenuClick(item.target)}
-              />
-            </View>
-          ))}
-        </View>
 
         <AppUpdate />
         <SetDefaultAccountModal
@@ -321,6 +309,18 @@ export const HomeScreen: React.FC = () => {
           toggleModal={toggleSetDefaultAccountModal}
         />
       </ScrollView>
+      <View style={styles.listItemsContainer}>
+        {buttons.map((item) => (
+          <View key={item.icon} style={styles.button}>
+            <GaloyIconButton
+              name={item.icon}
+              size="large"
+              text={item.title}
+              onPress={() => onMenuClick(item.target)}
+            />
+          </View>
+        ))}
+      </View>
     </Screen>
   )
 }

@@ -3,7 +3,7 @@ import { View } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 
 // eslint-disable-next-line camelcase
-import { useFragment_experimental } from "@apollo/client"
+import { useFragment } from "@apollo/client"
 import {
   TransactionFragment,
   TransactionFragmentDoc,
@@ -83,7 +83,7 @@ export const TransactionItem: React.FC<Props> = ({
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
 
-  const { data: tx } = useFragment_experimental<TransactionFragment>({
+  const { data: tx } = useFragment<TransactionFragment>({
     fragment: TransactionFragmentDoc,
     fragmentName: "Transaction",
     from: {

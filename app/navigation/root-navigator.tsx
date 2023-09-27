@@ -140,7 +140,7 @@ export const RootStack = () => {
       />
       <RootNavigator.Screen
         name="Primary"
-        component={PrimaryNavigator}
+        component={HomeScreen}
         options={{
           headerShown: false,
           animationEnabled: false,
