@@ -1,5 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useReducer } from "react"
-import { TextInput, TouchableWithoutFeedback, View } from "react-native"
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import {
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+  ActivityIndicator,
+} from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Screen } from "@app/components/screen"
 import { gql } from "@apollo/client"
@@ -8,20 +13,26 @@ import {
   useAccountDefaultWalletLazyQuery,
   useRealtimePriceQuery,
   useSendBitcoinDestinationQuery,
+  useContactsQuery,
 } from "@app/graphql/generated"
 import { useI18nContext } from "@app/i18n/i18n-react"
-import { RootStackParamList } from "@app/navigation/stack-param-lists"
+import {
+  RootStackParamList,
+  PeopleStackParamList,
+} from "@app/navigation/stack-param-lists"
 import { logParseDestinationResult } from "@app/utils/analytics"
 import { toastShow } from "@app/utils/toast"
 import { PaymentType } from "@galoymoney/client"
 import Clipboard from "@react-native-clipboard/clipboard"
 import crashlytics from "@react-native-firebase/crashlytics"
 import { StackNavigationProp } from "@react-navigation/stack"
+import { SearchBar } from "@rneui/base"
+import { FlatList } from "react-native-gesture-handler"
 
 import { LNURL_DOMAINS } from "@app/config"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { RouteProp, useNavigation } from "@react-navigation/native"
-import { makeStyles, useTheme, Text } from "@rneui/themed"
+import { makeStyles, useTheme, Text, ListItem } from "@rneui/themed"
 import { testProps } from "../../utils/testProps"
 import { ConfirmDestinationModal } from "./confirm-destination-modal"
 import { DestinationInformation } from "./destination-information"
@@ -63,6 +74,18 @@ gql`
       id
     }
   }
+
+  query contacts {
+    me {
+      id
+      contacts {
+        id
+        username
+        alias
+        transactionsCount
+      }
+    }
+  }
 `
 
 export const defaultDestinationState: SendBitcoinDestinationState = {
@@ -83,6 +106,8 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   const navigation =
     useNavigation<StackNavigationProp<RootStackParamList, "sendBitcoinDestination">>()
   const isAuthed = useIsAuthed()
+
+  const contactNavigation = useNavigation<StackNavigationProp<PeopleStackParamList>>()
 
   const [destinationState, dispatchDestinationStateAction] = useReducer(
     sendBitcoinDestinationReducer,
@@ -110,6 +135,66 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   const [accountDefaultWalletQuery] = useAccountDefaultWalletLazyQuery({
     fetchPolicy: "no-cache",
   })
+
+  const [matchingContacts, setMatchingContacts] = useState<Contact[]>([])
+  const [searchText, setSearchText] = useState("")
+  const {
+    loading,
+    data: contactsData,
+    error,
+  } = useContactsQuery({
+    skip: !isAuthed,
+    fetchPolicy: "cache-and-network",
+  })
+
+  const allContacts: Contact[] = useMemo(() => {
+    return contactsData?.me?.contacts.slice() ?? []
+  }, [contactsData])
+
+  if (error) {
+    toastShow({ message: error.message, LL })
+  }
+
+  const reset = useCallback(() => {
+    setSearchText("")
+    setMatchingContacts(allContacts)
+  }, [allContacts])
+
+  const updateMatchingContacts = useCallback(
+    (newSearchText: string) => {
+      setSearchText(newSearchText)
+      if (newSearchText.length > 0) {
+        const searchWordArray = newSearchText
+          .split(" ")
+          .filter((text) => text.trim().length > 0)
+        const matchingContacts = allContacts.filter((contact) =>
+          searchWordArray.some((word) => wordMatchesContact(word, contact)),
+        )
+        setMatchingContacts(matchingContacts)
+      } else {
+        setMatchingContacts(allContacts)
+      }
+    },
+    [allContacts],
+  )
+
+  const wordMatchesContact = (searchWord: string, contact: Contact): boolean => {
+    let contactPrettyNameMatchesSearchWord: boolean
+
+    const contactNameMatchesSearchWord = contact.username
+      .toLowerCase()
+      .includes(searchWord.toLowerCase())
+
+    if (contact.alias) {
+      contactPrettyNameMatchesSearchWord = contact.alias
+        .toLowerCase()
+        .includes(searchWord.toLowerCase())
+    } else {
+      contactPrettyNameMatchesSearchWord = false
+    }
+
+    return contactNameMatchesSearchWord || contactPrettyNameMatchesSearchWord
+  }
 
   const validateDestination = useMemo(() => {
     if (!bitcoinNetwork || !wallets || !contacts) {
@@ -201,6 +286,34 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     navigation,
   ])
 
+  let ListEmptyContent: React.ReactNode
+
+  if (allContacts.length > 0) {
+    ListEmptyContent = (
+      <View style={styles.emptyListNoMatching}>
+        <Text style={styles.emptyListTitle}>{LL.PeopleScreen.noMatchingContacts()}</Text>
+      </View>
+    )
+  } else if (loading) {
+    ListEmptyContent = (
+      <View style={styles.activityIndicatorContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    )
+  } else {
+    ListEmptyContent = (
+      <View style={styles.emptyListNoContacts}>
+        <Text
+          {...testProps(LL.PeopleScreen.noContactsTitle())}
+          style={styles.emptyListTitle}
+        >
+          {LL.PeopleScreen.noContactsTitle()}
+        </Text>
+        <Text style={styles.emptyListText}>{LL.PeopleScreen.noContactsYet()}</Text>
+      </View>
+    )
+  }
+
   const handleChangeText = useCallback(
     (newDestination: string) => {
       dispatchDestinationStateAction({
@@ -213,6 +326,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   )
 
   useEffect(() => {
+    setMatchingContacts(allContacts)
     if (
       !goToNextScreenWhenValid ||
       destinationState.destinationState !== DestinationState.Valid
@@ -238,7 +352,13 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         receiveDestination: destinationState.destination,
       })
     }
-  }, [destinationState, goToNextScreenWhenValid, navigation, setGoToNextScreenWhenValid])
+  }, [
+    allContacts,
+    destinationState,
+    goToNextScreenWhenValid,
+    navigation,
+    setGoToNextScreenWhenValid,
+  ])
 
   const initiateGoToNextScreen =
     validateDestination &&
@@ -305,7 +425,23 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         >
           {LL.SendBitcoinScreen.destination()}
         </Text>
-
+        <SearchBar
+          {...testProps(LL.SendBitcoinScreen.placeholder())}
+          placeholder={LL.SendBitcoinScreen.placeholder()}
+          value={searchText}
+          onChangeText={updateMatchingContacts}
+          platform="default"
+          round
+          showLoading={false}
+          containerStyle={styles.searchBarContainer}
+          inputContainerStyle={styles.searchBarInputContainerStyle}
+          inputStyle={styles.searchBarText}
+          rightIconContainerStyle={styles.searchBarRightIconStyle}
+          searchIcon={<Icon name="search" size={24} color={styles.icon.color} />}
+          clearIcon={
+            <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
+          }
+        />
         <View style={[styles.fieldBackground, inputContainerStyle]}>
           <TextInput
             {...testProps(LL.SendBitcoinScreen.placeholder())}
@@ -357,6 +493,27 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
             </View>
           </TouchableWithoutFeedback>
         </View>
+        <FlatList
+          contentContainerStyle={styles.listContainer}
+          data={matchingContacts}
+          ListEmptyComponent={ListEmptyContent}
+          renderItem={({ item }) => (
+            <ListItem
+              key={item.username}
+              style={styles.item}
+              containerStyle={styles.itemContainer}
+              onPress={() =>
+                contactNavigation.navigate("contactDetail", { contact: item })
+              }
+            >
+              <Icon name={"ios-person-outline"} size={24} color={colors.primary} />
+              <ListItem.Content>
+                <ListItem.Title style={styles.itemText}>{item.alias}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          )}
+          keyExtractor={(item) => item.username}
+        />
         <DestinationInformation destinationState={destinationState} />
         <View style={styles.buttonContainer}>
           <GaloyPrimaryButton
@@ -382,6 +539,72 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 export default SendBitcoinDestinationScreen
 
 const usestyles = makeStyles(({ colors }) => ({
+  activityIndicatorContainer: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+
+  emptyListNoContacts: {
+    marginHorizontal: 12,
+    marginTop: 32,
+  },
+
+  emptyListNoMatching: {
+    marginHorizontal: 26,
+    marginTop: 8,
+  },
+
+  emptyListText: {
+    fontSize: 18,
+    marginTop: 30,
+    textAlign: "center",
+    color: colors.black,
+  },
+
+  emptyListTitle: {
+    color: colors.black,
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
+  item: {
+    marginHorizontal: 32,
+    marginVertical: 8,
+  },
+
+  itemContainer: {
+    borderRadius: 8,
+    backgroundColor: colors.grey5,
+  },
+
+  listContainer: { flexGrow: 1 },
+
+  searchBarContainer: {
+    backgroundColor: colors.white,
+    borderBottomColor: colors.white,
+    borderTopColor: colors.white,
+    marginHorizontal: 26,
+    marginVertical: 8,
+  },
+
+  searchBarInputContainerStyle: {
+    backgroundColor: colors.grey5,
+  },
+
+  searchBarRightIconStyle: {
+    padding: 8,
+  },
+
+  searchBarText: {
+    color: colors.black,
+    textDecorationLine: "none",
+  },
+  itemText: { color: colors.black },
+  icon: {
+    color: colors.black,
+  },
   screenStyle: {
     padding: 20,
     flexGrow: 1,
