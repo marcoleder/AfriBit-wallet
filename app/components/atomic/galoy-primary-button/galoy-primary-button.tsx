@@ -32,10 +32,10 @@ const useStyles = makeStyles(({ colors }) => ({
   },
   buttonStyle: {
     minHeight: 50,
-    backgroundColor: colors.primary3,
+    backgroundColor: colors.black,
   },
   disabledStyle: {
     opacity: 0.5,
-    backgroundColor: colors.primary3,
+    backgroundColor: colors.black,
   },
 }))

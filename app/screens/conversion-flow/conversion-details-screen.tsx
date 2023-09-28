@@ -173,7 +173,7 @@ export const ConversionDetailsScreen = () => {
                 disabled={!canToggleWallet}
                 onPress={toggleWallet}
               >
-                <SwitchButton color={colors.primary} />
+                <SwitchButton color={colors.black} />
               </TouchableOpacity>
             </View>
             <View style={styles.toFieldContainer}>

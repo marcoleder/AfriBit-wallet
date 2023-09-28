@@ -460,7 +460,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
           />
           <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
             <View style={styles.iconContainer}>
-              <ScanIcon fill={colors.primary} />
+              <ScanIcon fill={colors.black} />
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -489,7 +489,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
           >
             <View style={styles.iconContainer}>
               {/* we could Paste from "FontAwesome" but as svg*/}
-              <Icon name="ios-clipboard-outline" color={colors.primary} size={22} />
+              <Icon name="ios-clipboard-outline" color={colors.black} size={22} />
             </View>
           </TouchableWithoutFeedback>
         </View>
@@ -506,7 +506,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
                 contactNavigation.navigate("contactDetail", { contact: item })
               }
             >
-              <Icon name={"ios-person-outline"} size={24} color={colors.primary} />
+              <Icon name={"ios-person-outline"} size={24} color={colors.black} />
               <ListItem.Content>
                 <ListItem.Title style={styles.itemText}>{item.alias}</ListItem.Title>
               </ListItem.Content>

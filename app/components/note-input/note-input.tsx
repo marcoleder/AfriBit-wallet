@@ -46,7 +46,7 @@ export const NoteInput: React.FC<NoteInputProps> = ({
           maxLength={500}
         />
         <View style={styles.noteIconContainer}>
-          <GaloyIcon name={"note"} size={18} color={colors.primary} />
+          <GaloyIcon name={"note"} size={18} color={colors.black} />
         </View>
       </View>
     </View>
