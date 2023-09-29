@@ -314,7 +314,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     )
   }
 
-  const handleChangeText = useCallback(
+  const parseBtcDest = useCallback(
     (newDestination: string) => {
       dispatchDestinationStateAction({
         type: "set-unparsed-destination",
@@ -369,9 +369,9 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.payment) {
-      handleChangeText(route.params?.payment)
+      parseBtcDest(route.params?.payment)
     }
-  }, [route.params?.payment, handleChangeText])
+  }, [route.params?.payment, parseBtcDest])
 
   useEffect(() => {
     if (route.params?.autoValidate) {
@@ -383,9 +383,9 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     // If we scan a QR code encoded with a payment url for a specific user e.g. https://{domain}/{username}
     // then we want to detect the username as the destination
     if (route.params?.username) {
-      handleChangeText(route.params?.username)
+      parseBtcDest(route.params?.username)
     }
-  }, [route.params?.username, handleChangeText])
+  }, [route.params?.username, parseBtcDest])
 
   let inputContainerStyle
   switch (destinationState.destinationState) {
@@ -425,30 +425,33 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         >
           {LL.SendBitcoinScreen.destination()}
         </Text>
-        <SearchBar
-          {...testProps(LL.SendBitcoinScreen.placeholder())}
-          placeholder={LL.SendBitcoinScreen.placeholder()}
-          value={searchText}
-          onChangeText={updateMatchingContacts}
-          platform="default"
-          round
-          showLoading={false}
-          containerStyle={styles.searchBarContainer}
-          inputContainerStyle={styles.searchBarInputContainerStyle}
-          inputStyle={styles.searchBarText}
-          rightIconContainerStyle={styles.searchBarRightIconStyle}
-          searchIcon={<Icon name="search" size={24} color={styles.icon.color} />}
-          clearIcon={
-            <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
-          }
-        />
         <View style={[styles.fieldBackground, inputContainerStyle]}>
+          <SearchBar
+            {...testProps(LL.SendBitcoinScreen.placeholder())}
+            placeholder={LL.SendBitcoinScreen.placeholder()}
+            value={searchText}
+            onChangeText={updateMatchingContacts}
+            platform="default"
+            round
+            showLoading={false}
+            containerStyle={styles.searchBarContainer}
+            inputContainerStyle={styles.searchBarInputContainerStyle}
+            inputStyle={styles.searchBarText}
+            rightIconContainerStyle={styles.searchBarRightIconStyle}
+            searchIcon={<></>}
+            clearIcon={
+              <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
+            }
+          />
           <TextInput
             {...testProps(LL.SendBitcoinScreen.placeholder())}
             style={styles.input}
             placeholder={LL.SendBitcoinScreen.placeholder()}
             placeholderTextColor={colors.grey2}
-            onChangeText={handleChangeText}
+            onChangeText={(text) => {
+              parseBtcDest(text)
+              updateMatchingContacts(text)
+            }}
             value={destinationState.unparsedDestination}
             onSubmitEditing={() =>
               validateDestination &&
@@ -582,10 +585,11 @@ const usestyles = makeStyles(({ colors }) => ({
   listContainer: { flexGrow: 1 },
 
   searchBarContainer: {
-    backgroundColor: colors.white,
-    borderBottomColor: colors.white,
-    borderTopColor: colors.white,
-    marginHorizontal: 26,
+    flex: 1,
+    backgroundColor: colors.grey5,
+    borderBottomColor: colors.grey5,
+    borderTopColor: colors.grey5,
+    padding: 0,
     marginVertical: 8,
   },
 

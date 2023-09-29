@@ -1,6 +1,6 @@
 import React from "react"
 import ContentLoader, { Rect } from "react-content-loader/native"
-import { Pressable, View } from "react-native"
+import { Dimensions, Pressable, View } from "react-native"
 import { LocalizedString } from "typesafe-i18n"
 import { useI18nContext } from "@app/i18n/i18n-react"
 
@@ -120,7 +120,9 @@ const WalletOverview: React.FC<Props> = ({
   let recentBtcTransactionsData: TransactionData = undefined
   let recentUsdTransactionsData: TransactionData = undefined
 
-  const TRANSACTIONS_TO_SHOW = 3
+  const height = Dimensions.get("window").height
+  const TRANSACTIONS_TO_SHOW = height < 400 ? 1 : height < 800 ? 2 : 3
+
   const transactionsEdges =
     dataAuthed?.me?.defaultAccount?.transactions?.edges ?? undefined
 
@@ -307,7 +309,9 @@ const useStyles = makeStyles(({ colors }) => ({
     flexDirection: "column",
     marginBottom: 20,
     borderRadius: 12,
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingTop: 6,
+    paddingBottom: 2,
   },
   loaderBackground: {
     color: colors.loaderBackground,
