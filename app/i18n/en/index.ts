@@ -52,7 +52,7 @@ const en: BaseTranslation = {
     noContactsTitle: "No Contacts Found",
     noContactsYet:
       "Send or receive a payment using a username and contacts will automatically be added here",
-    noMatchingContacts: "No contacts matching your search were found.",
+    noMatchingContacts: "Warning: You've never sent money to this address",
     allContacts: "All Contacts",
     viewAllContacts: "View all contacts",
     frequentContacts: "Frequent Contacts",

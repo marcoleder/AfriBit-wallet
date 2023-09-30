@@ -152,7 +152,11 @@ export const DestinationInformation = ({
           <Text style={styles.informationText}>{information.information}</Text>
         )}
         {information.error && <Text color={colors.error}>{information.error}</Text>}
-        {information.warning && <Text color={colors.warning}>{information.warning}</Text>}
+        {information.warning && (
+          <Text style={styles.warningText} color={colors.warning}>
+            {information.warning}
+          </Text>
+        )}
       </View>
     </View>
   )
@@ -169,5 +173,9 @@ const useStyles = makeStyles(() => ({
   },
   textContainer: {
     flex: 1,
+  },
+  warningText: {
+    paddingHorizontal: 5,
+    textAlign: "center",
   },
 }))

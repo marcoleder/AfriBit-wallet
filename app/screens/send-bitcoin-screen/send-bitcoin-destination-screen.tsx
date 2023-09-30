@@ -137,7 +137,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   })
 
   const [matchingContacts, setMatchingContacts] = useState<Contact[]>([])
-  const [searchText, setSearchText] = useState("")
   const {
     loading,
     data: contactsData,
@@ -156,13 +155,16 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   }
 
   const reset = useCallback(() => {
-    setSearchText("")
+    dispatchDestinationStateAction({
+      type: "set-unparsed-destination",
+      payload: { unparsedDestination: "" },
+    })
+    setGoToNextScreenWhenValid(false)
     setMatchingContacts(allContacts)
   }, [allContacts])
 
   const updateMatchingContacts = useCallback(
     (newSearchText: string) => {
-      setSearchText(newSearchText)
       if (newSearchText.length > 0) {
         const searchWordArray = newSearchText
           .split(" ")
@@ -327,6 +329,10 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
   useEffect(() => {
     setMatchingContacts(allContacts)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
     if (
       !goToNextScreenWhenValid ||
       destinationState.destinationState !== DestinationState.Valid
@@ -419,18 +425,19 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         dispatchDestinationStateAction={dispatchDestinationStateAction}
       />
       <View style={styles.sendBitcoinDestinationContainer}>
-        <Text
-          {...testProps(LL.SendBitcoinScreen.destination())}
-          style={styles.fieldTitleText}
-        >
-          {LL.SendBitcoinScreen.destination()}
-        </Text>
         <View style={[styles.fieldBackground, inputContainerStyle]}>
           <SearchBar
             {...testProps(LL.SendBitcoinScreen.placeholder())}
             placeholder={LL.SendBitcoinScreen.placeholder()}
-            value={searchText}
-            onChangeText={updateMatchingContacts}
+            value={destinationState.unparsedDestination}
+            onChangeText={(text) => {
+              parseBtcDest(text)
+              updateMatchingContacts(text)
+            }}
+            onSubmitEditing={() =>
+              validateDestination &&
+              validateDestination(destinationState.unparsedDestination)
+            }
             platform="default"
             round
             showLoading={false}
@@ -439,27 +446,11 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
             inputStyle={styles.searchBarText}
             rightIconContainerStyle={styles.searchBarRightIconStyle}
             searchIcon={<></>}
+            autoCapitalize="none"
+            autoCorrect={false}
             clearIcon={
               <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
             }
-          />
-          <TextInput
-            {...testProps(LL.SendBitcoinScreen.placeholder())}
-            style={styles.input}
-            placeholder={LL.SendBitcoinScreen.placeholder()}
-            placeholderTextColor={colors.grey2}
-            onChangeText={(text) => {
-              parseBtcDest(text)
-              updateMatchingContacts(text)
-            }}
-            value={destinationState.unparsedDestination}
-            onSubmitEditing={() =>
-              validateDestination &&
-              validateDestination(destinationState.unparsedDestination)
-            }
-            selectTextOnFocus
-            autoCapitalize="none"
-            autoCorrect={false}
           />
           <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
             <View style={styles.iconContainer}>
@@ -476,6 +467,17 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
                     unparsedDestination: clipboard,
                   },
                 })
+                if (clipboard.length > 0) {
+                  const searchWordArray = clipboard
+                    .split(" ")
+                    .filter((text) => text.trim().length > 0)
+                  const matchingContacts = allContacts.filter((contact) =>
+                    searchWordArray.some((word) => wordMatchesContact(word, contact)),
+                  )
+                  setMatchingContacts(matchingContacts)
+                } else {
+                  setMatchingContacts(allContacts)
+                }
                 validateDestination && (await validateDestination(clipboard))
               } catch (err) {
                 if (err instanceof Error) {
@@ -496,6 +498,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
             </View>
           </TouchableWithoutFeedback>
         </View>
+        <DestinationInformation destinationState={destinationState} />
         <FlatList
           contentContainerStyle={styles.listContainer}
           data={matchingContacts}
@@ -517,7 +520,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
           )}
           keyExtractor={(item) => item.username}
         />
-        <DestinationInformation destinationState={destinationState} />
         <View style={styles.buttonContainer}>
           <GaloyPrimaryButton
             title={
@@ -566,7 +568,7 @@ const usestyles = makeStyles(({ colors }) => ({
   },
 
   emptyListTitle: {
-    color: colors.black,
+    color: colors.warning,
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
@@ -582,7 +584,10 @@ const usestyles = makeStyles(({ colors }) => ({
     backgroundColor: colors.grey5,
   },
 
-  listContainer: { flexGrow: 1 },
+  listContainer: {
+    flexGrow: 1,
+    marginTop: 16,
+  },
 
   searchBarContainer: {
     flex: 1,

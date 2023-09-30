@@ -189,7 +189,7 @@ type RootTranslation = {
 		 */
 		noContactsYet: string
 		/**
-		 * N​o​ ​c​o​n​t​a​c​t​s​ ​m​a​t​c​h​i​n​g​ ​y​o​u​r​ ​s​e​a​r​c​h​ ​w​e​r​e​ ​f​o​u​n​d​.
+		 * W​a​r​n​i​n​g​:​ ​Y​o​u​'​v​e​ ​n​e​v​e​r​ ​s​e​n​t​ ​m​o​n​e​y​ ​t​o​ ​t​h​i​s​ ​a​d​d​r​e​s​s
 		 */
 		noMatchingContacts: string
 		/**
@@ -3959,7 +3959,7 @@ export type TranslationFunctions = {
 		 */
 		noContactsYet: () => LocalizedString
 		/**
-		 * No contacts matching your search were found.
+		 * Warning: You've never sent money to this address
 		 */
 		noMatchingContacts: () => LocalizedString
 		/**
