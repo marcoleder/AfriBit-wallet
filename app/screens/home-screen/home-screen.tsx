@@ -32,7 +32,6 @@ import { GaloyPrimaryButton } from "@app/components/atomic/galoy-primary-button"
 import { isIos } from "@app/utils/helper"
 import { SetDefaultAccountModal } from "@app/components/set-default-account-modal"
 import { useAppConfig } from "@app/hooks"
-import { IntroducingCirclesModal } from "@app/components/introducing-circles-modal"
 
 const TransactionCountToTriggerSetDefaultAccountModal = 1
 
@@ -143,8 +142,6 @@ export const HomeScreen: React.FC = () => {
   }, [isAuthed, refetchAuthed, refetchRealtimePrice, refetchUnauthed])
 
   const [modalVisible, setModalVisible] = React.useState(false)
-  const [isIntroducingCirclesModalVisible, setIsIntroducingCirclesModalVisible] =
-    React.useState(false)
   const [isStablesatModalVisible, setIsStablesatModalVisible] = React.useState(false)
   const [isContentVisible, setIsContentVisible] = React.useState(false)
 
@@ -260,10 +257,6 @@ export const HomeScreen: React.FC = () => {
   return (
     <Screen>
       {AccountCreationNeededModal}
-      <IntroducingCirclesModal
-        isVisible={isIntroducingCirclesModalVisible}
-        setIsVisible={setIsIntroducingCirclesModalVisible}
-      />
       <StableSatsModal
         isVisible={isStablesatModalVisible}
         setIsVisible={setIsStablesatModalVisible}
