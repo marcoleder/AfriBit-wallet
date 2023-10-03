@@ -679,7 +679,7 @@ const en: BaseTranslation = {
     destinationIsRequired: "Destination is required",
     fee: "network fee",
     feeCalculationUnsuccessful: "Calculation unsuccessful ⚠️",
-    placeholder: "Username, invoice, or address",
+    placeholder: "Destination / Recipient",
     invalidUsername: "Invalid username",
     noAmount:
       "This invoice doesn't have an amount, so you need to manually specify how much money you want to send",

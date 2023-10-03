@@ -2141,7 +2141,7 @@ type RootTranslation = {
 		 */
 		feeCalculationUnsuccessful: string
 		/**
-		 * U​s​e​r​n​a​m​e​,​ ​i​n​v​o​i​c​e​,​ ​o​r​ ​a​d​d​r​e​s​s
+		 * D​e​s​t​i​n​a​t​i​o​n​ ​/​ ​R​e​c​i​p​i​e​n​t
 		 */
 		placeholder: string
 		/**
@@ -5874,7 +5874,7 @@ export type TranslationFunctions = {
 		 */
 		feeCalculationUnsuccessful: () => LocalizedString
 		/**
-		 * Username, invoice, or address
+		 * Destination / Recipient
 		 */
 		placeholder: () => LocalizedString
 		/**

@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from "react"
-import {
-  TextInput,
-  TouchableWithoutFeedback,
-  View,
-  ActivityIndicator,
-} from "react-native"
+import { TouchableWithoutFeedback, View, ActivityIndicator } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Screen } from "@app/components/screen"
 import { gql } from "@apollo/client"
@@ -16,10 +11,7 @@ import {
   useContactsQuery,
 } from "@app/graphql/generated"
 import { useI18nContext } from "@app/i18n/i18n-react"
-import {
-  RootStackParamList,
-  PeopleStackParamList,
-} from "@app/navigation/stack-param-lists"
+import { RootStackParamList } from "@app/navigation/stack-param-lists"
 import { logParseDestinationResult } from "@app/utils/analytics"
 import { toastShow } from "@app/utils/toast"
 import { PaymentType } from "@galoymoney/client"
@@ -107,8 +99,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     useNavigation<StackNavigationProp<RootStackParamList, "sendBitcoinDestination">>()
   const isAuthed = useIsAuthed()
 
-  const contactNavigation = useNavigation<StackNavigationProp<PeopleStackParamList>>()
-
   const [destinationState, dispatchDestinationStateAction] = useReducer(
     sendBitcoinDestinationReducer,
     defaultDestinationState,
@@ -160,6 +150,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
       payload: { unparsedDestination: "" },
     })
     setGoToNextScreenWhenValid(false)
+    setSelectedId(null)
     setMatchingContacts(allContacts)
   }, [allContacts])
 
@@ -413,6 +404,13 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
       inputContainerStyle = styles.warningInputContainer
   }
 
+  const [selectedId, setSelectedId] = useState(null)
+
+  const handleSelection = (id) => {
+    if (selectedId === id) setSelectedId(null)
+    else setSelectedId(id)
+  }
+
   return (
     <Screen
       preset="scroll"
@@ -502,15 +500,19 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         <FlatList
           contentContainerStyle={styles.listContainer}
           data={matchingContacts}
+          extraData={selectedId}
           ListEmptyComponent={ListEmptyContent}
           renderItem={({ item }) => (
             <ListItem
               key={item.username}
               style={styles.item}
-              containerStyle={styles.itemContainer}
-              onPress={() =>
-                contactNavigation.navigate("contactDetail", { contact: item })
+              containerStyle={
+                item.id === selectedId ? styles.selectedContainer : styles.itemContainer
               }
+              onPress={() => {
+                handleSelection(item.id)
+                parseBtcDest(item.username)
+              }}
             >
               <Icon name={"ios-person-outline"} size={24} color={colors.black} />
               <ListItem.Content>
@@ -582,6 +584,10 @@ const usestyles = makeStyles(({ colors }) => ({
   itemContainer: {
     borderRadius: 8,
     backgroundColor: colors.grey5,
+  },
+  selectedContainer: {
+    borderRadius: 8,
+    backgroundColor: colors.grey3,
   },
 
   listContainer: {
