@@ -253,67 +253,130 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
     toggleModal()
   }
 
+  const walletContainerStyle = (paymentDetail, wallet) => {
+    const isPaymentCurrencyBtc =
+      paymentDetail.sendingWalletDescriptor.currency === WalletCurrency.Btc
+    const isWalletCurrencyBtc = wallet.walletCurrency === WalletCurrency.Btc
+    if (isPaymentCurrencyBtc) {
+      return isWalletCurrencyBtc
+        ? styles.walletContainerBtcSelected
+        : styles.walletContainerNoSelection
+    }
+    return isWalletCurrencyBtc
+      ? styles.walletContainerNoSelection
+      : styles.walletContainerUsdSelected
+  }
+
+  const walletSelectorTypeLabelStyle = (paymentDetail, wallet) => {
+    const isPaymentCurrencyBtc =
+      paymentDetail.sendingWalletDescriptor.currency === WalletCurrency.Btc
+    const isWalletCurrencyBtc = wallet.walletCurrency === WalletCurrency.Btc
+    if (isPaymentCurrencyBtc) {
+      return isWalletCurrencyBtc
+        ? styles.walletSelectorTypeLabelBitcoinSelected
+        : styles.walletSelectorTypeLabelUsd
+    }
+    return isWalletCurrencyBtc
+      ? styles.walletSelectorTypeLabelBitcoin
+      : styles.walletSelectorTypeLabelUsdSelected
+  }
+
+  const walletSelectorTypeLabelTextStyle = (paymentDetail, wallet) => {
+    const isPaymentCurrencyBtc =
+      paymentDetail.sendingWalletDescriptor.currency === WalletCurrency.Btc
+    const isWalletCurrencyBtc = wallet.walletCurrency === WalletCurrency.Btc
+    if (isPaymentCurrencyBtc) {
+      return isWalletCurrencyBtc
+        ? styles.walletSelectorTypeLabelBtcTextSelected
+        : styles.walletSelectorTypeLabelUsdText
+    }
+    return isWalletCurrencyBtc
+      ? styles.walletSelectorTypeLabelBtcText
+      : styles.walletSelectorTypeLabelUsdTextSelected
+  }
+
+  const walletCurrencyTextStyle = (paymentDetail, wallet) => {
+    const isPaymentCurrencyBtc =
+      paymentDetail.sendingWalletDescriptor.currency === WalletCurrency.Btc
+    const isWalletCurrencyBtc = wallet.walletCurrency === WalletCurrency.Btc
+    if (isPaymentCurrencyBtc) {
+      return isWalletCurrencyBtc
+        ? styles.walletCurrencyTextSelected
+        : styles.walletCurrencyText
+    }
+    return isWalletCurrencyBtc
+      ? styles.walletCurrencyText
+      : styles.walletCurrencyTextSelected
+  }
+
+  const walletBalanceTextStyle = (paymentDetail, wallet) => {
+    const isPaymentCurrencyBtc =
+      paymentDetail.sendingWalletDescriptor.currency === WalletCurrency.Btc
+    const isWalletCurrencyBtc = wallet.walletCurrency === WalletCurrency.Btc
+    if (isPaymentCurrencyBtc) {
+      return isWalletCurrencyBtc
+        ? styles.walletBalanceTextSelected
+        : styles.walletBalanceText
+    }
+    return isWalletCurrencyBtc
+      ? styles.walletBalanceText
+      : styles.walletBalanceTextSelected
+  }
+
   const ChooseWalletModal = wallets && (
-    <ReactNativeModal
-      style={styles.modal}
-      animationIn="fadeInDown"
-      animationOut="fadeOutUp"
-      isVisible={isModalVisible}
-      onBackButtonPress={toggleModal}
-      onBackdropPress={toggleModal}
-    >
-      <View>
-        {wallets.map((wallet) => {
-          return (
-            <TouchableWithoutFeedback
-              key={wallet.id}
-              onPress={() => {
-                chooseWallet(wallet)
-              }}
-            >
-              <View style={styles.walletContainer}>
-                <View style={styles.walletSelectorTypeContainer}>
-                  <View
-                    style={
-                      wallet.walletCurrency === WalletCurrency.Btc
-                        ? styles.walletSelectorTypeLabelBitcoin
-                        : styles.walletSelectorTypeLabelUsd
-                    }
-                  >
-                    {wallet.walletCurrency === WalletCurrency.Btc ? (
-                      <Text style={styles.walletSelectorTypeLabelBtcText}>BTC</Text>
-                    ) : (
-                      <Text style={styles.walletSelectorTypeLabelUsdText}>USD</Text>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.walletSelectorInfoContainer}>
-                  <View style={styles.walletSelectorTypeTextContainer}>
-                    {wallet.walletCurrency === WalletCurrency.Btc ? (
-                      <Text
-                        style={styles.walletCurrencyText}
-                      >{`${LL.common.btcAccount()}`}</Text>
-                    ) : (
-                      <Text
-                        style={styles.walletCurrencyText}
-                      >{`${LL.common.usdAccount()}`}</Text>
-                    )}
-                  </View>
-                  <View style={styles.walletSelectorBalanceContainer}>
-                    {wallet.walletCurrency === WalletCurrency.Btc ? (
-                      <Text>{btcWalletText}</Text>
-                    ) : (
-                      <Text>{usdWalletText}</Text>
-                    )}
-                  </View>
-                  <View />
+    <View>
+      {wallets.map((wallet) => {
+        return (
+          <TouchableWithoutFeedback
+            key={wallet.id}
+            onPress={() => {
+              chooseWallet(wallet)
+            }}
+          >
+            <View style={walletContainerStyle(paymentDetail, wallet)}>
+              <View style={styles.walletSelectorTypeContainer}>
+                <View style={walletSelectorTypeLabelStyle(paymentDetail, wallet)}>
+                  {wallet.walletCurrency === WalletCurrency.Btc ? (
+                    <Text style={walletSelectorTypeLabelTextStyle(paymentDetail, wallet)}>
+                      BTC
+                    </Text>
+                  ) : (
+                    <Text style={walletSelectorTypeLabelTextStyle(paymentDetail, wallet)}>
+                      USD
+                    </Text>
+                  )}
                 </View>
               </View>
-            </TouchableWithoutFeedback>
-          )
-        })}
-      </View>
-    </ReactNativeModal>
+              <View style={styles.walletSelectorInfoContainer}>
+                <View style={styles.walletSelectorTypeTextContainer}>
+                  {wallet.walletCurrency === WalletCurrency.Btc ? (
+                    <Text
+                      style={walletCurrencyTextStyle(paymentDetail, wallet)}
+                    >{`${LL.common.btcAccount()}`}</Text>
+                  ) : (
+                    <Text
+                      style={walletCurrencyTextStyle(paymentDetail, wallet)}
+                    >{`${LL.common.usdAccount()}`}</Text>
+                  )}
+                </View>
+                <View style={styles.walletSelectorBalanceContainer}>
+                  {wallet.walletCurrency === WalletCurrency.Btc ? (
+                    <Text style={walletBalanceTextStyle(paymentDetail, wallet)}>
+                      {btcWalletText}
+                    </Text>
+                  ) : (
+                    <Text style={walletBalanceTextStyle(paymentDetail, wallet)}>
+                      {usdWalletText}
+                    </Text>
+                  )}
+                </View>
+                <View />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        )
+      })}
+    </View>
   )
 
   const goToNextScreen =
@@ -425,56 +488,6 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
         </View>
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldTitleText}>{LL.common.from()}</Text>
-          <TouchableWithoutFeedback onPress={toggleModal} accessible={false}>
-            <View style={styles.fieldBackground}>
-              <View style={styles.walletSelectorTypeContainer}>
-                <View
-                  style={
-                    sendingWalletDescriptor.currency === WalletCurrency.Btc
-                      ? styles.walletSelectorTypeLabelBitcoin
-                      : styles.walletSelectorTypeLabelUsd
-                  }
-                >
-                  {sendingWalletDescriptor.currency === WalletCurrency.Btc ? (
-                    <Text style={styles.walletSelectorTypeLabelBtcText}>BTC</Text>
-                  ) : (
-                    <Text style={styles.walletSelectorTypeLabelUsdText}>USD</Text>
-                  )}
-                </View>
-              </View>
-              <View style={styles.walletSelectorInfoContainer}>
-                <View style={styles.walletSelectorTypeTextContainer}>
-                  {sendingWalletDescriptor.currency === WalletCurrency.Btc ? (
-                    <>
-                      <Text style={styles.walletCurrencyText}>
-                        {LL.common.btcAccount()}
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <Text style={styles.walletCurrencyText}>
-                        {LL.common.usdAccount()}
-                      </Text>
-                    </>
-                  )}
-                </View>
-                <View style={styles.walletSelectorBalanceContainer}>
-                  <Text
-                    {...testProps(`${sendingWalletDescriptor.currency} Wallet Balance`)}
-                  >
-                    {sendingWalletDescriptor.currency === WalletCurrency.Btc
-                      ? btcWalletText
-                      : usdWalletText}
-                  </Text>
-                </View>
-                <View />
-              </View>
-
-              <View style={styles.pickWalletIcon}>
-                <Icon name={"chevron-down"} size={24} color={colors.black} />
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
           {ChooseWalletModal}
         </View>
         <View style={styles.fieldContainer}>
@@ -558,7 +571,7 @@ const useStyles = makeStyles(({ colors }) => ({
     minHeight: 60,
     opacity: 0.5,
   },
-  walletContainer: {
+  walletContainerBtcSelected: {
     flexDirection: "row",
     borderStyle: "solid",
     overflow: "hidden",
@@ -568,6 +581,34 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "center",
     marginBottom: 10,
     minHeight: 60,
+    borderColor: colors.primary,
+    borderWidth: 1,
+  },
+  walletContainerUsdSelected: {
+    flexDirection: "row",
+    borderStyle: "solid",
+    overflow: "hidden",
+    backgroundColor: colors.grey5,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+    minHeight: 60,
+    borderColor: colors.green,
+    borderWidth: 1,
+  },
+  walletContainerNoSelection: {
+    flexDirection: "row",
+    borderStyle: "solid",
+    overflow: "hidden",
+    backgroundColor: colors.grey5,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+    minHeight: 60,
+    borderColor: colors.grey5,
+    borderWidth: 1,
   },
   walletSelectorTypeContainer: {
     justifyContent: "center",
@@ -579,6 +620,16 @@ const useStyles = makeStyles(({ colors }) => ({
     height: 30,
     width: 50,
     borderRadius: 10,
+    backgroundColor: colors.grey5,
+    borderColor: colors.primary,
+    borderWidth: 3,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  walletSelectorTypeLabelBitcoinSelected: {
+    height: 30,
+    width: 50,
+    borderRadius: 10,
     backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
@@ -586,18 +637,36 @@ const useStyles = makeStyles(({ colors }) => ({
   walletSelectorTypeLabelUsd: {
     height: 30,
     width: 50,
+    backgroundColor: colors.grey5,
+    borderColor: colors.green,
+    borderWidth: 3,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  walletSelectorTypeLabelUsdSelected: {
+    height: 30,
+    width: 50,
     backgroundColor: colors.green,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
-  walletSelectorTypeLabelUsdText: {
-    fontWeight: "bold",
-    color: colors.black,
-  },
   walletSelectorTypeLabelBtcText: {
     fontWeight: "bold",
+    color: colors.grey2,
+  },
+  walletSelectorTypeLabelBtcTextSelected: {
+    fontWeight: "bold",
     color: colors.white,
+  },
+  walletSelectorTypeLabelUsdText: {
+    fontWeight: "bold",
+    color: colors.grey2,
+  },
+  walletSelectorTypeLabelUsdTextSelected: {
+    fontWeight: "bold",
+    color: colors.black,
   },
   walletSelectorInfoContainer: {
     flex: 1,
@@ -606,6 +675,17 @@ const useStyles = makeStyles(({ colors }) => ({
   walletCurrencyText: {
     fontWeight: "bold",
     fontSize: 18,
+    color: colors.grey2,
+  },
+  walletCurrencyTextSelected: {
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  walletBalanceText: {
+    color: colors.grey2,
+  },
+  walletBalanceTextSelected: {
+    color: colors.black,
   },
   walletSelectorTypeTextContainer: {
     flex: 1,
