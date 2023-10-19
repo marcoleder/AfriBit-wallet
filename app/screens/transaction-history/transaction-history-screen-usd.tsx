@@ -30,7 +30,7 @@ gql`
   }
 `
 
-export const TransactionHistoryScreen: React.FC = () => {
+export const TransactionHistoryScreenUsd: React.FC = () => {
   const {
     theme: { colors },
   } = useTheme()
@@ -42,13 +42,18 @@ export const TransactionHistoryScreen: React.FC = () => {
 
   const transactions = data?.me?.defaultAccount?.transactions
 
+  const transactionsEdges = data?.me?.defaultAccount?.transactions?.edges ?? []
+  const usdTransactions = transactionsEdges.filter(
+    ({ node }) => node?.settlementCurrency === "USD",
+  )
+
   const sections = React.useMemo(
     () =>
       groupTransactionsByDate({
-        txs: transactions?.edges?.map((edge) => edge.node) ?? [],
+        txs: usdTransactions.map((edge) => edge.node) ?? [],
         common: LL.common,
       }),
-    [transactions, LL],
+    [usdTransactions, LL],
   )
 
   if (error) {

@@ -78,7 +78,8 @@ export type RootStackParamList = {
   phoneRegistrationInitiate: undefined
   phoneRegistrationValidate: { phone: string; channel: PhoneCodeChannelType }
   transactionDetail: { txid: string }
-  transactionHistory?: undefined
+  transactionHistoryBtc?: undefined
+  transactionHistoryUsd?: undefined
   Earn: undefined
   accountScreen: undefined
   notificationSettingsScreen: undefined

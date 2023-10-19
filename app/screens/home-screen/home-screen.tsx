@@ -193,7 +193,8 @@ export const HomeScreen: React.FC = () => {
     | "scanningQRCode"
     | "sendBitcoinDestination"
     | "receiveBitcoin"
-    | "transactionHistory"
+    | "transactionHistoryBtc"
+    | "transactionHistoryUsd"
   type IconNamesType = keyof typeof icons
 
   const buttons = [

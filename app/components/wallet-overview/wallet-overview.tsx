@@ -75,7 +75,7 @@ const WalletOverview: React.FC<Props> = ({
   const styles = useStyles()
   const { data } = useWalletOverviewScreenQuery({ skip: !isAuthed })
 
-  type Target = "transactionHistory"
+  type Target = "transactionHistoryBtc" | "transactionHistoryUsd"
 
   const onMenuClick = (target: Target) => {
     if (isAuthed) {
@@ -221,7 +221,7 @@ const WalletOverview: React.FC<Props> = ({
 
   return (
     <>
-      <Pressable onPress={() => onMenuClick("transactionHistory")}>
+      <Pressable onPress={() => onMenuClick("transactionHistoryBtc")}>
         <View style={styles.container}>
           <View style={styles.displayTextView}>
             <View style={styles.currency}>
@@ -255,7 +255,7 @@ const WalletOverview: React.FC<Props> = ({
           ) : null}
         </View>
       </Pressable>
-      <Pressable onPress={() => onMenuClick("transactionHistory")}>
+      <Pressable onPress={() => onMenuClick("transactionHistoryUsd")}>
         <View style={styles.container}>
           <View style={styles.displayTextView}>
             <View style={styles.currency}>

@@ -72,7 +72,8 @@ import { SettingsScreen } from "../screens/settings-screen"
 import { LanguageScreen } from "../screens/settings-screen/language-screen"
 import { SecurityScreen } from "../screens/settings-screen/security-screen"
 import { TransactionDetailScreen } from "../screens/transaction-detail-screen"
-import { TransactionHistoryScreen } from "../screens/transaction-history/transaction-history-screen"
+import { TransactionHistoryScreenBtc } from "../screens/transaction-history/transaction-history-screen-btc"
+import { TransactionHistoryScreenUsd } from "../screens/transaction-history/transaction-history-screen-usd"
 import {
   PeopleStackParamList,
   PhoneValidationStackParamList,
@@ -329,8 +330,13 @@ export const RootStack = () => {
         }}
       />
       <RootNavigator.Screen
-        name="transactionHistory"
-        component={TransactionHistoryScreen}
+        name="transactionHistoryBtc"
+        component={TransactionHistoryScreenBtc}
+        options={{ title: LL.TransactionScreen.transactionHistoryTitle() }}
+      />
+      <RootNavigator.Screen
+        name="transactionHistoryUsd"
+        component={TransactionHistoryScreenUsd}
         options={{ title: LL.TransactionScreen.transactionHistoryTitle() }}
       />
       <RootNavigator.Screen

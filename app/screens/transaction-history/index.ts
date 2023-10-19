@@ -1,1 +1,1 @@
-export * from "./transaction-history-screen"
+export * from "./transaction-history-screen-usd"

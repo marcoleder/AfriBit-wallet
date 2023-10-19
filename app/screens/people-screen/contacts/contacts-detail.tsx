@@ -57,7 +57,7 @@ export const ContactsDetailScreenJSX: React.FC<ContactDetailScreenProps> = ({
 
   const styles = useStyles()
   const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, "transactionHistory">>()
+    useNavigation<StackNavigationProp<RootStackParamList, "transactionHistoryBtc">>()
 
   const [contactName, setContactName] = React.useState(contact.alias)
   const { LL } = useI18nContext()
