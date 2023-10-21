@@ -22,7 +22,7 @@ import { GaloyIcon } from "../atomic/galoy-icon"
 import HideableArea from "../hideable-area/hideable-area"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
-import { TransactionItem } from "../../components/transaction-item"
+import { TransactionItem, DummyTransactionItem } from "../../components/transaction-item"
 
 const Loader = () => {
   const styles = useStyles()
@@ -253,6 +253,9 @@ const WalletOverview: React.FC<Props> = ({
           {recentBtcTransactionsData && isBtcTransactionsVisible ? (
             <>{recentBtcTransactionsData?.details}</>
           ) : null}
+          {isBtcTransactionsVisible ? (
+            <DummyTransactionItem isBalanceHidden={isContentVisible} />
+          ) : null}
         </View>
       </Pressable>
       <Pressable onPress={() => onMenuClick("transactionHistoryUsd")}>
@@ -293,6 +296,9 @@ const WalletOverview: React.FC<Props> = ({
           </View>
           {recentUsdTransactionsData && isUsdTransactionsVisible ? (
             <>{recentUsdTransactionsData?.details}</>
+          ) : null}
+          {isUsdTransactionsVisible ? (
+            <DummyTransactionItem isBalanceHidden={isContentVisible} />
           ) : null}
         </View>
       </Pressable>

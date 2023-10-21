@@ -332,12 +332,12 @@ export const RootStack = () => {
       <RootNavigator.Screen
         name="transactionHistoryBtc"
         component={TransactionHistoryScreenBtc}
-        options={{ title: LL.TransactionScreen.transactionHistoryTitle() }}
+        options={{ title: LL.TransactionScreen.transactionHistoryTitle() + " BTC" }}
       />
       <RootNavigator.Screen
         name="transactionHistoryUsd"
-        component={TransactionHistoryScreenUsd}
-        options={{ title: LL.TransactionScreen.transactionHistoryTitle() }}
+        component={TransactionHistoryScreenUsd}e
+        options={{ title: LL.TransactionScreen.transactionHistoryTitle() + " USD" }}
       />
       <RootNavigator.Screen
         name="priceHistory"

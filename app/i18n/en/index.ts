@@ -2417,7 +2417,7 @@ const en: BaseTranslation = {
     increaseLimits: "Increase your limits",
   },
   TransactionScreen: {
-    noTransaction: "No transaction to show",
+    noTransaction: "No transactions yet",
     title: "Transactions",
     recentTransactions: "Recent transactions",
     transactionHistoryTitle: "Transaction History",

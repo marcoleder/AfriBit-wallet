@@ -7521,7 +7521,7 @@ type RootTranslation = {
 	}
 	TransactionScreen: {
 		/**
-		 * N​o​ ​t​r​a​n​s​a​c​t​i​o​n​ ​t​o​ ​s​h​o​w
+		 * N​o​ ​t​r​a​n​s​a​c​t​i​o​n​s​ ​y​e​t
 		 */
 		noTransaction: string
 		/**
@@ -16097,7 +16097,7 @@ export type TranslationFunctions = {
 	}
 	TransactionScreen: {
 		/**
-		 * No transaction to show
+		 * No transactions yet
 		 */
 		noTransaction: () => LocalizedString
 		/**

@@ -22,41 +22,7 @@ import HideableArea from "../hideable-area/hideable-area"
 import { IconTransaction } from "../icon-transactions"
 import { TransactionDate } from "../transaction-date"
 import { useI18nContext } from "@app/i18n/i18n-react"
-
-// This should extend the Transaction directly from the cache
-export const useDescriptionDisplay = ({
-  tx,
-  bankName,
-}: {
-  tx: TransactionFragment | undefined
-  bankName: string
-}) => {
-  const { LL } = useI18nContext()
-
-  if (!tx) {
-    return ""
-  }
-
-  const { memo, direction, settlementVia } = tx
-  if (memo) {
-    return memo
-  }
-
-  const isReceive = direction === "RECEIVE"
-
-  switch (settlementVia.__typename) {
-    case "SettlementViaOnChain":
-      return "OnChain Payment"
-    case "SettlementViaLn":
-      return "Invoice"
-    case "SettlementViaIntraLedger":
-      return isReceive
-        ? `${LL.common.from()} ${
-            settlementVia.counterPartyUsername || bankName + " User"
-          }`
-        : `${LL.common.to()} ${settlementVia.counterPartyUsername || bankName + " User"}`
-  }
-}
+import { useDescriptionDisplay } from "./useDescriptionDisplay"
 
 type Props = {
   txid: string
@@ -64,6 +30,10 @@ type Props = {
   isFirst?: boolean
   isLast?: boolean
   isOnHomeScreen?: boolean
+  isBalanceHidden?: boolean
+}
+
+type DummyProps = {
   isBalanceHidden?: boolean
 }
 
@@ -202,6 +172,36 @@ type UseStyleProps = {
   isFirst?: boolean
   isLast?: boolean
   isOnHomeScreen?: boolean
+}
+
+export const DummyTransactionItem: React.FC<DummyProps> = ({
+  isBalanceHidden = false,
+}) => {
+  const { LL } = useI18nContext()
+  const styles = useStyles()
+
+  return (
+    <ListItem {...testProps("transaction-item")} containerStyle={styles.container}>
+      <ListItem.Content {...testProps("list-item-content")}>
+        <ListItem.Title
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          {...testProps("tx-description")}
+        >
+          <Text style={styles.pending}>{LL.TransactionScreen.noTransaction()}</Text>
+        </ListItem.Title>
+      </ListItem.Content>
+
+      <HideableArea
+        isContentVisible={isBalanceHidden}
+        hiddenContent={<Icon style={styles.hiddenBalanceContainer} name="eye" />}
+      >
+        <View>
+          <Text style={styles.pending}>- - - -</Text>
+        </View>
+      </HideableArea>
+    </ListItem>
+  )
 }
 
 const useStyles = makeStyles(({ colors }, props: UseStyleProps) => ({
