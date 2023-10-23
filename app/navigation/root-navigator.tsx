@@ -81,21 +81,7 @@ import {
   RootStackParamList,
 } from "./stack-param-lists"
 import { NotificationSettingsScreen } from "@app/screens/settings-screen/notifications-screen"
-
-const useStyles = makeStyles(({ colors }) => ({
-  bottomNavigatorStyle: {
-    height: "10%",
-    paddingTop: 4,
-    backgroundColor: colors.white,
-    borderTopColor: colors.grey4,
-  },
-  headerStyle: {
-    backgroundColor: colors.white,
-  },
-  title: {
-    color: colors.black,
-  },
-}))
+import { FullOnboardingFlowScreen } from "@app/screens/full-onboarding-flow"
 
 const RootNavigator = createStackNavigator<RootStackParamList>()
 
@@ -424,6 +410,13 @@ export const RootStack = () => {
           title: "WebView", // should be overridden by the navigate action with an initial title
         }}
       />
+      <RootNavigator.Screen
+        name="fullOnboardingFlow"
+        component={FullOnboardingFlowScreen}
+        options={{
+          title: LL.FullOnboarding.title(),
+        }}
+      />
     </RootNavigator.Navigator>
   )
 }
@@ -577,3 +570,18 @@ export const PrimaryNavigator = () => {
     </Tab.Navigator>
   )
 }
+
+const useStyles = makeStyles(({ colors }) => ({
+  bottomNavigatorStyle: {
+    height: "10%",
+    paddingTop: 4,
+    backgroundColor: colors.white,
+    borderTopColor: colors.grey4,
+  },
+  headerStyle: {
+    backgroundColor: colors.white,
+  },
+  title: {
+    color: colors.black,
+  },
+}))
