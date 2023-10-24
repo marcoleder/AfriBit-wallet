@@ -13,6 +13,7 @@ type ButtonForButtonGroupProps = {
         selected: React.ReactElement
         normal: React.ReactElement
       }
+  color?: string
 }
 
 const ButtonForButtonGroup: React.FC<
@@ -20,16 +21,19 @@ const ButtonForButtonGroup: React.FC<
     selected: boolean
     onPress: () => void
   }
-> = ({ text, icon, selected, onPress }) => {
+> = ({ text, icon, selected, onPress, color }) => {
   const styles = useStyles({ selected: Boolean(selected) })
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={styles.button}>
-        <Text {...testProps(text)} style={styles.text}>
+        <Text
+          {...testProps(text)}
+          style={color === "BTC" ? styles.textBtc : styles.textUsd}
+        >
           {text}
         </Text>
         {typeof icon === "string" ? (
-          <Icon style={styles.text} name={icon} />
+          <Icon style={color === "BTC" ? styles.textBtc : styles.textUsd} name={icon} />
         ) : selected ? (
           icon.selected
         ) : (
@@ -92,9 +96,13 @@ const useStyles = makeStyles(({ colors }, { selected }: { selected: boolean }) =
     backgroundColor: colors.grey5,
     height: "100%",
   },
-  text: {
+  textBtc: {
     fontSize: 16,
     color: selected ? colors.primary : colors.grey1, // change here
+  },
+  textUsd: {
+    fontSize: 16,
+    color: selected ? colors.green : colors.grey1, // change here
   },
   buttonGroup: {
     flexDirection: "row",

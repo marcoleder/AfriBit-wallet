@@ -106,6 +106,7 @@ const ReceiveScreen = () => {
                   <GaloyCurrencyBubble currency="BTC" iconSize={16} highlighted={false} />
                 ),
               },
+              color: request.receivingWalletDescriptor.currency,
             },
             {
               id: WalletCurrency.Usd,
@@ -116,6 +117,7 @@ const ReceiveScreen = () => {
                   <GaloyCurrencyBubble currency="USD" iconSize={16} highlighted={false} />
                 ),
               },
+              color: request.receivingWalletDescriptor.currency,
             },
           ]}
           onPress={(id) => isReady && request.setReceivingWallet(id as WalletCurrency)}
@@ -214,12 +216,19 @@ const ReceiveScreen = () => {
               id: Invoice.Lightning,
               text: "Lightning",
               icon: "md-flash",
+              color: request.receivingWalletDescriptor.currency,
             },
-            { id: Invoice.PayCode, text: "Paycode", icon: "md-at" },
             {
               id: Invoice.OnChain,
               text: "Onchain",
               icon: "logo-bitcoin",
+              color: request.receivingWalletDescriptor.currency,
+            },
+            {
+              id: Invoice.PayCode,
+              text: "Paycode",
+              icon: "md-at",
+              color: request.receivingWalletDescriptor.currency,
             },
           ]}
           onPress={(id) => isReady && request.setType(id as InvoiceType)}

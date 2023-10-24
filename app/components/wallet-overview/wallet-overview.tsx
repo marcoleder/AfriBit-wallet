@@ -117,6 +117,9 @@ const WalletOverview: React.FC<Props> = ({
       }
     | undefined
 
+  let btcDummyTxVisible = false
+  let usdDummyTxVisible = false
+
   let recentBtcTransactionsData: TransactionData = undefined
   let recentUsdTransactionsData: TransactionData = undefined
 
@@ -154,6 +157,8 @@ const WalletOverview: React.FC<Props> = ({
           </>
         ),
       }
+    } else {
+      btcDummyTxVisible = true
     }
 
     const usdTransactions = transactionsEdges.filter(
@@ -183,6 +188,8 @@ const WalletOverview: React.FC<Props> = ({
           </>
         ),
       }
+    } else {
+      usdDummyTxVisible = true
     }
   }
 
@@ -253,7 +260,7 @@ const WalletOverview: React.FC<Props> = ({
           {recentBtcTransactionsData && isBtcTransactionsVisible ? (
             <>{recentBtcTransactionsData?.details}</>
           ) : null}
-          {isBtcTransactionsVisible ? (
+          {btcDummyTxVisible && isBtcTransactionsVisible ? (
             <DummyTransactionItem isBalanceHidden={isContentVisible} />
           ) : null}
         </View>
@@ -297,7 +304,7 @@ const WalletOverview: React.FC<Props> = ({
           {recentUsdTransactionsData && isUsdTransactionsVisible ? (
             <>{recentUsdTransactionsData?.details}</>
           ) : null}
-          {isUsdTransactionsVisible ? (
+          {usdDummyTxVisible && isUsdTransactionsVisible ? (
             <DummyTransactionItem isBalanceHidden={isContentVisible} />
           ) : null}
         </View>
