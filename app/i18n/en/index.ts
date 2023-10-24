@@ -158,7 +158,7 @@ const en: BaseTranslation = {
       WhatIsMoney: {
         title: "What is Money? ",
         questions: {
-          moneySocialAggrement: {
+          moneySocialAgreement: {
             answers: [
               "Because people trust that other people will value money similarly",
               "Because your mother told you so",
@@ -2759,6 +2759,11 @@ const en: BaseTranslation = {
       details: "We're giving away 1,000,000 sats!\n\n Share your Circles on social with tag `#blinkcircles` to enter! The winner will be chosen at random on October 31st.\n\n You must have at least one person in your Inner Circle to enter!",
       connectOnSocial: "Connect on social: ",
       fullDetails: "Full details at "
+    },
+    novemberChallenge: {
+      title: "November Challenge!",
+      description: "Earn 2,100 sats for every person you welcome to Blink in November!",
+      details: "Earn 2,100 sats for every person you welcome to Blink in November!\n\nTo claim your sats, simply share your Circles on social any time during November with the tag `#blinkcircles`.\n\nYour sats will be paid out on December 1, 2023."
     },
   },
   FullOnboarding: {

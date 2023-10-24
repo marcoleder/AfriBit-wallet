@@ -495,7 +495,7 @@ type RootTranslation = {
 				 */
 				title: string
 				questions: {
-					moneySocialAggrement: {
+					moneySocialAgreement: {
 						answers: {
 							/**
 							 * B​e​c​a​u​s​e​ ​p​e​o​p​l​e​ ​t​r​u​s​t​ ​t​h​a​t​ ​o​t​h​e​r​ ​p​e​o​p​l​e​ ​w​i​l​l​ ​v​a​l​u​e​ ​m​o​n​e​y​ ​s​i​m​i​l​a​r​l​y
@@ -8648,6 +8648,24 @@ type RootTranslation = {
 			 */
 			fullDetails: string
 		}
+		novemberChallenge: {
+			/**
+			 * N​o​v​e​m​b​e​r​ ​C​h​a​l​l​e​n​g​e​!
+			 */
+			title: string
+			/**
+			 * E​a​r​n​ ​2​,​1​0​0​ ​s​a​t​s​ ​f​o​r​ ​e​v​e​r​y​ ​p​e​r​s​o​n​ ​y​o​u​ ​w​e​l​c​o​m​e​ ​t​o​ ​B​l​i​n​k​ ​i​n​ ​N​o​v​e​m​b​e​r​!
+			 */
+			description: string
+			/**
+			 * E​a​r​n​ ​2​,​1​0​0​ ​s​a​t​s​ ​f​o​r​ ​e​v​e​r​y​ ​p​e​r​s​o​n​ ​y​o​u​ ​w​e​l​c​o​m​e​ ​t​o​ ​B​l​i​n​k​ ​i​n​ ​N​o​v​e​m​b​e​r​!​
+		​
+		​T​o​ ​c​l​a​i​m​ ​y​o​u​r​ ​s​a​t​s​,​ ​s​i​m​p​l​y​ ​s​h​a​r​e​ ​y​o​u​r​ ​C​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​a​n​y​ ​t​i​m​e​ ​d​u​r​i​n​g​ ​N​o​v​e​m​b​e​r​ ​w​i​t​h​ ​t​h​e​ ​t​a​g​ ​`​#​b​l​i​n​k​c​i​r​c​l​e​s​`​.​
+		​
+		​Y​o​u​r​ ​s​a​t​s​ ​w​i​l​l​ ​b​e​ ​p​a​i​d​ ​o​u​t​ ​o​n​ ​D​e​c​e​m​b​e​r​ ​1​,​ ​2​0​2​3​.
+			 */
+			details: string
+		}
 	}
 	FullOnboarding: {
 		/**
@@ -9176,7 +9194,7 @@ export type TranslationFunctions = {
 				 */
 				title: () => LocalizedString
 				questions: {
-					moneySocialAggrement: {
+					moneySocialAgreement: {
 						answers: {
 							/**
 							 * Because people trust that other people will value money similarly
@@ -17254,6 +17272,24 @@ export type TranslationFunctions = {
 			 * Full details at 
 			 */
 			fullDetails: () => LocalizedString
+		}
+		novemberChallenge: {
+			/**
+			 * November Challenge!
+			 */
+			title: () => LocalizedString
+			/**
+			 * Earn 2,100 sats for every person you welcome to Blink in November!
+			 */
+			description: () => LocalizedString
+			/**
+			 * Earn 2,100 sats for every person you welcome to Blink in November!
+	
+		To claim your sats, simply share your Circles on social any time during November with the tag `#blinkcircles`.
+	
+		Your sats will be paid out on December 1, 2023.
+			 */
+			details: () => LocalizedString
 		}
 	}
 	FullOnboarding: {
