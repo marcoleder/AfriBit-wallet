@@ -243,14 +243,16 @@ const ReceiveScreen = () => {
           showValuesIfDisabled={false}
           big={false}
         />
-        <NoteInput
-          onBlur={request.setMemo}
-          onChangeText={request.setMemoChangeText}
-          value={request.memoChangeText || ""}
-          editable={request.canSetMemo}
-          style={styles.note}
-          big={false}
-        />
+        {request.canSetMemo ? (
+          <NoteInput
+            onBlur={request.setMemo}
+            onChangeText={request.setMemoChangeText}
+            value={request.memoChangeText || ""}
+            editable={request.canSetMemo}
+            style={styles.note}
+            big={false}
+          />
+        ) : null}
 
         {OnChainCharge}
 
