@@ -7041,6 +7041,22 @@ type RootTranslation = {
 		 */
 		title: string
 		/**
+		 * S​e​l​e​c​t​ ​r​e​c​i​p​i​e​n​t
+		 */
+		sendBitcoinDestination: string
+		/**
+		 * S​e​l​e​c​t​ ​a​c​c​o​u​n​t
+		 */
+		sendBitcoinDetails: string
+		/**
+		 * C​o​n​f​i​r​m​ ​p​a​y​m​e​n​t
+		 */
+		sendBitcoinConfirmation: string
+		/**
+		 * P​a​y​m​e​n​t​ ​c​o​n​f​i​r​m​e​d
+		 */
+		sendBitcoinSuccess: string
+		/**
 		 * F​a​i​l​e​d​ ​t​o​ ​f​e​t​c​h​ ​l​n​u​r​l​ ​i​n​v​o​i​c​e
 		 */
 		failedToFetchLnurlInvoice: string
@@ -15704,6 +15720,22 @@ export type TranslationFunctions = {
 		 * Send Bitcoin
 		 */
 		title: () => LocalizedString
+		/**
+		 * Select recipient
+		 */
+		sendBitcoinDestination: () => LocalizedString
+		/**
+		 * Select account
+		 */
+		sendBitcoinDetails: () => LocalizedString
+		/**
+		 * Confirm payment
+		 */
+		sendBitcoinConfirmation: () => LocalizedString
+		/**
+		 * Payment confirmed
+		 */
+		sendBitcoinSuccess: () => LocalizedString
 		/**
 		 * Failed to fetch lnurl invoice
 		 */

@@ -2197,6 +2197,10 @@
         "max": "Max",
         "maxAmount": "Max Amount",
         "title": "Send Bitcoin",
+        "sendBitcoinDestination": "Select recipient",
+        "sendBitcoinDetails": "Select account",
+        "sendBitcoinConfirmation": "Confirm payment",
+        "sendBitcoinSuccess": "Payment confirmed",
         "failedToFetchLnurlInvoice": "Failed to fetch lnurl invoice",
         "lnurlInvoiceIncorrectAmount": "The lnurl server responded with an invoice with an incorrect amount.",
         "lnurlInvoiceIncorrectDescription": "The lnurl server responded with an invoice with an incorrect description hash."

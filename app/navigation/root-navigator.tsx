@@ -146,22 +146,22 @@ export const RootStack = () => {
       <RootNavigator.Screen
         name="sendBitcoinDestination"
         component={SendBitcoinDestinationScreen}
-        options={{ title: LL.SendBitcoinScreen.title() }}
+        options={{ title: LL.SendBitcoinScreen.sendBitcoinDestination() }}
       />
       <RootNavigator.Screen
         name="sendBitcoinDetails"
         component={SendBitcoinDetailsScreen}
-        options={{ title: LL.SendBitcoinScreen.title() }}
+        options={{ title: LL.SendBitcoinScreen.sendBitcoinDetails() }}
       />
       <RootNavigator.Screen
         name="sendBitcoinConfirmation"
         component={SendBitcoinConfirmationScreen}
-        options={{ title: LL.SendBitcoinScreen.title() }}
+        options={{ title: LL.SendBitcoinScreen.sendBitcoinConfirmation() }}
       />
       <RootNavigator.Screen
         name="sendBitcoinSuccess"
         component={SendBitcoinSuccessScreen}
-        options={{ title: LL.SendBitcoinScreen.title() }}
+        options={{ title: LL.SendBitcoinScreen.sendBitcoinSuccess() }}
       />
       <RootNavigator.Screen
         name="receiveBitcoin"
