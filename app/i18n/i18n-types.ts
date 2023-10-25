@@ -6501,11 +6501,11 @@ type RootTranslation = {
 		 */
 		tapQrCodeCopy: string
 		/**
-		 * R​e​c​e​i​v​e​ ​B​i​t​c​o​i​n
+		 * R​e​c​e​i​v​e
 		 */
 		title: string
 		/**
-		 * R​e​c​e​i​v​e​ ​U​S​D
+		 * R​e​c​e​i​v​e
 		 */
 		usdTitle: string
 		/**
@@ -15213,11 +15213,11 @@ export type TranslationFunctions = {
 		 */
 		tapQrCodeCopy: () => LocalizedString
 		/**
-		 * Receive Bitcoin
+		 * Receive
 		 */
 		title: () => LocalizedString
 		/**
-		 * Receive USD
+		 * Receive
 		 */
 		usdTitle: () => LocalizedString
 		/**

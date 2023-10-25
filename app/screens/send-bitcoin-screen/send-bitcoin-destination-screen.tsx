@@ -413,7 +413,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
   return (
     <Screen
-      preset="scroll"
       style={styles.screenStyle}
       keyboardOffset="navigationHeader"
       keyboardShouldPersistTaps="handled"
@@ -422,122 +421,121 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         destinationState={destinationState}
         dispatchDestinationStateAction={dispatchDestinationStateAction}
       />
-      <View style={styles.sendBitcoinDestinationContainer}>
-        <View style={[styles.fieldBackground, inputContainerStyle]}>
-          <SearchBar
-            {...testProps(LL.SendBitcoinScreen.placeholder())}
-            placeholder={LL.SendBitcoinScreen.placeholder()}
-            value={destinationState.unparsedDestination}
-            onChangeText={(text) => {
-              parseBtcDest(text)
-              updateMatchingContacts(text)
-            }}
-            onSubmitEditing={() =>
-              validateDestination &&
-              validateDestination(destinationState.unparsedDestination)
-            }
-            platform="default"
-            round
-            showLoading={false}
-            containerStyle={styles.searchBarContainer}
-            inputContainerStyle={styles.searchBarInputContainerStyle}
-            inputStyle={styles.searchBarText}
-            rightIconContainerStyle={styles.searchBarRightIconStyle}
-            searchIcon={<></>}
-            autoCapitalize="none"
-            autoCorrect={false}
-            clearIcon={
-              <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
-            }
-          />
-          <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
-            <View style={styles.iconContainer}>
-              <ScanIcon fill={colors.black} />
-            </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={async () => {
-              try {
-                const clipboard = await Clipboard.getString()
-                dispatchDestinationStateAction({
-                  type: "set-unparsed-destination",
-                  payload: {
-                    unparsedDestination: clipboard,
-                  },
-                })
-                if (clipboard.length > 0) {
-                  const searchWordArray = clipboard
-                    .split(" ")
-                    .filter((text) => text.trim().length > 0)
-                  const matchingContacts = allContacts.filter((contact) =>
-                    searchWordArray.some((word) => wordMatchesContact(word, contact)),
-                  )
-                  setMatchingContacts(matchingContacts)
-                } else {
-                  setMatchingContacts(allContacts)
-                }
-                validateDestination && (await validateDestination(clipboard))
-              } catch (err) {
-                if (err instanceof Error) {
-                  crashlytics().recordError(err)
-                }
-                toastShow({
-                  type: "error",
-                  message: (translations) =>
-                    translations.SendBitcoinDestinationScreen.clipboardError(),
-                  LL,
-                })
+      <View style={[styles.fieldBackground, inputContainerStyle]}>
+        <SearchBar
+          {...testProps(LL.SendBitcoinScreen.placeholder())}
+          placeholder={LL.SendBitcoinScreen.placeholder()}
+          value={destinationState.unparsedDestination}
+          onChangeText={(text) => {
+            parseBtcDest(text)
+            updateMatchingContacts(text)
+          }}
+          onSubmitEditing={() =>
+            validateDestination &&
+            validateDestination(destinationState.unparsedDestination)
+          }
+          platform="default"
+          round
+          showLoading={false}
+          containerStyle={styles.searchBarContainer}
+          inputContainerStyle={styles.searchBarInputContainerStyle}
+          inputStyle={styles.searchBarText}
+          rightIconContainerStyle={styles.searchBarRightIconStyle}
+          searchIcon={<></>}
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearIcon={
+            <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
+          }
+        />
+        <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
+          <View style={styles.iconContainer}>
+            <ScanIcon fill={colors.black} />
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={async () => {
+            try {
+              const clipboard = await Clipboard.getString()
+              dispatchDestinationStateAction({
+                type: "set-unparsed-destination",
+                payload: {
+                  unparsedDestination: clipboard,
+                },
+              })
+              if (clipboard.length > 0) {
+                const searchWordArray = clipboard
+                  .split(" ")
+                  .filter((text) => text.trim().length > 0)
+                const matchingContacts = allContacts.filter((contact) =>
+                  searchWordArray.some((word) => wordMatchesContact(word, contact)),
+                )
+                setMatchingContacts(matchingContacts)
+              } else {
+                setMatchingContacts(allContacts)
               }
+              validateDestination && (await validateDestination(clipboard))
+            } catch (err) {
+              if (err instanceof Error) {
+                crashlytics().recordError(err)
+              }
+              toastShow({
+                type: "error",
+                message: (translations) =>
+                  translations.SendBitcoinDestinationScreen.clipboardError(),
+                LL,
+              })
+            }
+          }}
+        >
+          <View style={styles.iconContainer}>
+            {/* we could Paste from "FontAwesome" but as svg*/}
+            <Icon name="ios-clipboard-outline" color={colors.black} size={22} />
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+      <DestinationInformation destinationState={destinationState} />
+      <FlatList
+        style={styles.flatList}
+        contentContainerStyle={styles.flatListContainer}
+        data={matchingContacts}
+        extraData={selectedId}
+        ListEmptyComponent={ListEmptyContent}
+        renderItem={({ item }) => (
+          <ListItem
+            key={item.username}
+            style={styles.item}
+            containerStyle={
+              item.id === selectedId ? styles.selectedContainer : styles.itemContainer
+            }
+            onPress={() => {
+              handleSelection(item.id)
+              parseBtcDest(item.username)
             }}
           >
-            <View style={styles.iconContainer}>
-              {/* we could Paste from "FontAwesome" but as svg*/}
-              <Icon name="ios-clipboard-outline" color={colors.black} size={22} />
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-        <DestinationInformation destinationState={destinationState} />
-        <FlatList
-          contentContainerStyle={styles.listContainer}
-          data={matchingContacts}
-          extraData={selectedId}
-          ListEmptyComponent={ListEmptyContent}
-          renderItem={({ item }) => (
-            <ListItem
-              key={item.username}
-              style={styles.item}
-              containerStyle={
-                item.id === selectedId ? styles.selectedContainer : styles.itemContainer
-              }
-              onPress={() => {
-                handleSelection(item.id)
-                parseBtcDest(item.username)
-              }}
-            >
-              <Icon name={"ios-person-outline"} size={24} color={colors.black} />
-              <ListItem.Content>
-                <ListItem.Title style={styles.itemText}>{item.alias}</ListItem.Title>
-              </ListItem.Content>
-            </ListItem>
-          )}
-          keyExtractor={(item) => item.username}
+            <Icon name={"ios-person-outline"} size={24} color={colors.black} />
+            <ListItem.Content>
+              <ListItem.Title style={styles.itemText}>{item.alias}</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
+        )}
+        keyExtractor={(item) => item.username}
+      />
+      <View style={styles.buttonContainer}>
+        <GaloyPrimaryButton
+          title={
+            destinationState.unparsedDestination
+              ? LL.common.next()
+              : LL.SendBitcoinScreen.destinationIsRequired()
+          }
+          loading={destinationState.destinationState === "validating"}
+          disabled={
+            destinationState.destinationState === "invalid" ||
+            !destinationState.unparsedDestination ||
+            !initiateGoToNextScreen
+          }
+          onPress={initiateGoToNextScreen || undefined}
         />
-        <View style={styles.buttonContainer}>
-          <GaloyPrimaryButton
-            title={
-              destinationState.unparsedDestination
-                ? LL.common.next()
-                : LL.SendBitcoinScreen.destinationIsRequired()
-            }
-            loading={destinationState.destinationState === "validating"}
-            disabled={
-              destinationState.destinationState === "invalid" ||
-              !destinationState.unparsedDestination ||
-              !initiateGoToNextScreen
-            }
-            onPress={initiateGoToNextScreen || undefined}
-          />
-        </View>
       </View>
     </Screen>
   )
@@ -576,9 +574,17 @@ const usestyles = makeStyles(({ colors }) => ({
     textAlign: "center",
   },
 
+  flatList: {
+    flex: 1,
+  },
+
+  flatListContainer: {
+    margin: 0,
+  },
+
   item: {
     marginHorizontal: 32,
-    marginVertical: 8,
+    marginBottom: 16,
   },
 
   itemContainer: {
@@ -588,11 +594,6 @@ const usestyles = makeStyles(({ colors }) => ({
   selectedContainer: {
     borderRadius: 8,
     backgroundColor: colors.grey3,
-  },
-
-  listContainer: {
-    flexGrow: 1,
-    marginTop: 16,
   },
 
   searchBarContainer: {
@@ -624,9 +625,6 @@ const usestyles = makeStyles(({ colors }) => ({
     padding: 20,
     flexGrow: 1,
   },
-  sendBitcoinDestinationContainer: {
-    flex: 1,
-  },
   fieldBackground: {
     flexDirection: "row",
     borderStyle: "solid",
@@ -636,7 +634,7 @@ const usestyles = makeStyles(({ colors }) => ({
     justifyContent: "center",
     alignItems: "center",
     height: 60,
-    marginBottom: 10,
+    marginBottom: 26,
   },
   enteringInputContainer: {},
   errorInputContainer: {
@@ -652,8 +650,7 @@ const usestyles = makeStyles(({ colors }) => ({
     borderWidth: 1,
   },
   buttonContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
+    marginTop: 26,
   },
   input: {
     flex: 1,

@@ -1,17 +1,5 @@
-import React, { useEffect } from "react"
+import React from "react"
 import {
-  Platform,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native"
-import Modal from "react-native-modal"
-import { makeStyles, Text, useTheme } from "@rneui/themed"
-import { GaloyIcon } from "../atomic/galoy-icon"
-import { GaloyCurrencyBubble } from "../atomic/galoy-currency-bubble"
-import {
-  WalletCurrency,
   useAccountUpdateDefaultWalletIdMutation,
   useSetDefaultAccountModalQuery,
 } from "@app/graphql/generated"
@@ -19,7 +7,6 @@ import { gql, useApolloClient } from "@apollo/client"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
 import crashlytics from "@react-native-firebase/crashlytics"
 import { setHasPromptedSetDefaultAccount } from "@app/graphql/client-only-query"
-import { useI18nContext } from "@app/i18n/i18n-react"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
@@ -96,7 +83,6 @@ export const SetDefaultAccountModal = ({
     }
 
     if (isVisible) {
-      console.log("btc set")
       selectBtcAsDefault()
       setHasPromptedSetDefaultAccount(client)
       toggleModal()

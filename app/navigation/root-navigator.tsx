@@ -48,6 +48,7 @@ import {
 import { PhoneRegistrationInitiateScreen } from "@app/screens/phone-auth-screen/phone-registration-input"
 import { PhoneRegistrationValidateScreen } from "@app/screens/phone-auth-screen/phone-registration-validation"
 import ReceiveScreen from "@app/screens/receive-bitcoin-screen/receive-screen"
+import { useReceiveBitcoin } from "@app/screens/receive-bitcoin-screen/use-receive-bitcoin"
 import RedeemBitcoinDetailScreen from "@app/screens/redeem-lnurl-withdrawal-screen/redeem-bitcoin-detail-screen"
 import RedeemBitcoinResultScreen from "@app/screens/redeem-lnurl-withdrawal-screen/redeem-bitcoin-result-screen"
 import SendBitcoinConfirmationScreen from "@app/screens/send-bitcoin-screen/send-bitcoin-confirmation-screen"
@@ -92,6 +93,8 @@ export const RootStack = () => {
   } = useTheme()
   const isAuthed = useIsAuthed()
   const { LL } = useI18nContext()
+
+  const request = useReceiveBitcoin()
 
   return (
     <RootNavigator.Navigator
@@ -167,7 +170,8 @@ export const RootStack = () => {
         name="receiveBitcoin"
         component={ReceiveScreen}
         options={{
-          title: LL.ReceiveScreen.title(),
+          title:
+            LL.ReceiveScreen.title() + request?.receivingWalletDescriptor.currency,
         }}
       />
       <RootNavigator.Screen

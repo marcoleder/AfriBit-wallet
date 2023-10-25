@@ -191,6 +191,9 @@ const WalletOverview: React.FC<Props> = ({
     } else {
       usdDummyTxVisible = true
     }
+  } else {
+    btcDummyTxVisible = true
+    usdDummyTxVisible = true
   }
 
   if (isAuthed) {
