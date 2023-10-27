@@ -22,7 +22,58 @@ import HideableArea from "../hideable-area/hideable-area"
 import { IconTransaction } from "../icon-transactions"
 import { TransactionDate } from "../transaction-date"
 import { useI18nContext } from "@app/i18n/i18n-react"
-import { useDescriptionDisplay } from "./useDescriptionDisplay"
+import { DeepPartialObject } from "./index.types"
+
+// This should extend the Transaction directly from the cache
+export const useDescriptionDisplay = ({
+  tx,
+  bankName,
+}: {
+  tx: TransactionFragment | DeepPartialObject<TransactionFragment>
+  bankName: string
+}) => {
+  const { LL } = useI18nContext()
+
+  if (!tx) {
+    return ""
+  }
+
+  const { memo, direction, settlementVia } = tx
+  if (memo) {
+    return memo
+  }
+
+  const isReceive = direction === "RECEIVE"
+
+  switch (settlementVia?.__typename) {
+    case "SettlementViaOnChain":
+      return "OnChain Payment"
+    case "SettlementViaLn":
+      return "Invoice"
+    case "SettlementViaIntraLedger":
+      return isReceive
+        ? `${LL.common.from()} ${
+            settlementVia.counterPartyUsername || bankName + " User"
+          }`
+        : `${LL.common.to()} ${settlementVia.counterPartyUsername || bankName + " User"}`
+  }
+}
+
+const AmountDisplayStyle = ({
+  isReceive,
+  isPending,
+}: {
+  isReceive: boolean
+  isPending: boolean
+}) => {
+  const styles = useStyles()
+
+  if (isPending) {
+    return styles.pending
+  }
+
+  return isReceive ? styles.receive : styles.send
+}
 
 type Props = {
   txid: string
@@ -76,28 +127,15 @@ export const TransactionItem: React.FC<Props> = ({
     return null
   }
 
-  const walletCurrency = tx.settlementCurrency as WalletCurrency
-
-  const AmountDisplayStyle = ({
-    isReceive,
-    isPending,
-  }: {
-    isReceive: boolean
-    isPending: boolean
-  }) => {
-    const styles = useStyles()
-
-    if (isPending) {
-      return styles.pending
-    }
-
-    if (walletCurrency === WalletCurrency.Btc) {
-      return isReceive ? styles.receiveBtc : styles.send
-    } else if (walletCurrency === WalletCurrency.Usd) {
-      return isReceive ? styles.receiveUsd : styles.send
-    }
-
-    return isReceive ? styles.receive : styles.send
+  if (
+    !tx.settlementCurrency ||
+    !tx.settlementDisplayAmount ||
+    !tx.settlementDisplayCurrency ||
+    !tx.id ||
+    !tx.createdAt ||
+    !tx.status
+  ) {
+    return null
   }
 
   const isReceive = tx.direction === "RECEIVE"
@@ -126,16 +164,16 @@ export const TransactionItem: React.FC<Props> = ({
       containerStyle={styles.container}
       onPress={() =>
         navigation.navigate("transactionDetail", {
-          txid: tx.id,
+          txid,
         })
       }
       hitSlop={{ left: 10, right: 10 }}
     >
       <IconTransaction
-        onChain={tx.settlementVia.__typename === "SettlementViaOnChain"}
+        onChain={tx.settlementVia?.__typename === "SettlementViaOnChain"}
         isReceive={isReceive}
         pending={isPending}
-        walletCurrency={walletCurrency}
+        walletCurrency={WalletCurrency}
       />
       <ListItem.Content {...testProps("list-item-content")}>
         <ListItem.Title
@@ -146,7 +184,13 @@ export const TransactionItem: React.FC<Props> = ({
           {description}
         </ListItem.Title>
         <ListItem.Subtitle>
-          {subtitle ? <TransactionDate diffDate={true} {...tx} /> : undefined}
+          {subtitle ? (
+            <TransactionDate
+              diffDate={true}
+              createdAt={tx.createdAt}
+              status={tx.status}
+            />
+          ) : undefined}
         </ListItem.Subtitle>
       </ListItem.Content>
 
