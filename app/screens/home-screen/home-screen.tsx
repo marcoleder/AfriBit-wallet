@@ -263,7 +263,7 @@ export const HomeScreen: React.FC = () => {
         setIsVisible={setIsStablesatModalVisible}
       />
       <View style={[styles.header, styles.container]}>
-        <Pressable onPress={toggleIsContentVisible}>
+        <Pressable hitSlop={10} onPress={toggleIsContentVisible}>
           <GaloyIcon name={isContentVisible ? "eye" : "eye-slash"} size={24} />
         </Pressable>
         <BalanceHeader
@@ -271,7 +271,7 @@ export const HomeScreen: React.FC = () => {
           setIsContentVisible={setIsContentVisible}
           loading={loading}
         />
-        <Pressable onPress={() => navigation.navigate("settings")}>
+        <Pressable hitSlop={10} onPress={() => navigation.navigate("settings")}>
           <GaloyIcon name={"menu"} size={24} />
         </Pressable>
       </View>
@@ -311,6 +311,7 @@ export const HomeScreen: React.FC = () => {
               size="large"
               text={item.title}
               onPress={() => onMenuClick(item.target)}
+              hitSlop={{ top: 15, bottom: 15, left: 8, right: 8 }}
             />
           </View>
         ))}

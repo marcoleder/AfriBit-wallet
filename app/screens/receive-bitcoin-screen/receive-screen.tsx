@@ -151,6 +151,7 @@ const ReceiveScreen = () => {
               <>
                 <View style={styles.copyInvoiceContainer}>
                   <TouchableOpacity
+                    hitSlop={10}
                     {...testProps(LL.ReceiveScreen.copyInvoice())}
                     onPress={request.copyToClipboard}
                   >
@@ -161,11 +162,9 @@ const ReceiveScreen = () => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <View>
-                  <Text color={colors.grey2}>{request.extraDetails || ""}</Text>
-                </View>
                 <View style={styles.shareInvoiceContainer}>
                   <TouchableOpacity
+                    hitSlop={10}
                     {...testProps(LL.ReceiveScreen.shareInvoice())}
                     onPress={request.share}
                   >
@@ -337,7 +336,6 @@ const useStyles = makeStyles(({ colors }) => ({
     minHeight: 20,
   },
   copyInvoiceContainer: {
-    flex: 2,
     marginLeft: 10,
   },
   shareInvoiceContainer: {

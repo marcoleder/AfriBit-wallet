@@ -129,6 +129,7 @@ export const TransactionItem: React.FC<Props> = ({
           txid: tx.id,
         })
       }
+      hitSlop={{ left: 10, right: 10 }}
     >
       <IconTransaction
         onChain={tx.settlementVia.__typename === "SettlementViaOnChain"}

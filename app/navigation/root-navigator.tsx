@@ -170,8 +170,7 @@ export const RootStack = () => {
         name="receiveBitcoin"
         component={ReceiveScreen}
         options={{
-          title:
-            LL.ReceiveScreen.title() + request?.receivingWalletDescriptor.currency,
+          title: LL.ReceiveScreen.title() + request?.receivingWalletDescriptor.currency,
         }}
       />
       <RootNavigator.Screen

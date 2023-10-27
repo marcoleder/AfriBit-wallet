@@ -231,87 +231,103 @@ const WalletOverview: React.FC<Props> = ({
 
   return (
     <>
-      <Pressable onPress={() => onMenuClick("transactionHistoryBtc")}>
-        <View style={styles.container}>
-          <View style={styles.displayTextView}>
-            <View style={styles.currency}>
+      <View style={styles.container}>
+        <View style={styles.displayTextView}>
+          <View style={styles.currency}>
+            <Pressable
+              hitSlop={{ top: 10, bottom: 10, left: 10 }}
+              style={styles.currency}
+              onPress={() => onMenuClick("transactionHistoryBtc")}
+            >
               <GaloyCurrencyBubble currency="BTC" />
               <Text type="p1">Bitcoin</Text>
-              <Pressable onPress={() => navigation.navigate("priceHistory")}>
-                <GaloyIcon color={colors.grey1} name="graph" size={18} />
-              </Pressable>
-            </View>
-            <Pressable onPress={toggleIsBtcTransactionsVisible} style={styles.pressable}>
-              {loading ? (
-                <Loader />
-              ) : (
-                <View style={styles.hideableArea}>
-                  <HideableArea isContentVisible={isContentVisible}>
-                    <Text type="p1" bold>
-                      {btcInUnderlyingCurrency}
-                    </Text>
-                    <Text type="p3">{btcInDisplayCurrencyFormatted}</Text>
-                  </HideableArea>
-                </View>
-              )}
-              <GaloyIcon
-                name={isBtcTransactionsVisible ? "caret-up" : "caret-down"}
-                size={24}
-              />
+            </Pressable>
+            <Pressable hitSlop={10} onPress={() => navigation.navigate("receiveBitcoin")}>
+              <GaloyIcon color={colors.grey1} name="graph" size={18} />
             </Pressable>
           </View>
-          {recentBtcTransactionsData && isBtcTransactionsVisible ? (
-            <>{recentBtcTransactionsData?.details}</>
-          ) : null}
-          {btcDummyTxVisible && isBtcTransactionsVisible ? (
-            <DummyTransactionItem isBalanceHidden={isContentVisible} />
-          ) : null}
+          <Pressable
+            hitSlop={{ top: 8, bottom: 8, left: 10, right: 10 }}
+            onPress={toggleIsBtcTransactionsVisible}
+            style={styles.pressable}
+          >
+            {loading ? (
+              <Loader />
+            ) : (
+              <View style={styles.hideableArea}>
+                <HideableArea isContentVisible={isContentVisible}>
+                  <Text type="p1" bold>
+                    {btcInUnderlyingCurrency}
+                  </Text>
+                  <Text type="p3">{btcInDisplayCurrencyFormatted}</Text>
+                </HideableArea>
+              </View>
+            )}
+            <GaloyIcon
+              name={isBtcTransactionsVisible ? "caret-up" : "caret-down"}
+              size={24}
+            />
+          </Pressable>
         </View>
-      </Pressable>
-      <Pressable onPress={() => onMenuClick("transactionHistoryUsd")}>
-        <View style={styles.container}>
-          <View style={styles.displayTextView}>
-            <View style={styles.currency}>
+        {recentBtcTransactionsData && isBtcTransactionsVisible ? (
+          <>{recentBtcTransactionsData?.details}</>
+        ) : null}
+        {btcDummyTxVisible && isBtcTransactionsVisible ? (
+          <DummyTransactionItem isBalanceHidden={isContentVisible} />
+        ) : null}
+      </View>
+      <View style={styles.container}>
+        <View style={styles.displayTextView}>
+          <View style={styles.currency}>
+            <Pressable
+              hitSlop={{ top: 10, bottom: 10, left: 10 }}
+              style={styles.currency}
+              onPress={() => onMenuClick("transactionHistoryUsd")}
+            >
               <GaloyCurrencyBubble currency="USD" />
               <Text type="p1">Stablesats</Text>
-              <Pressable onPress={() => setIsStablesatModalVisible(true)}>
-                <GaloyIcon color={colors.grey1} name="question" size={18} />
-              </Pressable>
-            </View>
-            <Pressable onPress={toggleIsUsdTransactionsVisible} style={styles.pressable}>
-              {loading ? (
-                <Loader />
-              ) : (
-                <View style={styles.hideableArea}>
-                  <HideableArea isContentVisible={isContentVisible}>
-                    {usdInUnderlyingCurrency ? (
-                      <Text type="p1" bold>
-                        {usdInUnderlyingCurrency}
-                      </Text>
-                    ) : null}
-                    <Text
-                      type={usdInUnderlyingCurrency ? "p3" : "p1"}
-                      bold={!usdInUnderlyingCurrency}
-                    >
-                      {usdInDisplayCurrencyFormatted}
-                    </Text>
-                  </HideableArea>
-                </View>
-              )}
-              <GaloyIcon
-                name={isUsdTransactionsVisible ? "caret-up" : "caret-down"}
-                size={24}
-              />
+            </Pressable>
+            <Pressable hitSlop={10} onPress={() => setIsStablesatModalVisible(true)}>
+              <GaloyIcon color={colors.grey1} name="question" size={18} />
             </Pressable>
           </View>
-          {recentUsdTransactionsData && isUsdTransactionsVisible ? (
-            <>{recentUsdTransactionsData?.details}</>
-          ) : null}
-          {usdDummyTxVisible && isUsdTransactionsVisible ? (
-            <DummyTransactionItem isBalanceHidden={isContentVisible} />
-          ) : null}
+          <Pressable
+            hitSlop={{ top: 15, bottom: 15, left: 10, right: 10 }}
+            onPress={toggleIsUsdTransactionsVisible}
+            style={styles.pressable}
+          >
+            {loading ? (
+              <Loader />
+            ) : (
+              <View style={styles.hideableArea}>
+                <HideableArea isContentVisible={isContentVisible}>
+                  {usdInUnderlyingCurrency ? (
+                    <Text type="p1" bold>
+                      {usdInUnderlyingCurrency}
+                    </Text>
+                  ) : null}
+                  <Text
+                    type={usdInUnderlyingCurrency ? "p3" : "p1"}
+                    bold={!usdInUnderlyingCurrency}
+                  >
+                    {usdInDisplayCurrencyFormatted}
+                  </Text>
+                </HideableArea>
+              </View>
+            )}
+            <GaloyIcon
+              name={isUsdTransactionsVisible ? "caret-up" : "caret-down"}
+              size={24}
+            />
+          </Pressable>
         </View>
-      </Pressable>
+        {recentUsdTransactionsData && isUsdTransactionsVisible ? (
+          <>{recentUsdTransactionsData?.details}</>
+        ) : null}
+        {usdDummyTxVisible && isUsdTransactionsVisible ? (
+          <DummyTransactionItem isBalanceHidden={isContentVisible} />
+        ) : null}
+      </View>
     </>
   )
 }

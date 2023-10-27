@@ -110,6 +110,7 @@ export const BalanceHeader: React.FC<Props> = ({
         isContentVisible={isContentVisible}
         hiddenContent={
           <TouchableOpacity
+            hitSlop={10}
             onPress={toggleIsContentVisible}
             style={styles.hiddenBalanceTouchableOpacity}
           >
@@ -118,7 +119,7 @@ export const BalanceHeader: React.FC<Props> = ({
         }
       >
         <View style={styles.balancesContainer}>
-          <TouchableOpacity onPress={toggleIsContentVisible}>
+          <TouchableOpacity hitSlop={10} onPress={toggleIsContentVisible}>
             <View style={styles.marginBottom}>
               {loading ? (
                 <Loader />
@@ -154,7 +155,6 @@ const useStyles = makeStyles(({ colors }) => ({
   },
   hiddenBalanceTouchableOpacity: {
     alignItems: "center",
-    flexGrow: 1,
     justifyContent: "center",
   },
   primaryBalanceText: {
