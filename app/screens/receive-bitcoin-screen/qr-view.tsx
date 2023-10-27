@@ -139,19 +139,25 @@ export const QRView: React.FC<Props> = ({
       const uri = getFullUri({ uppercase: true })
       return (
         <View style={[styles.container, style]} {...testProps("QR-Code")}>
-          <QRCode
-            size={qrSize}
-            value={uri}
-            logoBackgroundColor="white"
-            ecl={type && configByType[type].ecl}
-            logo={getQrLogo() || undefined}
-            logoSize={60}
-            logoBorderRadius={10}
-          />
+          <Pressable
+            onPressIn={displayingQR ? breatheIn : () => {}}
+            onPressOut={displayingQR ? breatheOut : () => {}}
+          >
+            <QRCode
+              size={qrSize}
+              value={uri}
+              logoBackgroundColor="white"
+              ecl={type && configByType[type].ecl}
+              logo={getQrLogo() || undefined}
+              logoSize={60}
+              logoBorderRadius={10}
+            />
+          </Pressable>
         </View>
       )
     }
     return null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayingQR, type, getFullUri, size, scale, styles, style])
 
   const renderStatusView = useMemo(() => {
@@ -210,16 +216,11 @@ export const QRView: React.FC<Props> = ({
 
   return (
     <View style={styles.qr}>
-      <Pressable
-        onPressIn={displayingQR ? breatheIn : () => {}}
-        onPressOut={displayingQR ? breatheOut : () => {}}
-      >
-        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-          {renderSuccessView}
-          {renderQRCode}
-          {renderStatusView}
-        </Animated.View>
-      </Pressable>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+        {renderSuccessView}
+        {renderQRCode}
+        {renderStatusView}
+      </Animated.View>
     </View>
   )
 }

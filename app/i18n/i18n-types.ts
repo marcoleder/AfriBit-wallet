@@ -6501,11 +6501,11 @@ type RootTranslation = {
 		 */
 		tapQrCodeCopy: string
 		/**
-		 * R​e​c​e​i​v​e
+		 * R​e​c​e​i​v​e​ 
 		 */
 		title: string
 		/**
-		 * R​e​c​e​i​v​e
+		 * R​e​c​e​i​v​e​ 
 		 */
 		usdTitle: string
 		/**
@@ -7001,7 +7001,7 @@ type RootTranslation = {
 		 */
 		feeCalculationUnsuccessful: string
 		/**
-		 * D​e​s​t​i​n​a​t​i​o​n​ ​/​ ​R​e​c​i​p​i​e​n​t
+		 * D​e​s​t​i​n​a​t​i​o​n
 		 */
 		placeholder: string
 		/**
@@ -15217,11 +15217,11 @@ export type TranslationFunctions = {
 		 */
 		tapQrCodeCopy: () => LocalizedString
 		/**
-		 * Receive
+		 * Receive 
 		 */
 		title: () => LocalizedString
 		/**
-		 * Receive
+		 * Receive 
 		 */
 		usdTitle: () => LocalizedString
 		/**
@@ -15685,7 +15685,7 @@ export type TranslationFunctions = {
 		 */
 		feeCalculationUnsuccessful: () => LocalizedString
 		/**
-		 * Destination / Recipient
+		 * Destination
 		 */
 		placeholder: () => LocalizedString
 		/**

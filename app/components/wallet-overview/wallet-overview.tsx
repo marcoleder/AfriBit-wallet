@@ -242,12 +242,12 @@ const WalletOverview: React.FC<Props> = ({
               <GaloyCurrencyBubble currency="BTC" />
               <Text type="p1">Bitcoin</Text>
             </Pressable>
-            <Pressable hitSlop={10} onPress={() => navigation.navigate("receiveBitcoin")}>
+            <Pressable hitSlop={10} onPress={() => navigation.navigate("priceHistory")}>
               <GaloyIcon color={colors.grey1} name="graph" size={18} />
             </Pressable>
           </View>
           <Pressable
-            hitSlop={{ top: 8, bottom: 8, left: 10, right: 10 }}
+            hitSlop={{ top: 8, bottom: 5, left: 10, right: 10 }}
             onPress={toggleIsBtcTransactionsVisible}
             style={styles.pressable}
           >

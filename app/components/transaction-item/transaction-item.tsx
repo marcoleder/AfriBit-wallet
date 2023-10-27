@@ -3,7 +3,7 @@ import { View } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 
 // eslint-disable-next-line camelcase
-import { useFragment_experimental } from "@apollo/client"
+import { useFragment } from "@apollo/client"
 import {
   TransactionFragment,
   TransactionFragmentDoc,
@@ -60,9 +60,11 @@ export const useDescriptionDisplay = ({
 }
 
 const AmountDisplayStyle = ({
+  tx,
   isReceive,
   isPending,
 }: {
+  tx: TransactionFragment | DeepPartialObject<TransactionFragment>
   isReceive: boolean
   isPending: boolean
 }) => {
@@ -72,7 +74,11 @@ const AmountDisplayStyle = ({
     return styles.pending
   }
 
-  return isReceive ? styles.receive : styles.send
+  if (tx.settlementCurrency === "BTC") {
+    return isReceive ? styles.receiveBtc : styles.send
+  } else if (tx.settlementCurrency === "USD") {
+    return isReceive ? styles.receiveUsd : styles.send
+  }
 }
 
 type Props = {
@@ -104,7 +110,7 @@ export const TransactionItem: React.FC<Props> = ({
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>()
 
-  const { data: tx } = useFragment_experimental<TransactionFragment>({
+  const { data: tx } = useFragment<TransactionFragment>({
     fragment: TransactionFragmentDoc,
     fragmentName: "Transaction",
     from: {
@@ -199,11 +205,11 @@ export const TransactionItem: React.FC<Props> = ({
         hiddenContent={<Icon style={styles.hiddenBalanceContainer} name="eye" />}
       >
         <View>
-          <Text style={AmountDisplayStyle({ isReceive, isPending })}>
+          <Text style={AmountDisplayStyle({ tx, isReceive, isPending })}>
             {formattedDisplayAmount}
           </Text>
           {formattedSecondaryAmount ? (
-            <Text style={AmountDisplayStyle({ isReceive, isPending })}>
+            <Text style={AmountDisplayStyle({ tx, isReceive, isPending })}>
               {formattedSecondaryAmount}
             </Text>
           ) : null}
@@ -278,11 +284,6 @@ const useStyles = makeStyles(({ colors }, props: UseStyleProps) => ({
   },
   receiveUsd: {
     color: colors.green,
-    textAlign: "right",
-    flexWrap: "wrap",
-  },
-  receive: {
-    color: colors.white,
     textAlign: "right",
     flexWrap: "wrap",
   },

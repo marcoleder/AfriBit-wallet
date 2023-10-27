@@ -4,6 +4,7 @@ import Icon from "react-native-vector-icons/Ionicons"
 import { Screen } from "@app/components/screen"
 import { gql } from "@apollo/client"
 import ScanIcon from "@app/assets/icons/scan.svg"
+import CancelIcon from "@app/assets/icons/cancel.svg"
 import {
   useAccountDefaultWalletLazyQuery,
   useRealtimePriceQuery,
@@ -435,17 +436,19 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
             validateDestination(destinationState.unparsedDestination)
           }
           platform="default"
-          round
           showLoading={false}
           containerStyle={styles.searchBarContainer}
           inputContainerStyle={styles.searchBarInputContainerStyle}
           inputStyle={styles.searchBarText}
-          rightIconContainerStyle={styles.searchBarRightIconStyle}
           searchIcon={<></>}
           autoCapitalize="none"
           autoCorrect={false}
           clearIcon={
-            <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
+            <TouchableWithoutFeedback onPress={reset}>
+              <View style={styles.iconContainer}>
+                <CancelIcon />
+              </View>
+            </TouchableWithoutFeedback>
           }
         />
         <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
@@ -602,15 +605,10 @@ const usestyles = makeStyles(({ colors }) => ({
     borderBottomColor: colors.grey5,
     borderTopColor: colors.grey5,
     padding: 0,
-    marginVertical: 8,
   },
 
   searchBarInputContainerStyle: {
     backgroundColor: colors.grey5,
-  },
-
-  searchBarRightIconStyle: {
-    padding: 8,
   },
 
   searchBarText: {
@@ -663,6 +661,7 @@ const usestyles = makeStyles(({ colors }) => ({
   },
   iconContainer: {
     width: 50,
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
   },

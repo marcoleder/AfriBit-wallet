@@ -162,6 +162,34 @@ const ReceiveScreen = () => {
                     </Text>
                   </TouchableOpacity>
                 </View>
+                <View style={styles.extraDetailsContainer}>
+                  <TouchableOpacity onPress={request.copyToClipboard} hitSlop={10}>
+                    {request.readablePaymentRequest ? (
+                      request.type === Invoice.OnChain ? (
+                        <View style={styles.btcHighContainer}>
+                          <Text style={styles.btcHigh}>
+                            {request.readablePaymentRequest.slice(0, 6)}
+                          </Text>
+                          <Text style={styles.btcLow}>
+                            {request.readablePaymentRequest.substring(
+                              6,
+                              request.readablePaymentRequest.length - 6,
+                            )}
+                          </Text>
+                          <Text style={styles.btcHigh}>
+                            {request.readablePaymentRequest.slice(-6)}
+                          </Text>
+                        </View>
+                      ) : (
+                        <Text {...testProps("readable-payment-request")}>
+                          {request.readablePaymentRequest}
+                        </Text>
+                      )
+                    ) : (
+                      <></>
+                    )}
+                  </TouchableOpacity>
+                </View>
                 <View style={styles.shareInvoiceContainer}>
                   <TouchableOpacity
                     hitSlop={10}
@@ -178,35 +206,6 @@ const ReceiveScreen = () => {
               </>
             )}
         </View>
-
-        <TouchableOpacity onPress={request.copyToClipboard}>
-          <View style={styles.extraDetails}>
-            {request.readablePaymentRequest ? (
-              request.type === Invoice.OnChain ? (
-                <View style={styles.btcHighContainer}>
-                  <Text style={styles.btcHigh}>
-                    {request.readablePaymentRequest.slice(0, 6)}
-                  </Text>
-                  <Text style={styles.btcLow}>
-                    {request.readablePaymentRequest.substring(
-                      6,
-                      request.readablePaymentRequest.length - 6,
-                    )}
-                  </Text>
-                  <Text style={styles.btcHigh}>
-                    {request.readablePaymentRequest.slice(-6)}
-                  </Text>
-                </View>
-              ) : (
-                <Text {...testProps("readable-payment-request")}>
-                  {request.readablePaymentRequest}
-                </Text>
-              )
-            ) : (
-              <></>
-            )}
-          </View>
-        </TouchableOpacity>
 
         <ButtonGroup
           selectedId={request.type}
@@ -332,11 +331,19 @@ const useStyles = makeStyles(({ colors }) => ({
   invoiceActions: {
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "center",
     marginBottom: 10,
     minHeight: 20,
   },
   copyInvoiceContainer: {
+    flex: 2,
+    alignItems: "flex-start",
     marginLeft: 10,
+  },
+  extraDetailsContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 15,
   },
   shareInvoiceContainer: {
     flex: 2,
@@ -347,7 +354,7 @@ const useStyles = makeStyles(({ colors }) => ({
   btcHighContainer: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
   },
   btcHigh: {
     fontWeight: "700",

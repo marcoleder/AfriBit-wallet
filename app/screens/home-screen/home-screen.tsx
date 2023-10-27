@@ -311,7 +311,7 @@ export const HomeScreen: React.FC = () => {
               size="large"
               text={item.title}
               onPress={() => onMenuClick(item.target)}
-              hitSlop={{ top: 15, bottom: 15, left: 8, right: 8 }}
+              hitSlop={{ top: 15, bottom: 15 }}
             />
           </View>
         ))}
