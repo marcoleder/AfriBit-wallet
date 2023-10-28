@@ -16,6 +16,7 @@ import QRCode from "react-native-qrcode-svg"
 import Logo from "@app/assets/logo/blink-logo-icon.png"
 
 import { Invoice, InvoiceType, GetFullUriFn } from "./payment/index.types"
+import { WalletCurrency } from "@app/graphql/generated"
 
 import { testProps } from "../../utils/testProps"
 import { GaloyIcon } from "@app/components/atomic/galoy-icon"
@@ -47,6 +48,7 @@ const configByType = {
 }
 
 type Props = {
+  currency: WalletCurrency
   type: InvoiceType
   getFullUri: GetFullUriFn | undefined
   loading: boolean
@@ -63,6 +65,7 @@ type Props = {
 }
 
 export const QRView: React.FC<Props> = ({
+  currency,
   type,
   getFullUri,
   loading,
@@ -127,6 +130,9 @@ export const QRView: React.FC<Props> = ({
 
   const renderQRCode = useMemo(() => {
     const getQrLogo = () => {
+      if (currency === WalletCurrency.Btc) {
+        return Logo
+      }
       if (type === Invoice.OnChain) return Logo
       if (type === Invoice.Lightning) return Logo
       if (type === Invoice.PayCode) return Logo

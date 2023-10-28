@@ -126,6 +126,7 @@ const ReceiveScreen = () => {
         />
 
         <QRView
+          currency={request?.receivingWalletDescriptor.currency}
           type={request.info?.data?.invoiceType || Invoice.OnChain}
           getFullUri={request.info?.data?.getFullUriFn}
           loading={request.state === PaymentRequestState.Loading}

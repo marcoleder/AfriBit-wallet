@@ -3,7 +3,7 @@ import { Platform, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native-gesture-handler"
 
 import { gql } from "@apollo/client"
-import SwitchButton from "@app/assets/icons-redesign/transfer.svg"
+import SwitchButton from "@app/assets/icons-redesign/swap.svg"
 import { AmountInput } from "@app/components/amount-input"
 import { Screen } from "@app/components/screen"
 import {
