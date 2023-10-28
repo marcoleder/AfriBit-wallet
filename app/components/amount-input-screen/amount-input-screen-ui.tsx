@@ -66,11 +66,7 @@ export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
             <>
               <View style={styles.swapContainer}>
                 <View style={styles.horizontalLine} />
-                <GaloyIconButton
-                  size={"large"}
-                  name="transfer"
-                  onPress={onToggleCurrency}
-                />
+                <GaloyIconButton size={"large"} name="swap" onPress={onToggleCurrency} />
                 <View style={styles.horizontalLine} />
               </View>
               <View style={styles.secondaryAmountContainer}>

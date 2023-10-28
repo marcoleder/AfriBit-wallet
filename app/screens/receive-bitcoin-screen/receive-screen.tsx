@@ -14,7 +14,6 @@ import { useReceiveBitcoin } from "./use-receive-bitcoin"
 import { Invoice, InvoiceType, PaymentRequestState } from "./payment/index.types"
 import { QRView } from "./qr-view"
 import { AmountInput } from "@app/components/amount-input"
-import { NoteInput } from "@app/components/note-input"
 import Icon from "react-native-vector-icons/Ionicons"
 import { SetLightningAddressModal } from "@app/components/set-lightning-address-modal"
 import { GaloyCurrencyBubble } from "@app/components/atomic/galoy-currency-bubble"
@@ -182,10 +181,12 @@ const ReceiveScreen = () => {
                             {request.readablePaymentRequest.slice(0, 6)}
                           </Text>
                           <Text style={styles.btcLow}>
+                            ...
                             {request.readablePaymentRequest.substring(
-                              6,
-                              request.readablePaymentRequest.length - 6,
+                              16,
+                              request.readablePaymentRequest.length - 16,
                             )}
+                            ...
                           </Text>
                           <Text style={styles.btcHigh}>
                             {request.readablePaymentRequest.slice(-6)}
@@ -252,16 +253,6 @@ const ReceiveScreen = () => {
           showValuesIfDisabled={false}
           big={false}
         />
-        {request.canSetMemo ? (
-          <NoteInput
-            onBlur={request.setMemo}
-            onChangeText={request.setMemoChangeText}
-            value={request.memoChangeText || ""}
-            editable={request.canSetMemo}
-            style={styles.note}
-            big={false}
-          />
-        ) : null}
 
         {OnChainCharge}
 
@@ -355,6 +346,7 @@ const useStyles = makeStyles(({ colors }) => ({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 15,
+    flexWrap: "wrap",
   },
   shareInvoiceContainer: {
     flex: 2,

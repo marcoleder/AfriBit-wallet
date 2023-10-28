@@ -38,6 +38,7 @@ import Receive from "@app/assets/icons-redesign/receive.svg"
 import Send from "@app/assets/icons-redesign/send.svg"
 import Settings from "@app/assets/icons-redesign/settings.svg"
 import Share from "@app/assets/icons-redesign/share.svg"
+import Swap from "@app/assets/icons-redesign/swap.svg"
 import Transfer from "@app/assets/icons-redesign/transfer.svg"
 import User from "@app/assets/icons-redesign/user.svg"
 import Video from "@app/assets/icons-redesign/video.svg"
@@ -92,6 +93,7 @@ export const icons = {
   "send": Send,
   "settings": Settings,
   "share": Share,
+  "swap": Swap,
   "transfer": Transfer,
   "user": User,
   "video": Video,

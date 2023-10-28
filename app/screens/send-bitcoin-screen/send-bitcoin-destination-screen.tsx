@@ -444,11 +444,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
           autoCapitalize="none"
           autoCorrect={false}
           clearIcon={
-            <TouchableWithoutFeedback onPress={reset}>
-              <View style={styles.iconContainer}>
-                <CancelIcon />
-              </View>
-            </TouchableWithoutFeedback>
+            <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
           }
         />
         <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
