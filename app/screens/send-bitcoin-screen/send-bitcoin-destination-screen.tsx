@@ -4,7 +4,6 @@ import Icon from "react-native-vector-icons/Ionicons"
 import { Screen } from "@app/components/screen"
 import { gql } from "@apollo/client"
 import ScanIcon from "@app/assets/icons/scan.svg"
-import CancelIcon from "@app/assets/icons/cancel.svg"
 import {
   useAccountDefaultWalletLazyQuery,
   useRealtimePriceQuery,
@@ -321,8 +320,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
   useEffect(() => {
     setMatchingContacts(allContacts)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [allContacts])
 
   useEffect(() => {
     if (

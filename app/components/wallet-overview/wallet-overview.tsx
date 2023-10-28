@@ -124,7 +124,7 @@ const WalletOverview: React.FC<Props> = ({
   let recentUsdTransactionsData: TransactionData = undefined
 
   const height = Dimensions.get("window").height
-  const TRANSACTIONS_TO_SHOW = height < 400 ? 1 : height < 750 ? 2 : 3
+  const TRANSACTIONS_TO_SHOW = height < 500 ? 1 : height < 800 ? 2 : height < 1200 ? 3 : 4
 
   const transactionsEdges =
     dataAuthed?.me?.defaultAccount?.transactions?.edges ?? undefined
