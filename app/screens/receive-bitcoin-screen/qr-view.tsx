@@ -14,6 +14,8 @@ import {
 import QRCode from "react-native-qrcode-svg"
 
 import Logo from "@app/assets/logo/blink-logo-icon.png"
+import UsdLogo from "@app/assets/logo/usd.png"
+import BtcLogo from "@app/assets/logo/btc.png"
 
 import { Invoice, InvoiceType, GetFullUriFn } from "./payment/index.types"
 import { WalletCurrency } from "@app/graphql/generated"
@@ -131,7 +133,9 @@ export const QRView: React.FC<Props> = ({
   const renderQRCode = useMemo(() => {
     const getQrLogo = () => {
       if (currency === WalletCurrency.Btc) {
-        return Logo
+        return BtcLogo
+      } else if (currency === WalletCurrency.Usd) {
+        return UsdLogo
       }
       if (type === Invoice.OnChain) return Logo
       if (type === Invoice.Lightning) return Logo
