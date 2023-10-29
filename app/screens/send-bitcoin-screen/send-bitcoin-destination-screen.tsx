@@ -137,7 +137,13 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   })
 
   const allContacts: Contact[] = useMemo(() => {
-    return contactsData?.me?.contacts.slice() ?? []
+    const contactsCopy = contactsData?.me?.contacts.slice() ?? []
+    const compareUsernames = (a: Contact, b: Contact) => {
+      return a.username.toLocaleLowerCase().localeCompare(b.username.toLocaleLowerCase())
+    }
+    contactsCopy.sort(compareUsernames)
+
+    return contactsCopy
   }, [contactsData])
 
   if (error) {
