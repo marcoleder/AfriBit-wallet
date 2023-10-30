@@ -94,7 +94,7 @@ export const AmountInputButton: React.FC<AmountInputButtonProps> = ({
         {iconName && (
           <GaloyIcon
             name={iconName}
-            size={20}
+            size={30}
             color={error ? colors.error : colors.black}
           />
         )}

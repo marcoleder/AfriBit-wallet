@@ -516,16 +516,6 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
             />
           </View>
         </View>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.fieldTitleText}>{LL.SendBitcoinScreen.note()}</Text>
-          <NoteInput
-            onChangeText={(text) =>
-              paymentDetail.setMemo && setPaymentDetail(paymentDetail.setMemo(text))
-            }
-            value={paymentDetail.memo || ""}
-            editable={paymentDetail.canSetMemo}
-          />
-        </View>
         <SendBitcoinDetailsExtraInfo
           errorMessage={asyncErrorMessage}
           amountStatus={amountStatus}

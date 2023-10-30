@@ -2066,7 +2066,7 @@
         "title": "Receive ",
         "usdTitle": "Receive ",
         "error": "Failed to generate invoice. Please contact support if this problem persists.",
-        "copyInvoice": "Copy",
+        "copyInvoice": "Nakili",
         "shareInvoice": "Share",
         "addAmount": "Request Specific Amount",
         "expired": "The invoice has expired",
@@ -2589,12 +2589,12 @@
     },
     "AmountInputScreen": {
         "enterAmount": "Enter Amount",
-        "setAmount": "Set Amount",
+        "setAmount": "Weka Kiasi",
         "maxAmountExceeded": "Amount must not exceed {maxAmount: string}.",
         "minAmountNotMet": "Amount must be at least {minAmount: string}."
     },
     "AmountInputButton": {
-        "tapToSetAmount": "Set amount"
+        "tapToSetAmount": "Weka Kiasi"
     },
     "AppUpdate": {
         "needToUpdateSupportMessage": "I need to update my app to the latest version. I'm using the {os: string} app with version {version: string}.",

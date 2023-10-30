@@ -2096,7 +2096,7 @@ const en: BaseTranslation = {
     title: "Receive ",
     usdTitle: "Receive ",
     error: "Failed to generate invoice. Please contact support if this problem persists.",
-    copyInvoice: "Copy",
+    copyInvoice: "Nakili",
     shareInvoice: "Share",
     addAmount: "Request Specific Amount",
     expired: "The invoice has expired",
@@ -2687,12 +2687,12 @@ const en: BaseTranslation = {
   },
   AmountInputScreen: {
     enterAmount: "Enter Amount",
-    setAmount: "Set Amount",
+    setAmount: "Weka Kiasi",
     maxAmountExceeded: "Amount must not exceed {maxAmount: string}.",
     minAmountNotMet: "Amount must be at least {minAmount: string}.",
   },
   AmountInputButton: {
-    tapToSetAmount: "Set amount",
+    tapToSetAmount: "Weka Kiasi",
   },
   AppUpdate: {
     needToUpdateSupportMessage:

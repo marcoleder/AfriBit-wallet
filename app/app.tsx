@@ -24,7 +24,6 @@ import { RootStack } from "./navigation/root-navigator"
 import theme from "./rne-theme/theme"
 import { ErrorScreen } from "./screens/error-screen"
 import { PersistentStateProvider } from "./store/persistent-state"
-import { detectDefaultLocale } from "./utils/locale-detector"
 import { ThemeSyncGraphql } from "./utils/theme-sync"
 import { NetworkErrorComponent } from "./graphql/network-error-component"
 import { FeatureFlagContextProvider } from "./config/feature-flags-context"
@@ -43,7 +42,7 @@ loadAllLocales()
  */
 export const App = () => (
   <PersistentStateProvider>
-    <TypesafeI18n locale={detectDefaultLocale()}>
+    <TypesafeI18n locale={"sw"}>
       <ThemeProvider theme={theme}>
         <GaloyClient>
           <FeatureFlagContextProvider>

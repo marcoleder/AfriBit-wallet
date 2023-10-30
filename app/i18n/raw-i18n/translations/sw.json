@@ -2046,7 +2046,7 @@
         "title": "Pokea Bitcoin",
         "usdTitle": "Pokea USD",
         "error": "Imeshindwa kutoa ankara. Tafadhali wasiliana na usaidizi ikiwa tatizo hili litaendelea.",
-        "copyInvoice": "Copy",
+        "copyInvoice": "Nakili",
         "shareInvoice": "Sambaza",
         "addAmount": "Omba Kiasi Mahususi",
         "expired": "Muda wa ankara umekwisha",
@@ -2176,6 +2176,10 @@
         "max": "Max",
         "maxAmount": "Max Amount",
         "title": "Tuma Bitcoin",
+        "sendBitcoinDestination": "Chagua mpokeaji",
+        "sendBitcoinDetails": "Chagua akaunti",
+        "sendBitcoinConfirmation": "Thibitisha malipo",
+        "sendBitcoinSuccess": "Malipo yamethibitishwa",
         "failedToFetchLnurlInvoice": "Imeshindwa kupata ankara ya malipo ya lnurl",
         "lnurlInvoiceIncorrectAmount": "Seva ya lnurl ilijibu na ankara ya malipo yenye kiasi batili",
         "lnurlInvoiceIncorrectDescription": "Seva ya lnurl ilijibu na ankara ya malipo yenye hashi ya maelezo batili.",
@@ -2509,13 +2513,13 @@
         "errorLoading": "Hitilafu katika kupakia orodha ya sarafu"
     },
     "AmountInputScreen": {
-        "enterAmount": "Enter Amount",
-        "setAmount": "Set Amount",
-        "maxAmountExceeded": "Amount must not exceed {maxAmount: string}.",
-        "minAmountNotMet": "Amount must be at least {minAmount: string}."
+        "enterAmount": "Ingiza Kiasi",
+        "setAmount": "Weka Kiasi",
+        "maxAmountExceeded": "Kiasi haipaswi kuzidi {maxAmount: string}.",
+        "minAmountNotMet": "Kiasi lazima kiwe angalau {minAmount: string}."
     },
     "AmountInputButton": {
-        "tapToSetAmount": "Set amount"
+        "tapToSetAmount": "Wekea kiasi"
     },
     "AppUpdate": {
         "needToUpdateSupportMessage": "Ninahitaji kusasisha programu yangu hadi toleo jipya zaidi. Ninatumia programu ya {os: string} yenye toleo la {version: string}.",

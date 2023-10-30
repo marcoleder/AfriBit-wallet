@@ -6513,7 +6513,7 @@ type RootTranslation = {
 		 */
 		error: string
 		/**
-		 * C​o​p​y
+		 * N​a​k​i​l​i
 		 */
 		copyInvoice: string
 		/**
@@ -8416,7 +8416,7 @@ type RootTranslation = {
 		 */
 		enterAmount: string
 		/**
-		 * S​e​t​ ​A​m​o​u​n​t
+		 * W​e​k​a​ ​K​i​a​s​i
 		 */
 		setAmount: string
 		/**
@@ -8432,7 +8432,7 @@ type RootTranslation = {
 	}
 	AmountInputButton: {
 		/**
-		 * S​e​t​ ​a​m​o​u​n​t
+		 * W​e​k​a​ ​K​i​a​s​i
 		 */
 		tapToSetAmount: string
 	}
@@ -15233,7 +15233,7 @@ export type TranslationFunctions = {
 		 */
 		error: () => LocalizedString
 		/**
-		 * Copy
+		 * Nakili
 		 */
 		copyInvoice: () => LocalizedString
 		/**
@@ -17075,7 +17075,7 @@ export type TranslationFunctions = {
 		 */
 		enterAmount: () => LocalizedString
 		/**
-		 * Set Amount
+		 * Weka Kiasi
 		 */
 		setAmount: () => LocalizedString
 		/**
@@ -17089,7 +17089,7 @@ export type TranslationFunctions = {
 	}
 	AmountInputButton: {
 		/**
-		 * Set amount
+		 * Weka Kiasi
 		 */
 		tapToSetAmount: () => LocalizedString
 	}
