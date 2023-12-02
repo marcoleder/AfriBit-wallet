@@ -422,7 +422,7 @@ export const AccountScreen = () => {
     {
       category: LL.AccountScreen.accountLevel(),
       id: "level",
-      icon: "ios-flash-outline",
+      icon: "flash-outline",
       subTitleText: currentLevel,
       enabled: false,
       greyed: true,
@@ -531,7 +531,7 @@ export const AccountScreen = () => {
     accountSettingsList.push({
       category: LL.AccountScreen.logOutAndDeleteLocalData(),
       id: "logout",
-      icon: "ios-log-out-outline",
+      icon: "log-out-outline",
       action: logoutAlert,
       enabled: true,
       greyed: false,
@@ -567,7 +567,9 @@ export const AccountScreen = () => {
         <TextInput style={styles.textInput} onChangeText={setText} value={text} />
         <GaloyPrimaryButton
           title="Confirm"
-          disabled={text.toLowerCase().trim() !== LL.support.delete()}
+          disabled={
+            text.toLowerCase().trim() !== LL.support.delete().toLocaleLowerCase().trim()
+          }
           onPress={() => {
             setModalVisible(false)
             Alert.alert(

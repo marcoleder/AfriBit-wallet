@@ -1,4 +1,4 @@
-import { TransactionFragment } from "./generated"
+import { TransactionFragment, TxDirection, TxStatus } from "./generated"
 
 import { TranslationFunctions } from "@app/i18n/i18n-types"
 import { sameDay, sameMonth } from "../utils/date"
@@ -14,20 +14,30 @@ const isThisMonth = (tx: TransactionFragment) => sameMonth(tx.createdAt, new Dat
 type Common = TranslationFunctions["common"]
 
 export const groupTransactionsByDate = ({
+  pendingIncomingTxs,
   txs,
   common,
 }: {
+  pendingIncomingTxs?: TransactionFragment[]
   txs: TransactionFragment[]
   common: Common
 }) => {
   const sections: SectionTransactions[] = []
+
+  const settledOrOutgoingTransactions = txs.filter(
+    (tx) => tx.status !== TxStatus.Pending || tx.direction === TxDirection.Send,
+  )
 
   const today: TransactionFragment[] = []
   const yesterday: TransactionFragment[] = []
   const thisMonth: TransactionFragment[] = []
   const before: TransactionFragment[] = []
 
-  for (const tx of txs) {
+  for (const tx of pendingIncomingTxs ?? []) {
+    today.push(tx)
+  }
+
+  for (const tx of settledOrOutgoingTransactions) {
     if (isToday(tx)) {
       today.push(tx)
     } else if (isYesterday(tx)) {

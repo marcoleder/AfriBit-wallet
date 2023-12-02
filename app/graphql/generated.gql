@@ -41,7 +41,7 @@ fragment Transaction on Transaction {
       __typename
     }
     ... on SettlementViaLn {
-      paymentSecret
+      preImage
       __typename
     }
     ... on SettlementViaOnChain {
@@ -280,9 +280,9 @@ mutation lnInvoiceCreate($input: LnInvoiceCreateInput!) {
       __typename
     }
     invoice {
+      createdAt
       paymentHash
       paymentRequest
-      paymentSecret
       paymentStatus
       satoshis
       __typename
@@ -320,9 +320,9 @@ mutation lnNoAmountInvoiceCreate($input: LnNoAmountInvoiceCreateInput!) {
       __typename
     }
     invoice {
+      createdAt
       paymentHash
       paymentRequest
-      paymentSecret
       paymentStatus
       __typename
     }
@@ -381,9 +381,9 @@ mutation lnUsdInvoiceCreate($input: LnUsdInvoiceCreateInput!) {
       __typename
     }
     invoice {
+      createdAt
       paymentHash
       paymentRequest
-      paymentSecret
       paymentStatus
       satoshis
       __typename
@@ -461,8 +461,7 @@ mutation onChainUsdPaymentSendAsBtcDenominated($input: OnChainUsdPaymentSendAsBt
 mutation onboardingFlowStart($input: OnboardingFlowStartInput!) {
   onboardingFlowStart(input: $input) {
     workflowRunId
-    tokenAndroid
-    tokenIos
+    tokenWeb
     __typename
   }
 }
@@ -1014,6 +1013,10 @@ query homeAuthed {
       id
       level
       defaultWalletId
+      pendingIncomingTransactions {
+        ...Transaction
+        __typename
+      }
       transactions(first: 20) {
         ...TransactionList
         __typename
@@ -1465,6 +1468,10 @@ query transactionListForDefaultAccount($first: Int, $after: String, $last: Int, 
     id
     defaultAccount {
       id
+      pendingIncomingTransactions {
+        ...Transaction
+        __typename
+      }
       transactions(first: $first, after: $after, last: $last, before: $before) {
         ...TransactionList
         __typename

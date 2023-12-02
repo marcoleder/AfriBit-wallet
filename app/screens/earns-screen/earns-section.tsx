@@ -22,6 +22,7 @@ import {
   getQuizQuestionsContent,
 } from "./earns-utils"
 import { makeStyles, useTheme } from "@rneui/themed"
+import { PhoneLoginInitiateType } from "../phone-auth-screen"
 
 const { width: screenWidth } = Dimensions.get("window")
 
@@ -213,7 +214,14 @@ export const EarnSection = ({ route }: Props) => {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "OK", onPress: () => navigation.navigate("phoneFlow") },
+        {
+          text: "OK",
+          onPress: () =>
+            navigation.navigate("phoneFlow", {
+              screen: "phoneLoginInitiate",
+              params: { type: PhoneLoginInitiateType.CreateAccount },
+            }),
+        },
       ])
       return
     }
@@ -255,7 +263,7 @@ export const EarnSection = ({ route }: Props) => {
               icon={
                 item.completed ? (
                   <Icon
-                    name="ios-checkmark-circle-outline"
+                    name="checkmark-circle-outline"
                     size={36}
                     color={colors._white}
                     style={styles.icon}

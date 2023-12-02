@@ -70,9 +70,9 @@ gql`
         message
       }
       invoice {
+        createdAt
         paymentHash
         paymentRequest
-        paymentSecret
         paymentStatus
       }
     }
@@ -84,9 +84,9 @@ gql`
         message
       }
       invoice {
+        createdAt
         paymentHash
         paymentRequest
-        paymentSecret
         paymentStatus
         satoshis
       }
@@ -108,9 +108,9 @@ gql`
         message
       }
       invoice {
+        createdAt
         paymentHash
         paymentRequest
-        paymentSecret
         paymentStatus
         satoshis
       }
@@ -148,7 +148,7 @@ export const useReceiveBitcoin = () => {
   const isAuthed = useIsAuthed()
 
   const { data } = usePaymentRequestQuery({
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     skip: !isAuthed,
   })
 

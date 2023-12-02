@@ -7,20 +7,19 @@ import {
   useFullOnboardingScreenQuery,
   useOnboardingFlowStartMutation,
 } from "@app/graphql/generated"
+import { useAppConfig } from "@app/hooks"
 import { useI18nContext } from "@app/i18n/i18n-react"
-import { isIos } from "@app/utils/helper"
-import Onfido, { OnfidoTheme } from "@onfido/react-native-sdk"
 import { useNavigation } from "@react-navigation/native"
 import { Input, Text, makeStyles, useTheme } from "@rneui/themed"
 import React, { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, View } from "react-native"
+import { ActivityIndicator, Alert, Linking, View } from "react-native"
+import InAppBrowser from "react-native-inappbrowser-reborn"
 
 gql`
   mutation onboardingFlowStart($input: OnboardingFlowStartInput!) {
     onboardingFlowStart(input: $input) {
       workflowRunId
-      tokenAndroid
-      tokenIos
+      tokenWeb
     }
   }
 
@@ -52,10 +51,22 @@ export const FullOnboardingFlowScreen: React.FC = () => {
 
   const onboardingStatus = data?.me?.defaultAccount?.onboardingStatus
 
+  const [loadingOnfido, setLoadingOnfido] = useState(false)
+
   const [onboardingFlowStart] = useOnboardingFlowStartMutation()
 
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
+
+  useEffect(() => {
+    InAppBrowser.warmup()
+  }, [])
+
+  const {
+    appConfig: {
+      galoyInstance: { kycUrl },
+    },
+  } = useAppConfig()
 
   const confirmNames = async () => {
     Alert.alert(
@@ -72,43 +83,36 @@ export const FullOnboardingFlowScreen: React.FC = () => {
   }
 
   const onfidoStart = React.useCallback(async () => {
-    const res = await onboardingFlowStart({
-      variables: { input: { firstName, lastName } },
-    })
-
-    const workflowRunId = res.data?.onboardingFlowStart?.workflowRunId
-    if (!workflowRunId) {
-      Alert.alert("no workflowRunId")
-      return
-    }
-
-    const tokenAndroid = res.data?.onboardingFlowStart?.tokenAndroid
-    const tokenIos = res.data?.onboardingFlowStart?.tokenIos
-
-    const sdkToken = isIos ? tokenIos : tokenAndroid
-
-    if (!sdkToken) {
-      Alert.alert("no sdkToken")
-      return
-    }
+    setLoadingOnfido(true)
 
     try {
-      /* eslint @typescript-eslint/ban-ts-comment: "off" */
-      // @ts-expect-error
-      await Onfido.start({
-        sdkToken,
-        theme: OnfidoTheme.AUTOMATIC,
-        workflowRunId,
+      console.log("onfidoStart", firstName, lastName)
+      const res = await onboardingFlowStart({
+        variables: { input: { firstName, lastName } },
       })
 
-      Alert.alert(LL.common.success(), LL.FullOnboarding.success(), [
-        {
-          text: LL.common.ok(),
-          onPress: () => {
-            navigation.goBack()
-          },
-        },
-      ])
+      const workflowRunId = res.data?.onboardingFlowStart?.workflowRunId
+      if (!workflowRunId) {
+        Alert.alert("no workflowRunId")
+        setLoadingOnfido(false)
+        return
+      }
+
+      const tokenWeb = res.data?.onboardingFlowStart?.tokenWeb
+
+      const page = `${kycUrl}/webflow?token=${tokenWeb}&workflow_run_id=${workflowRunId}`
+
+      if (await InAppBrowser.isAvailable()) {
+        await InAppBrowser.open(page, {
+          dismissButtonStyle: "done",
+          enableDefaultShare: false,
+          hasBackButton: false,
+          showInRecents: false,
+        })
+        navigation.goBack()
+      } else {
+        Linking.openURL(page)
+      }
     } catch (err) {
       console.error(err, "error")
       let message = ""
@@ -118,6 +122,7 @@ export const FullOnboardingFlowScreen: React.FC = () => {
 
       if (message.match(/canceled/i)) {
         navigation.goBack()
+        setLoadingOnfido(false)
         return
       }
 
@@ -133,8 +138,10 @@ export const FullOnboardingFlowScreen: React.FC = () => {
           },
         ],
       )
+    } finally {
+      setLoadingOnfido(false)
     }
-  }, [LL, firstName, lastName, navigation, onboardingFlowStart])
+  }, [LL, firstName, lastName, navigation, onboardingFlowStart, kycUrl])
 
   useEffect(() => {
     if (onboardingStatus === OnboardingStatus.AwaitingInput) {
@@ -188,27 +195,30 @@ export const FullOnboardingFlowScreen: React.FC = () => {
       keyboardOffset="navigationHeader"
       style={styles.screenStyle}
     >
-      <Text type="h2" style={styles.textStyle}>
-        {LL.FullOnboarding.requirements()}
-      </Text>
-      <>
-        <Input
-          placeholder={LL.FullOnboarding.firstName()}
-          value={firstName}
-          onChangeText={(text) => setFirstName(text)}
-        />
-        <Input
-          placeholder={LL.FullOnboarding.lastName()}
-          value={lastName}
-          onChangeText={(text) => setLastName(text)}
-        />
-      </>
-      <View style={styles.buttonContainer}>
-        <GaloyPrimaryButton
-          onPress={confirmNames}
-          title={LL.common.next()}
-          disabled={!firstName || !lastName}
-        />
+      <View style={styles.innerView}>
+        <Text type="h2" style={styles.textStyle}>
+          {LL.FullOnboarding.requirements()}
+        </Text>
+        <>
+          <Input
+            placeholder={LL.FullOnboarding.firstName()}
+            value={firstName}
+            onChangeText={(text) => setFirstName(text)}
+          />
+          <Input
+            placeholder={LL.FullOnboarding.lastName()}
+            value={lastName}
+            onChangeText={(text) => setLastName(text)}
+          />
+        </>
+        <View style={styles.buttonContainer}>
+          <GaloyPrimaryButton
+            onPress={confirmNames}
+            title={LL.common.next()}
+            disabled={!firstName || !lastName}
+            loading={loadingOnfido}
+          />
+        </View>
       </View>
     </Screen>
   )
@@ -216,8 +226,11 @@ export const FullOnboardingFlowScreen: React.FC = () => {
 
 const useStyles = makeStyles(() => ({
   screenStyle: {
-    padding: 20,
     flexGrow: 1,
+  },
+
+  innerView: {
+    padding: 20,
   },
 
   textStyle: {

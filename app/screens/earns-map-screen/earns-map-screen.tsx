@@ -62,13 +62,16 @@ const ProgressBar = ({ progress }: ProgressProps) => {
   } = useTheme()
 
   const styles = useStyles()
-  const balanceWidth = `${progress * 100}%`
+  const balanceWidth = Number(`${progress * 100}`)
 
   return (
     <View style={styles.progressContainer}>
       {/* pass props to style object to remove inline style */}
-      {/* eslint-disable-next-line react-native/no-inline-styles */}
-      <View style={{ width: balanceWidth, height: 3, backgroundColor: colors._white }} />
+      {/* eslint-disable react-native/no-inline-styles */}
+      <View
+        style={{ width: `${balanceWidth}%`, height: 3, backgroundColor: colors._white }}
+      />
+      {/* eslint-enable react-native/no-inline-styles */}
     </View>
   )
 }

@@ -20,6 +20,8 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { ScrollView } from "react-native-gesture-handler"
+import useAppCheckToken from "../get-started-screen/use-device-token"
+import DeviceInfo from "react-native-device-info"
 
 gql`
   query debugScreen {
@@ -72,6 +74,10 @@ export const DeveloperScreen: React.FC = () => {
     currentGaloyInstance.id === "Custom" ? currentGaloyInstance.posUrl : "",
   )
 
+  const [newKycUrl, setNewKycUrl] = React.useState(
+    currentGaloyInstance.id === "Custom" ? currentGaloyInstance.kycUrl : "",
+  )
+
   const [newRestUrl, setNewRestUrl] = React.useState(
     currentGaloyInstance.id === "Custom" ? currentGaloyInstance.authUrl : "",
   )
@@ -97,6 +103,7 @@ export const DeveloperScreen: React.FC = () => {
       (newGraphqlUri !== currentGaloyInstance.graphqlUri ||
         newGraphqlWslUri !== currentGaloyInstance.graphqlWsUri ||
         newPosUrl !== currentGaloyInstance.posUrl ||
+        newKycUrl !== currentGaloyInstance.kycUrl ||
         newRestUrl !== currentGaloyInstance.authUrl ||
         newLnAddressHostname !== currentGaloyInstance.lnAddressHostname))
 
@@ -107,6 +114,8 @@ export const DeveloperScreen: React.FC = () => {
       setNewToken("")
     }
   }, [newGaloyInstance, currentGaloyInstance, token])
+
+  const appCheckToken = useAppCheckToken({})
 
   const openInAppBrowser = async () => {
     try {
@@ -165,6 +174,7 @@ export const DeveloperScreen: React.FC = () => {
           graphqlWsUri: newGraphqlWslUri,
           authUrl: newRestUrl,
           posUrl: newPosUrl,
+          kycUrl: newKycUrl,
           lnAddressHostname: newLnAddressHostname,
           name: "Custom", // TODO: make configurable
           blockExplorer: "https://mempool.space/tx/", // TODO make configurable
@@ -260,6 +270,7 @@ export const DeveloperScreen: React.FC = () => {
             }
           />
           <View>
+            <Text style={styles.textHeader}>{DeviceInfo.getReadableVersion()}</Text>
             <Text style={styles.textHeader}>Account info</Text>
             <Text>AccountId: </Text>
             <Text selectable>{accountId}</Text>
@@ -369,6 +380,15 @@ export const DeveloperScreen: React.FC = () => {
                   selectTextOnFocus
                 />
                 <GaloyInput
+                  label="Kyc Url"
+                  placeholder={"Kyc Url"}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  value={newKycUrl}
+                  onChangeText={setNewKycUrl}
+                  selectTextOnFocus
+                />
+                <GaloyInput
                   label="Rest Url"
                   placeholder={"Rest Url"}
                   autoCapitalize="none"
@@ -388,6 +408,7 @@ export const DeveloperScreen: React.FC = () => {
                 />
               </>
             )}
+            <Text selectable>{appCheckToken}</Text>
           </View>
         </View>
       </ScrollView>

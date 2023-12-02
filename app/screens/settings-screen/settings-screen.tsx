@@ -125,12 +125,10 @@ export const SettingsScreen: React.FC = () => {
     const csvEncoded = data?.me?.defaultAccount?.csvTransactions
     try {
       await Share.open({
-        title: "export-csv-title.csv",
+        title: "export-wallet.csv", // what is used for android
         url: `data:text/comma-separated-values;base64,${csvEncoded}`,
         type: "text/comma-separated-values",
-        // subject: 'csv export',
-        filename: "export",
-        // message: 'export message'
+        filename: "export-wallet.csv", // what is used for ios
       })
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -163,7 +161,7 @@ export const SettingsScreen: React.FC = () => {
   }
 
   const rateUs = () => {
-    isIos && InAppReview.RequestInAppReview()
+    InAppReview.RequestInAppReview()
   }
 
   const contactMessageBody = LL.support.defaultSupportMessage({
@@ -236,7 +234,7 @@ export const SettingsScreen: React.FC = () => {
     },
     {
       category: LL.common.language(),
-      icon: "ios-language",
+      icon: "language",
       id: "language",
       subTitleText: language,
       action: () => navigation.navigate("language"),
@@ -245,7 +243,7 @@ export const SettingsScreen: React.FC = () => {
     },
     {
       category: `${LL.common.currency()}`,
-      icon: "ios-cash-outline",
+      icon: "cash-outline",
       id: "currency",
       action: () => navigation.navigate("currency"),
       subTitleText: displayCurrency,
@@ -279,7 +277,7 @@ export const SettingsScreen: React.FC = () => {
     },
     {
       category: LL.common.csvExport(),
-      icon: "ios-download-outline",
+      icon: "download-outline",
       id: "csv",
       action: fetchCsvTransactions,
       enabled: isAtLeastLevelZero && !loadingCsvTransactions,

@@ -29,9 +29,24 @@ interface Account
   defaultWalletId: WalletId!
   displayCurrency: DisplayCurrency!
   id: ID!
+  invoices(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the last n items from the list."""
+    last: Int
+    walletIds: [WalletId]
+  ): InvoiceConnection
   level: AccountLevel!
   limits: AccountLimits!
   notificationSettings: NotificationSettings!
+  pendingIncomingTransactions(walletIds: [WalletId]): [Transaction!]!
   realtimePrice: RealtimePrice!
   transactions(
     """Returns the items in the list that come after the specified cursor."""
@@ -47,6 +62,7 @@ interface Account
     last: Int
     walletIds: [WalletId]
   ): TransactionConnection
+  walletById(walletId: WalletId!): Wallet!
   wallets: [Wallet!]!
 }
 
@@ -154,6 +170,46 @@ type AccountUpdateNotificationSettingsPayload
   errors: [Error!]!
 }
 
+type ApiKey
+  @join__type(graph: GALOY)
+{
+  id: ID!
+  name: String!
+  createdAt: Timestamp!
+  revoked: Boolean!
+  expired: Boolean!
+  lastUsedAt: Timestamp
+  expiresAt: Timestamp!
+  readOnly: Boolean!
+}
+
+input ApiKeyCreateInput
+  @join__type(graph: GALOY)
+{
+  name: String!
+  expireInDays: Int
+  readOnly: Boolean! = false
+}
+
+type ApiKeyCreatePayload
+  @join__type(graph: GALOY)
+{
+  apiKey: ApiKey!
+  apiKeySecret: String!
+}
+
+input ApiKeyRevokeInput
+  @join__type(graph: GALOY)
+{
+  id: ID!
+}
+
+type ApiKeyRevokePayload
+  @join__type(graph: GALOY)
+{
+  apiKey: ApiKey!
+}
+
 """An Opaque Bearer token"""
 scalar AuthToken
   @join__type(graph: GALOY)
@@ -178,9 +234,31 @@ type BTCWallet implements Wallet
   """A balance stored in BTC."""
   balance: SignedAmount!
   id: ID!
+  invoiceByPaymentHash(paymentHash: PaymentHash!): Invoice!
+
+  """A list of all invoices associated with walletIds optionally passed."""
+  invoices(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): InvoiceConnection
 
   """An unconfirmed incoming onchain balance."""
   pendingIncomingBalance: SignedAmount!
+  pendingIncomingTransactions: [Transaction!]!
+  pendingIncomingTransactionsByAddress(
+    """Returns the items that include this address."""
+    address: OnChainAddress!
+  ): [Transaction!]!
+  transactionById(transactionId: ID!): Transaction!
 
   """A list of BTC transactions associated with this wallet."""
   transactions(
@@ -212,6 +290,7 @@ type BTCWallet implements Wallet
     """Returns the last n items from the list."""
     last: Int
   ): TransactionConnection
+  transactionsByPaymentHash(paymentHash: PaymentHash!): [Transaction!]!
   walletCurrency: WalletCurrency!
 }
 
@@ -302,9 +381,26 @@ type ConsumerAccount implements Account
   csvTransactions(walletIds: [WalletId!]!): String! @join__field(graph: GALOY)
   defaultWalletId: WalletId! @join__field(graph: GALOY)
   displayCurrency: DisplayCurrency! @join__field(graph: GALOY)
+
+  """A list of all invoices associated with walletIds optionally passed."""
+  invoices(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the last n items from the list."""
+    last: Int
+    walletIds: [WalletId]
+  ): InvoiceConnection @join__field(graph: GALOY)
   level: AccountLevel! @join__field(graph: GALOY)
   limits: AccountLimits! @join__field(graph: GALOY)
   notificationSettings: NotificationSettings! @join__field(graph: GALOY)
+  pendingIncomingTransactions(walletIds: [WalletId]): [Transaction!]! @join__field(graph: GALOY)
 
   """List the quiz questions of the consumer account"""
   quiz: [Quiz!]! @join__field(graph: GALOY)
@@ -327,6 +423,7 @@ type ConsumerAccount implements Account
     last: Int
     walletIds: [WalletId]
   ): TransactionConnection @join__field(graph: GALOY)
+  walletById(walletId: WalletId!): Wallet! @join__field(graph: GALOY)
   wallets: [Wallet!]! @join__field(graph: GALOY)
   onboardingStatus: OnboardingStatus @join__field(graph: KYC)
 }
@@ -528,11 +625,12 @@ input IntraLedgerPaymentSendInput
 type IntraLedgerUpdate
   @join__type(graph: GALOY)
 {
-  amount: SatAmount!
-  displayCurrencyPerSat: Float!
+  amount: SatAmount! @deprecated(reason: "Deprecated in favor of transaction")
+  displayCurrencyPerSat: Float! @deprecated(reason: "Deprecated in favor of transaction")
+  transaction: Transaction!
   txNotificationType: TxNotificationType!
   usdPerSat: Float! @deprecated(reason: "updated over displayCurrencyPerSat")
-  walletId: WalletId!
+  walletId: WalletId! @deprecated(reason: "Deprecated in favor of transaction")
 }
 
 input IntraLedgerUsdPaymentSendInput
@@ -547,6 +645,49 @@ input IntraLedgerUsdPaymentSendInput
 
   """The wallet ID of the sender."""
   walletId: WalletId!
+}
+
+"""A lightning invoice."""
+interface Invoice
+  @join__type(graph: GALOY)
+{
+  createdAt: Timestamp!
+
+  """The payment hash of the lightning invoice."""
+  paymentHash: PaymentHash!
+
+  """The bolt11 invoice to be paid."""
+  paymentRequest: LnPaymentRequest!
+
+  """
+  The payment secret of the lightning invoice. This is not the preimage of the payment hash.
+  """
+  paymentSecret: LnPaymentSecret!
+
+  """The payment status of the invoice."""
+  paymentStatus: InvoicePaymentStatus!
+}
+
+"""A connection to a list of items."""
+type InvoiceConnection
+  @join__type(graph: GALOY)
+{
+  """A list of edges."""
+  edges: [InvoiceEdge!]
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+}
+
+"""An edge in a connection."""
+type InvoiceEdge
+  @join__type(graph: GALOY)
+{
+  """A cursor for use in pagination"""
+  cursor: String!
+
+  """The item at the end of the edge"""
+  node: Invoice!
 }
 
 enum InvoicePaymentStatus
@@ -600,13 +741,16 @@ enum link__Purpose {
   EXECUTION
 }
 
-type LnInvoice
+type LnInvoice implements Invoice
+  @join__implements(graph: GALOY, interface: "Invoice")
   @join__type(graph: GALOY)
 {
+  createdAt: Timestamp!
   paymentHash: PaymentHash!
   paymentRequest: LnPaymentRequest!
   paymentSecret: LnPaymentSecret!
-  satoshis: SatAmount
+  paymentStatus: InvoicePaymentStatus!
+  satoshis: SatAmount!
 }
 
 input LnInvoiceCreateInput
@@ -684,12 +828,15 @@ type LnInvoicePaymentStatusPayload
   status: InvoicePaymentStatus
 }
 
-type LnNoAmountInvoice
+type LnNoAmountInvoice implements Invoice
+  @join__implements(graph: GALOY, interface: "Invoice")
   @join__type(graph: GALOY)
 {
+  createdAt: Timestamp!
   paymentHash: PaymentHash!
   paymentRequest: LnPaymentRequest!
   paymentSecret: LnPaymentSecret!
+  paymentStatus: InvoicePaymentStatus!
 }
 
 input LnNoAmountInvoiceCreateInput
@@ -794,9 +941,10 @@ scalar LnPaymentSecret
 type LnUpdate
   @join__type(graph: GALOY)
 {
-  paymentHash: PaymentHash!
+  paymentHash: PaymentHash! @deprecated(reason: "Deprecated in favor of transaction")
   status: InvoicePaymentStatus!
-  walletId: WalletId!
+  transaction: Transaction!
+  walletId: WalletId! @deprecated(reason: "Deprecated in favor of transaction")
 }
 
 input LnUsdInvoiceBtcDenominatedCreateOnBehalfOfRecipientInput
@@ -894,6 +1042,8 @@ type Mutation
   @join__type(graph: GALOY)
   @join__type(graph: KYC)
 {
+  apiKeyCreate(input: ApiKeyCreateInput!): ApiKeyCreatePayload! @join__field(graph: GALOY)
+  apiKeyRevoke(input: ApiKeyRevokeInput!): ApiKeyRevokePayload! @join__field(graph: GALOY)
   accountDelete: AccountDeletePayload! @join__field(graph: GALOY)
   accountDisableNotificationCategory(input: AccountDisableNotificationCategoryInput!): AccountUpdateNotificationSettingsPayload! @join__field(graph: GALOY)
   accountDisableNotificationChannel(input: AccountDisableNotificationChannelInput!): AccountUpdateNotificationSettingsPayload! @join__field(graph: GALOY)
@@ -1075,6 +1225,7 @@ type OnboardingFlowStartResult
   workflowRunId: String!
   tokenAndroid: String!
   tokenIos: String!
+  tokenWeb: String!
 }
 
 enum OnboardingStatus
@@ -1118,7 +1269,7 @@ input OnChainPaymentSendAllInput
 {
   address: OnChainAddress!
   memo: Memo
-  speed: PayoutSpeed = FAST
+  speed: PayoutSpeed! = FAST
   walletId: WalletId!
 }
 
@@ -1128,7 +1279,7 @@ input OnChainPaymentSendInput
   address: OnChainAddress!
   amount: SatAmount!
   memo: Memo
-  speed: PayoutSpeed = FAST
+  speed: PayoutSpeed! = FAST
   walletId: WalletId!
 }
 
@@ -1144,12 +1295,13 @@ scalar OnChainTxHash
 type OnChainUpdate
   @join__type(graph: GALOY)
 {
-  amount: SatAmount!
-  displayCurrencyPerSat: Float!
-  txHash: OnChainTxHash!
+  amount: SatAmount! @deprecated(reason: "Deprecated in favor of transaction")
+  displayCurrencyPerSat: Float! @deprecated(reason: "Deprecated in favor of transaction")
+  transaction: Transaction!
+  txHash: OnChainTxHash! @deprecated(reason: "Deprecated in favor of transaction")
   txNotificationType: TxNotificationType!
   usdPerSat: Float! @deprecated(reason: "updated over displayCurrencyPerSat")
-  walletId: WalletId!
+  walletId: WalletId! @deprecated(reason: "Deprecated in favor of transaction")
 }
 
 input OnChainUsdPaymentSendAsBtcDenominatedInput
@@ -1158,7 +1310,7 @@ input OnChainUsdPaymentSendAsBtcDenominatedInput
   address: OnChainAddress!
   amount: SatAmount!
   memo: Memo
-  speed: PayoutSpeed = FAST
+  speed: PayoutSpeed! = FAST
   walletId: WalletId!
 }
 
@@ -1168,7 +1320,7 @@ input OnChainUsdPaymentSendInput
   address: OnChainAddress!
   amount: CentAmount!
   memo: Memo
-  speed: PayoutSpeed = FAST
+  speed: PayoutSpeed! = FAST
   walletId: WalletId!
 }
 
@@ -1225,6 +1377,7 @@ type PaymentSendPayload
 {
   errors: [Error!]!
   status: PaymentSendResult
+  transaction: Transaction
 }
 
 enum PaymentSendResult
@@ -1369,9 +1522,9 @@ type Query
   lnInvoicePaymentStatus(input: LnInvoicePaymentStatusInput!): LnInvoicePaymentStatusPayload! @join__field(graph: GALOY)
   me: User @join__field(graph: GALOY)
   mobileVersions: [MobileVersions] @join__field(graph: GALOY)
-  onChainTxFee(address: OnChainAddress!, amount: SatAmount!, speed: PayoutSpeed = FAST, walletId: WalletId!): OnChainTxFee! @join__field(graph: GALOY)
-  onChainUsdTxFee(address: OnChainAddress!, amount: CentAmount!, speed: PayoutSpeed = FAST, walletId: WalletId!): OnChainUsdTxFee! @join__field(graph: GALOY)
-  onChainUsdTxFeeAsBtcDenominated(address: OnChainAddress!, amount: SatAmount!, speed: PayoutSpeed = FAST, walletId: WalletId!): OnChainUsdTxFee! @join__field(graph: GALOY)
+  onChainTxFee(address: OnChainAddress!, amount: SatAmount!, speed: PayoutSpeed! = FAST, walletId: WalletId!): OnChainTxFee! @join__field(graph: GALOY)
+  onChainUsdTxFee(address: OnChainAddress!, amount: CentAmount!, speed: PayoutSpeed! = FAST, walletId: WalletId!): OnChainUsdTxFee! @join__field(graph: GALOY)
+  onChainUsdTxFeeAsBtcDenominated(address: OnChainAddress!, amount: SatAmount!, speed: PayoutSpeed! = FAST, walletId: WalletId!): OnChainUsdTxFee! @join__field(graph: GALOY)
   quizQuestions: [QuizQuestion] @join__field(graph: GALOY) @deprecated(reason: "TODO: remove. we don't need a non authenticated version of this query. the users can only do the query while authenticated")
 
   """Returns 1 Sat and 1 Usd Cent price for the given currency"""
@@ -1605,7 +1758,7 @@ enum TxNotificationType
 {
   IntraLedgerPayment @join__enumValue(graph: GALOY)
   IntraLedgerReceipt @join__enumValue(graph: GALOY)
-  LnInvoicePaid @join__enumValue(graph: GALOY)
+  LigtningReceipt @join__enumValue(graph: GALOY)
   OnchainPayment @join__enumValue(graph: GALOY)
   OnchainReceipt @join__enumValue(graph: GALOY)
   OnchainReceiptPending @join__enumValue(graph: GALOY)
@@ -1637,9 +1790,31 @@ type UsdWallet implements Wallet
   accountId: ID!
   balance: SignedAmount!
   id: ID!
+  invoiceByPaymentHash(paymentHash: PaymentHash!): Invoice!
+
+  """A list of all invoices associated with walletIds optionally passed."""
+  invoices(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): InvoiceConnection
 
   """An unconfirmed incoming onchain balance."""
   pendingIncomingBalance: SignedAmount!
+  pendingIncomingTransactions: [Transaction!]!
+  pendingIncomingTransactionsByAddress(
+    """Returns the items that include this address."""
+    address: OnChainAddress!
+  ): [Transaction!]!
+  transactionById(transactionId: ID!): Transaction!
   transactions(
     """Returns the items in the list that come after the specified cursor."""
     after: String
@@ -1669,12 +1844,16 @@ type UsdWallet implements Wallet
     """Returns the last n items from the list."""
     last: Int
   ): TransactionConnection
+  transactionsByPaymentHash(paymentHash: PaymentHash!): [Transaction!]!
   walletCurrency: WalletCurrency!
 }
 
 type User
   @join__type(graph: GALOY)
 {
+  id: ID!
+  apiKeys: [ApiKey!]!
+
   """
   Get single contact details.
   Can include the transactions associated with the contact.
@@ -1691,7 +1870,6 @@ type User
 
   """Email address"""
   email: Email
-  id: ID!
 
   """
   Preferred language for user.
@@ -1936,7 +2114,46 @@ interface Wallet
   accountId: ID!
   balance: SignedAmount!
   id: ID!
+  invoiceByPaymentHash(
+    """
+    The lightning invoice with the matching paymentHash belonging to this wallet.
+    """
+    paymentHash: PaymentHash!
+  ): Invoice!
+  invoices(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): InvoiceConnection
   pendingIncomingBalance: SignedAmount!
+
+  """
+  Pending incoming OnChain transactions. When transactions
+  are confirmed they will receive a new id and be found in the transactions
+  list. Transactions are ordered anti-chronologically,
+  ie: the newest transaction will be first
+  """
+  pendingIncomingTransactions: [Transaction!]!
+
+  """
+  Pending incoming OnChain transactions. When transactions
+  are confirmed they will receive a new id and be found in the transactions
+  list. Transactions are ordered anti-chronologically,
+  ie: the newest transaction will be first
+  """
+  pendingIncomingTransactionsByAddress(
+    """Returns the items that include this address."""
+    address: OnChainAddress!
+  ): [Transaction!]!
+  transactionById(transactionId: ID!): Transaction!
 
   """
   Transactions are ordered anti-chronologically,
@@ -1976,6 +2193,14 @@ interface Wallet
     """Returns the last n items from the list."""
     last: Int
   ): TransactionConnection
+
+  """
+  Returns the transactions that include this paymentHash. This should be a list of size one for a received lightning payment. This can be more that one transaction for a sent lightning payment.
+  """
+  transactionsByPaymentHash(
+    """The payment hash of the lightning invoice paid in this transaction."""
+    paymentHash: PaymentHash!
+  ): [Transaction!]!
   walletCurrency: WalletCurrency!
 }
 

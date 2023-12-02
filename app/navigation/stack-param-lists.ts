@@ -74,7 +74,7 @@ export type RootStackParamList = {
     settlementAmount: MoneyAmount<typeof WalletCurrency.Btc>
     displayAmount: MoneyAmount<DisplayCurrency>
   }
-  phoneFlow?: NavigatorScreenParams<PhoneValidationStackParamList>
+  phoneFlow: NavigatorScreenParams<PhoneValidationStackParamList>
   phoneRegistrationInitiate: undefined
   phoneRegistrationValidate: { phone: string; channel: PhoneCodeChannelType }
   transactionDetail: { txid: string }
@@ -105,9 +105,13 @@ export type PeopleStackParamList = {
 export type PhoneValidationStackParamList = {
   Primary: undefined
   phoneLoginInitiate: {
-    type?: PhoneLoginInitiateType
+    type: PhoneLoginInitiateType
   }
-  phoneLoginValidate: { phone: string; channel: PhoneCodeChannelType }
+  phoneLoginValidate: {
+    phone: string
+    channel: PhoneCodeChannelType
+    type: PhoneLoginInitiateType
+  }
   authentication: {
     screenPurpose: AuthenticationScreenPurpose
   }

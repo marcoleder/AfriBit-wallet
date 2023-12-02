@@ -2,7 +2,7 @@ import { Text, makeStyles, useTheme } from "@rneui/themed"
 
 import { Circle, CircleRef } from "@app/components/circle"
 import { gql } from "@apollo/client"
-import { RefreshControl, ScrollView, View } from "react-native"
+import { RefreshControl, View } from "react-native"
 import { useCirclesQuery } from "@app/graphql/generated"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { useI18nContext } from "@app/i18n/i18n-react"
@@ -16,6 +16,8 @@ import { OctoberChallengeCard } from "@app/components/october-challenge"
 import { Screen } from "../../../components/screen"
 import { IntroducingCirclesModal } from "@app/components/introducing-circles-modal"
 import { NovemberChallengeCard } from "@app/components/november-challenge"
+import { ScrollView } from "react-native-gesture-handler"
+import { DecemberChallengeCard } from "@app/components/december-challenge"
 
 gql`
   query Circles {
@@ -153,6 +155,7 @@ export const CirclesDashboardScreen: React.FC = () => {
         )}
         <OctoberChallengeCard />
         <NovemberChallengeCard />
+        <DecemberChallengeCard />
         {isLonely ? <InviteFriendsCard /> : <ShareCircles />}
       </ScrollView>
     </Screen>

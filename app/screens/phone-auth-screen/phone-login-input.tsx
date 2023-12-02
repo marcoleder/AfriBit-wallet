@@ -29,6 +29,7 @@ import { GaloyErrorBox } from "@app/components/atomic/galoy-error-box"
 import { PhoneCodeChannelType } from "@app/graphql/generated"
 import { TouchableOpacity } from "react-native-gesture-handler"
 import { testProps } from "@app/utils/testProps"
+import { GaloyInfo } from "@app/components/atomic/galoy-info"
 
 const DEFAULT_COUNTRY_CODE = "SV"
 const PLACEHOLDER_PHONE_NUMBER = "123-456-7890"
@@ -89,6 +90,9 @@ const useStyles = makeStyles(({ colors }) => ({
   errorContainer: {
     marginBottom: 20,
   },
+  infoContainer: {
+    marginBottom: 20,
+  },
   whatsAppButton: {
     marginBottom: 20,
   },
@@ -126,7 +130,7 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
   } = useTheme()
 
   const {
-    submitPhoneNumber,
+    userSubmitPhoneNumber,
     captchaLoading,
     status,
     setPhoneNumber,
@@ -144,8 +148,10 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
 
   const { LL } = useI18nContext()
 
+  const screenType = route.params.type
+
   const isDisabledCountryAndCreateAccount =
-    route.params?.type === PhoneLoginInitiateType.CreateAccount &&
+    screenType === PhoneLoginInitiateType.CreateAccount &&
     phoneInputInfo?.countryCode &&
     DisableCountriesForAccountCreation.includes(phoneInputInfo.countryCode)
 
@@ -153,11 +159,12 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
     if (status === RequestPhoneCodeStatus.SuccessRequestingCode) {
       setStatus(RequestPhoneCodeStatus.InputtingPhoneNumber)
       navigation.navigate("phoneLoginValidate", {
+        type: screenType,
         phone: validatedPhoneNumber || "",
         channel: phoneCodeChannel,
       })
     }
-  }, [status, phoneCodeChannel, validatedPhoneNumber, navigation, setStatus])
+  }, [status, phoneCodeChannel, validatedPhoneNumber, navigation, setStatus, screenType])
 
   if (status === RequestPhoneCodeStatus.LoadingCountryCode || loadingSupportedCountries) {
     return (
@@ -204,7 +211,7 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
         <GaloyPrimaryButton
           title={LL.PhoneLoginInitiateScreen.sms()}
           loading={captchaLoading && phoneCodeChannel === PhoneCodeChannelType.Sms}
-          onPress={() => submitPhoneNumber(PhoneCodeChannelType.Sms)}
+          onPress={() => userSubmitPhoneNumber(PhoneCodeChannelType.Sms)}
           disabled={isDisabledCountryAndCreateAccount}
         />
       )
@@ -213,7 +220,7 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
           title={LL.PhoneLoginInitiateScreen.whatsapp()}
           containerStyle={styles.whatsAppButton}
           loading={captchaLoading && phoneCodeChannel === PhoneCodeChannelType.Whatsapp}
-          onPress={() => submitPhoneNumber(PhoneCodeChannelType.Whatsapp)}
+          onPress={() => userSubmitPhoneNumber(PhoneCodeChannelType.Whatsapp)}
           disabled={isDisabledCountryAndCreateAccount}
         />
       )
@@ -223,7 +230,7 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
         <GaloyPrimaryButton
           title={LL.PhoneLoginInitiateScreen.sms()}
           loading={captchaLoading && phoneCodeChannel === PhoneCodeChannelType.Sms}
-          onPress={() => submitPhoneNumber(PhoneCodeChannelType.Sms)}
+          onPress={() => userSubmitPhoneNumber(PhoneCodeChannelType.Sms)}
           disabled={isDisabledCountryAndCreateAccount}
         />
       )
@@ -233,11 +240,16 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
         <GaloyPrimaryButton
           title={LL.PhoneLoginInitiateScreen.whatsapp()}
           loading={captchaLoading && phoneCodeChannel === PhoneCodeChannelType.Whatsapp}
-          onPress={() => submitPhoneNumber(PhoneCodeChannelType.Whatsapp)}
+          onPress={() => userSubmitPhoneNumber(PhoneCodeChannelType.Whatsapp)}
           disabled={isDisabledCountryAndCreateAccount}
         />
       )
       break
+  }
+
+  let info: string | undefined = undefined
+  if (phoneInputInfo?.countryCode && phoneInputInfo.countryCode === "AR") {
+    info = LL.PhoneLoginInitiateScreen.infoArgentina()
   }
 
   return (
@@ -295,6 +307,11 @@ export const PhoneLoginInitiateScreen: React.FC<PhoneLoginInitiateScreenProps> =
             autoFocus={true}
           />
         </View>
+        {info && (
+          <View style={styles.infoContainer}>
+            <GaloyInfo>{info}</GaloyInfo>
+          </View>
+        )}
         {errorMessage && (
           <View style={styles.errorContainer}>
             <GaloyErrorBox errorMessage={errorMessage} />

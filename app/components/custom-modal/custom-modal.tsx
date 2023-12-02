@@ -1,10 +1,17 @@
 import React, { ReactNode } from "react"
-import { Platform, View, ScrollView, TouchableOpacity } from "react-native"
+import {
+  Platform,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  DimensionValue,
+} from "react-native"
 import Modal from "react-native-modal"
 import { makeStyles, Text, useTheme } from "@rneui/themed"
 import { GaloyIcon } from "../atomic/galoy-icon"
 import { GaloyPrimaryButton } from "../atomic/galoy-primary-button"
 import { GaloySecondaryButton } from "../atomic/galoy-secondary-button"
+import { ScrollView } from "react-native-gesture-handler"
 
 export type CustomModalProps = {
   isVisible: boolean
@@ -21,8 +28,8 @@ export type CustomModalProps = {
   secondaryButtonTitle?: string
   secondaryButtonOnPress?: () => void
   showCloseIconButton?: boolean
-  minHeight?: string
-  titleMaxWidth?: string
+  minHeight?: DimensionValue
+  titleMaxWidth?: DimensionValue
   titleTextAlignment?: "auto" | "center" | "left" | "right" | "justify"
 }
 
@@ -50,7 +57,9 @@ const CustomModal: React.FC<CustomModalProps> = ({
     minHeight,
     titleMaxWidth,
     titleTextAlignment,
-  })
+    /* eslint @typescript-eslint/ban-ts-comment: "off" */
+    // @ts-ignore-next-line no-implicit-any error
+  }) as StyleSheet.NamedStyles
   const {
     theme: { mode, colors },
   } = useTheme()
@@ -112,15 +121,15 @@ export default CustomModal
 
 type UseStylesProps = {
   hasPrimaryButtonTextAbove: boolean
-  minHeight?: string
+  minHeight?: DimensionValue
   titleTextAlignment?: "auto" | "center" | "left" | "right" | "justify"
-  titleMaxWidth?: string
+  titleMaxWidth?: DimensionValue
 }
 
 const useStyles = makeStyles(({ colors }, props: UseStylesProps) => ({
   container: {
     backgroundColor: colors.white,
-    maxHeight: "80%",
+    maxHeight: "95%",
     minHeight: props.minHeight || "auto",
     borderRadius: 16,
     padding: 20,

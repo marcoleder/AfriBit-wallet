@@ -93,9 +93,11 @@ export type Account = {
   readonly defaultWalletId: Scalars['WalletId']['output'];
   readonly displayCurrency: Scalars['DisplayCurrency']['output'];
   readonly id: Scalars['ID']['output'];
+  readonly invoices?: Maybe<InvoiceConnection>;
   readonly level: AccountLevel;
   readonly limits: AccountLimits;
   readonly notificationSettings: NotificationSettings;
+  readonly pendingIncomingTransactions: ReadonlyArray<Transaction>;
   readonly realtimePrice: RealtimePrice;
   readonly transactions?: Maybe<TransactionConnection>;
   readonly usdWallet?: Maybe<UsdWallet>;
@@ -106,6 +108,20 @@ export type Account = {
 
 export type AccountCsvTransactionsArgs = {
   walletIds: ReadonlyArray<Scalars['WalletId']['input']>;
+};
+
+
+export type AccountInvoicesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  walletIds?: InputMaybe<ReadonlyArray<InputMaybe<Scalars['WalletId']['input']>>>;
+};
+
+
+export type AccountPendingIncomingTransactionsArgs = {
+  walletIds?: InputMaybe<ReadonlyArray<InputMaybe<Scalars['WalletId']['input']>>>;
 };
 
 
@@ -198,6 +214,39 @@ export type AccountUpdateNotificationSettingsPayload = {
   readonly errors: ReadonlyArray<Error>;
 };
 
+export type ApiKey = {
+  readonly __typename: 'ApiKey';
+  readonly createdAt: Scalars['Timestamp']['output'];
+  readonly expired: Scalars['Boolean']['output'];
+  readonly expiresAt: Scalars['Timestamp']['output'];
+  readonly id: Scalars['ID']['output'];
+  readonly lastUsedAt?: Maybe<Scalars['Timestamp']['output']>;
+  readonly name: Scalars['String']['output'];
+  readonly readOnly: Scalars['Boolean']['output'];
+  readonly revoked: Scalars['Boolean']['output'];
+};
+
+export type ApiKeyCreateInput = {
+  readonly expireInDays?: InputMaybe<Scalars['Int']['input']>;
+  readonly name: Scalars['String']['input'];
+  readonly readOnly?: Scalars['Boolean']['input'];
+};
+
+export type ApiKeyCreatePayload = {
+  readonly __typename: 'ApiKeyCreatePayload';
+  readonly apiKey: ApiKey;
+  readonly apiKeySecret: Scalars['String']['output'];
+};
+
+export type ApiKeyRevokeInput = {
+  readonly id: Scalars['ID']['input'];
+};
+
+export type ApiKeyRevokePayload = {
+  readonly __typename: 'ApiKeyRevokePayload';
+  readonly apiKey: ApiKey;
+};
+
 export type AuthTokenPayload = {
   readonly __typename: 'AuthTokenPayload';
   readonly authToken?: Maybe<Scalars['AuthToken']['output']>;
@@ -213,8 +262,12 @@ export type BtcWallet = Wallet & {
   readonly balance: Scalars['SignedAmount']['output'];
   readonly id: Scalars['ID']['output'];
   readonly invoiceByPaymentHash: Invoice;
+  /** A list of all invoices associated with walletIds optionally passed. */
+  readonly invoices?: Maybe<InvoiceConnection>;
   /** An unconfirmed incoming onchain balance. */
   readonly pendingIncomingBalance: Scalars['SignedAmount']['output'];
+  readonly pendingIncomingTransactions: ReadonlyArray<Transaction>;
+  readonly pendingIncomingTransactionsByAddress: ReadonlyArray<Transaction>;
   readonly transactionById: Transaction;
   /** A list of BTC transactions associated with this wallet. */
   readonly transactions?: Maybe<TransactionConnection>;
@@ -227,6 +280,21 @@ export type BtcWallet = Wallet & {
 /** A wallet belonging to an account which contains a BTC balance and a list of transactions. */
 export type BtcWalletInvoiceByPaymentHashArgs = {
   paymentHash: Scalars['PaymentHash']['input'];
+};
+
+
+/** A wallet belonging to an account which contains a BTC balance and a list of transactions. */
+export type BtcWalletInvoicesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** A wallet belonging to an account which contains a BTC balance and a list of transactions. */
+export type BtcWalletPendingIncomingTransactionsByAddressArgs = {
+  address: Scalars['OnChainAddress']['input'];
 };
 
 
@@ -325,10 +393,13 @@ export type ConsumerAccount = Account & {
   readonly defaultWalletId: Scalars['WalletId']['output'];
   readonly displayCurrency: Scalars['DisplayCurrency']['output'];
   readonly id: Scalars['ID']['output'];
+  /** A list of all invoices associated with walletIds optionally passed. */
+  readonly invoices?: Maybe<InvoiceConnection>;
   readonly level: AccountLevel;
   readonly limits: AccountLimits;
   readonly notificationSettings: NotificationSettings;
   readonly onboardingStatus?: Maybe<OnboardingStatus>;
+  readonly pendingIncomingTransactions: ReadonlyArray<Transaction>;
   /** List the quiz questions of the consumer account */
   readonly quiz: ReadonlyArray<Quiz>;
   readonly realtimePrice: RealtimePrice;
@@ -343,6 +414,20 @@ export type ConsumerAccount = Account & {
 
 export type ConsumerAccountCsvTransactionsArgs = {
   walletIds: ReadonlyArray<Scalars['WalletId']['input']>;
+};
+
+
+export type ConsumerAccountInvoicesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  walletIds?: InputMaybe<ReadonlyArray<InputMaybe<Scalars['WalletId']['input']>>>;
+};
+
+
+export type ConsumerAccountPendingIncomingTransactionsArgs = {
+  walletIds?: InputMaybe<ReadonlyArray<InputMaybe<Scalars['WalletId']['input']>>>;
 };
 
 
@@ -481,11 +566,15 @@ export type IntraLedgerPaymentSendInput = {
 
 export type IntraLedgerUpdate = {
   readonly __typename: 'IntraLedgerUpdate';
+  /** @deprecated Deprecated in favor of transaction */
   readonly amount: Scalars['SatAmount']['output'];
+  /** @deprecated Deprecated in favor of transaction */
   readonly displayCurrencyPerSat: Scalars['Float']['output'];
+  readonly transaction: Transaction;
   readonly txNotificationType: TxNotificationType;
   /** @deprecated updated over displayCurrencyPerSat */
   readonly usdPerSat: Scalars['Float']['output'];
+  /** @deprecated Deprecated in favor of transaction */
   readonly walletId: Scalars['WalletId']['output'];
 };
 
@@ -501,6 +590,7 @@ export type IntraLedgerUsdPaymentSendInput = {
 
 /** A lightning invoice. */
 export type Invoice = {
+  readonly createdAt: Scalars['Timestamp']['output'];
   /** The payment hash of the lightning invoice. */
   readonly paymentHash: Scalars['PaymentHash']['output'];
   /** The bolt11 invoice to be paid. */
@@ -509,6 +599,24 @@ export type Invoice = {
   readonly paymentSecret: Scalars['LnPaymentSecret']['output'];
   /** The payment status of the invoice. */
   readonly paymentStatus: InvoicePaymentStatus;
+};
+
+/** A connection to a list of items. */
+export type InvoiceConnection = {
+  readonly __typename: 'InvoiceConnection';
+  /** A list of edges. */
+  readonly edges?: Maybe<ReadonlyArray<InvoiceEdge>>;
+  /** Information to aid in pagination. */
+  readonly pageInfo: PageInfo;
+};
+
+/** An edge in a connection. */
+export type InvoiceEdge = {
+  readonly __typename: 'InvoiceEdge';
+  /** A cursor for use in pagination */
+  readonly cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  readonly node: Invoice;
 };
 
 export const InvoicePaymentStatus = {
@@ -533,11 +641,12 @@ export type Leaderboard = {
 
 export type LnInvoice = Invoice & {
   readonly __typename: 'LnInvoice';
+  readonly createdAt: Scalars['Timestamp']['output'];
   readonly paymentHash: Scalars['PaymentHash']['output'];
   readonly paymentRequest: Scalars['LnPaymentRequest']['output'];
   readonly paymentSecret: Scalars['LnPaymentSecret']['output'];
   readonly paymentStatus: InvoicePaymentStatus;
-  readonly satoshis?: Maybe<Scalars['SatAmount']['output']>;
+  readonly satoshis: Scalars['SatAmount']['output'];
 };
 
 export type LnInvoiceCreateInput = {
@@ -595,6 +704,7 @@ export type LnInvoicePaymentStatusPayload = {
 
 export type LnNoAmountInvoice = Invoice & {
   readonly __typename: 'LnNoAmountInvoice';
+  readonly createdAt: Scalars['Timestamp']['output'];
   readonly paymentHash: Scalars['PaymentHash']['output'];
   readonly paymentRequest: Scalars['LnPaymentRequest']['output'];
   readonly paymentSecret: Scalars['LnPaymentSecret']['output'];
@@ -661,8 +771,11 @@ export type LnNoAmountUsdInvoicePaymentInput = {
 
 export type LnUpdate = {
   readonly __typename: 'LnUpdate';
+  /** @deprecated Deprecated in favor of transaction */
   readonly paymentHash: Scalars['PaymentHash']['output'];
   readonly status: InvoicePaymentStatus;
+  readonly transaction: Transaction;
+  /** @deprecated Deprecated in favor of transaction */
   readonly walletId: Scalars['WalletId']['output'];
 };
 
@@ -734,6 +847,8 @@ export type Mutation = {
   readonly accountEnableNotificationChannel: AccountUpdateNotificationSettingsPayload;
   readonly accountUpdateDefaultWalletId: AccountUpdateDefaultWalletIdPayload;
   readonly accountUpdateDisplayCurrency: AccountUpdateDisplayCurrencyPayload;
+  readonly apiKeyCreate: ApiKeyCreatePayload;
+  readonly apiKeyRevoke: ApiKeyRevokePayload;
   readonly callbackEndpointAdd: CallbackEndpointAddPayload;
   readonly callbackEndpointDelete: SuccessPayload;
   readonly captchaCreateChallenge: CaptchaCreateChallengePayload;
@@ -874,6 +989,16 @@ export type MutationAccountUpdateDefaultWalletIdArgs = {
 
 export type MutationAccountUpdateDisplayCurrencyArgs = {
   input: AccountUpdateDisplayCurrencyInput;
+};
+
+
+export type MutationApiKeyCreateArgs = {
+  input: ApiKeyCreateInput;
+};
+
+
+export type MutationApiKeyRevokeArgs = {
+  input: ApiKeyRevokeInput;
 };
 
 
@@ -1153,12 +1278,17 @@ export type OnChainTxFee = {
 
 export type OnChainUpdate = {
   readonly __typename: 'OnChainUpdate';
+  /** @deprecated Deprecated in favor of transaction */
   readonly amount: Scalars['SatAmount']['output'];
+  /** @deprecated Deprecated in favor of transaction */
   readonly displayCurrencyPerSat: Scalars['Float']['output'];
+  readonly transaction: Transaction;
+  /** @deprecated Deprecated in favor of transaction */
   readonly txHash: Scalars['OnChainTxHash']['output'];
   readonly txNotificationType: TxNotificationType;
   /** @deprecated updated over displayCurrencyPerSat */
   readonly usdPerSat: Scalars['Float']['output'];
+  /** @deprecated Deprecated in favor of transaction */
   readonly walletId: Scalars['WalletId']['output'];
 };
 
@@ -1192,6 +1322,7 @@ export type OnboardingFlowStartResult = {
   readonly __typename: 'OnboardingFlowStartResult';
   readonly tokenAndroid: Scalars['String']['output'];
   readonly tokenIos: Scalars['String']['output'];
+  readonly tokenWeb: Scalars['String']['output'];
   readonly workflowRunId: Scalars['String']['output'];
 };
 
@@ -1234,6 +1365,7 @@ export type PaymentSendPayload = {
   readonly __typename: 'PaymentSendPayload';
   readonly errors: ReadonlyArray<Error>;
   readonly status?: Maybe<PaymentSendResult>;
+  readonly transaction?: Maybe<Transaction>;
 };
 
 export const PaymentSendResult = {
@@ -1593,7 +1725,7 @@ export type TxDirection = typeof TxDirection[keyof typeof TxDirection];
 export const TxNotificationType = {
   IntraLedgerPayment: 'IntraLedgerPayment',
   IntraLedgerReceipt: 'IntraLedgerReceipt',
-  LnInvoicePaid: 'LnInvoicePaid',
+  LigtningReceipt: 'LigtningReceipt',
   OnchainPayment: 'OnchainPayment',
   OnchainReceipt: 'OnchainReceipt',
   OnchainReceiptPending: 'OnchainReceiptPending'
@@ -1621,8 +1753,12 @@ export type UsdWallet = Wallet & {
   readonly balance: Scalars['SignedAmount']['output'];
   readonly id: Scalars['ID']['output'];
   readonly invoiceByPaymentHash: Invoice;
+  /** A list of all invoices associated with walletIds optionally passed. */
+  readonly invoices?: Maybe<InvoiceConnection>;
   /** An unconfirmed incoming onchain balance. */
   readonly pendingIncomingBalance: Scalars['SignedAmount']['output'];
+  readonly pendingIncomingTransactions: ReadonlyArray<Transaction>;
+  readonly pendingIncomingTransactionsByAddress: ReadonlyArray<Transaction>;
   readonly transactionById: Transaction;
   readonly transactions?: Maybe<TransactionConnection>;
   readonly transactionsByAddress?: Maybe<TransactionConnection>;
@@ -1634,6 +1770,21 @@ export type UsdWallet = Wallet & {
 /** A wallet belonging to an account which contains a USD balance and a list of transactions. */
 export type UsdWalletInvoiceByPaymentHashArgs = {
   paymentHash: Scalars['PaymentHash']['input'];
+};
+
+
+/** A wallet belonging to an account which contains a USD balance and a list of transactions. */
+export type UsdWalletInvoicesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** A wallet belonging to an account which contains a USD balance and a list of transactions. */
+export type UsdWalletPendingIncomingTransactionsByAddressArgs = {
+  address: Scalars['OnChainAddress']['input'];
 };
 
 
@@ -1669,6 +1820,7 @@ export type UsdWalletTransactionsByPaymentHashArgs = {
 
 export type User = {
   readonly __typename: 'User';
+  readonly apiKeys: ReadonlyArray<ApiKey>;
   /**
    * Get single contact details.
    * Can include the transactions associated with the contact.
@@ -1877,7 +2029,22 @@ export type Wallet = {
   readonly balance: Scalars['SignedAmount']['output'];
   readonly id: Scalars['ID']['output'];
   readonly invoiceByPaymentHash: Invoice;
+  readonly invoices?: Maybe<InvoiceConnection>;
   readonly pendingIncomingBalance: Scalars['SignedAmount']['output'];
+  /**
+   * Pending incoming OnChain transactions. When transactions
+   * are confirmed they will receive a new id and be found in the transactions
+   * list. Transactions are ordered anti-chronologically,
+   * ie: the newest transaction will be first
+   */
+  readonly pendingIncomingTransactions: ReadonlyArray<Transaction>;
+  /**
+   * Pending incoming OnChain transactions. When transactions
+   * are confirmed they will receive a new id and be found in the transactions
+   * list. Transactions are ordered anti-chronologically,
+   * ie: the newest transaction will be first
+   */
+  readonly pendingIncomingTransactionsByAddress: ReadonlyArray<Transaction>;
   readonly transactionById: Transaction;
   /**
    * Transactions are ordered anti-chronologically,
@@ -1898,6 +2065,21 @@ export type Wallet = {
 /** A generic wallet which stores value in one of our supported currencies. */
 export type WalletInvoiceByPaymentHashArgs = {
   paymentHash: Scalars['PaymentHash']['input'];
+};
+
+
+/** A generic wallet which stores value in one of our supported currencies. */
+export type WalletInvoicesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+/** A generic wallet which stores value in one of our supported currencies. */
+export type WalletPendingIncomingTransactionsByAddressArgs = {
+  address: Scalars['OnChainAddress']['input'];
 };
 
 
@@ -2054,9 +2236,9 @@ export type InnerCircleValueQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type InnerCircleValueQuery = { readonly __typename: 'Query', readonly innerCircleValue: number };
 
-export type TransactionFragment = { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly paymentSecret?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } };
+export type TransactionFragment = { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } };
 
-export type TransactionListFragment = { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly paymentSecret?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null };
+export type TransactionListFragment = { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null };
 
 export type NetworkQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2136,7 +2318,7 @@ export type OnboardingFlowStartMutationVariables = Exact<{
 }>;
 
 
-export type OnboardingFlowStartMutation = { readonly __typename: 'Mutation', readonly onboardingFlowStart: { readonly __typename: 'OnboardingFlowStartResult', readonly workflowRunId: string, readonly tokenAndroid: string, readonly tokenIos: string } };
+export type OnboardingFlowStartMutation = { readonly __typename: 'Mutation', readonly onboardingFlowStart: { readonly __typename: 'OnboardingFlowStartResult', readonly workflowRunId: string, readonly tokenWeb: string } };
 
 export type FullOnboardingScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2151,7 +2333,7 @@ export type AddressScreenQuery = { readonly __typename: 'Query', readonly me?: {
 export type HomeAuthedQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type HomeAuthedQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly language: string, readonly username?: string | null, readonly phone?: string | null, readonly email?: { readonly __typename: 'Email', readonly address?: string | null, readonly verified?: boolean | null } | null, readonly defaultAccount: { readonly __typename: 'ConsumerAccount', readonly id: string, readonly level: AccountLevel, readonly defaultWalletId: string, readonly transactions?: { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly paymentSecret?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null } | null, readonly wallets: ReadonlyArray<{ readonly __typename: 'BTCWallet', readonly id: string, readonly balance: number, readonly walletCurrency: WalletCurrency } | { readonly __typename: 'UsdWallet', readonly id: string, readonly balance: number, readonly walletCurrency: WalletCurrency }> } } | null };
+export type HomeAuthedQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly language: string, readonly username?: string | null, readonly phone?: string | null, readonly email?: { readonly __typename: 'Email', readonly address?: string | null, readonly verified?: boolean | null } | null, readonly defaultAccount: { readonly __typename: 'ConsumerAccount', readonly id: string, readonly level: AccountLevel, readonly defaultWalletId: string, readonly pendingIncomingTransactions: ReadonlyArray<{ readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } }>, readonly transactions?: { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null } | null, readonly wallets: ReadonlyArray<{ readonly __typename: 'BTCWallet', readonly id: string, readonly balance: number, readonly walletCurrency: WalletCurrency } | { readonly __typename: 'UsdWallet', readonly id: string, readonly balance: number, readonly walletCurrency: WalletCurrency }> } } | null };
 
 export type HomeUnauthedQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2182,7 +2364,7 @@ export type TransactionListForContactQueryVariables = Exact<{
 }>;
 
 
-export type TransactionListForContactQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly contactByUsername: { readonly __typename: 'UserContact', readonly transactions?: { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly paymentSecret?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null } | null } } | null };
+export type TransactionListForContactQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly contactByUsername: { readonly __typename: 'UserContact', readonly transactions?: { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null } | null } } | null };
 
 export type ContactsCardQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2256,14 +2438,14 @@ export type LnNoAmountInvoiceCreateMutationVariables = Exact<{
 }>;
 
 
-export type LnNoAmountInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnNoAmountInvoiceCreate: { readonly __typename: 'LnNoAmountInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnNoAmountInvoice', readonly paymentHash: string, readonly paymentRequest: string, readonly paymentSecret: string, readonly paymentStatus: InvoicePaymentStatus } | null } };
+export type LnNoAmountInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnNoAmountInvoiceCreate: { readonly __typename: 'LnNoAmountInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnNoAmountInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus } | null } };
 
 export type LnInvoiceCreateMutationVariables = Exact<{
   input: LnInvoiceCreateInput;
 }>;
 
 
-export type LnInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly paymentHash: string, readonly paymentRequest: string, readonly paymentSecret: string, readonly paymentStatus: InvoicePaymentStatus, readonly satoshis?: number | null } | null } };
+export type LnInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly satoshis: number } | null } };
 
 export type OnChainAddressCurrentMutationVariables = Exact<{
   input: OnChainAddressCurrentInput;
@@ -2277,7 +2459,7 @@ export type LnUsdInvoiceCreateMutationVariables = Exact<{
 }>;
 
 
-export type LnUsdInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnUsdInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly paymentHash: string, readonly paymentRequest: string, readonly paymentSecret: string, readonly paymentStatus: InvoicePaymentStatus, readonly satoshis?: number | null } | null } };
+export type LnUsdInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnUsdInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly satoshis: number } | null } };
 
 export type ScanningQrCodeScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2581,7 +2763,7 @@ export type TransactionListForDefaultAccountQueryVariables = Exact<{
 }>;
 
 
-export type TransactionListForDefaultAccountQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly defaultAccount: { readonly __typename: 'ConsumerAccount', readonly id: string, readonly transactions?: { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly paymentSecret?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null } | null } } | null };
+export type TransactionListForDefaultAccountQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly defaultAccount: { readonly __typename: 'ConsumerAccount', readonly id: string, readonly pendingIncomingTransactions: ReadonlyArray<{ readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } }>, readonly transactions?: { readonly __typename: 'TransactionConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null, readonly endCursor?: string | null }, readonly edges?: ReadonlyArray<{ readonly __typename: 'TransactionEdge', readonly cursor: string, readonly node: { readonly __typename: 'Transaction', readonly id: string, readonly status: TxStatus, readonly direction: TxDirection, readonly memo?: string | null, readonly createdAt: number, readonly settlementAmount: number, readonly settlementFee: number, readonly settlementDisplayFee: string, readonly settlementCurrency: WalletCurrency, readonly settlementDisplayAmount: string, readonly settlementDisplayCurrency: string, readonly settlementPrice: { readonly __typename: 'PriceOfOneSettlementMinorUnitInDisplayMinorUnit', readonly base: number, readonly offset: number, readonly currencyUnit: string, readonly formattedAmount: string }, readonly initiationVia: { readonly __typename: 'InitiationViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'InitiationViaLn', readonly paymentHash: string } | { readonly __typename: 'InitiationViaOnChain', readonly address: string }, readonly settlementVia: { readonly __typename: 'SettlementViaIntraLedger', readonly counterPartyWalletId?: string | null, readonly counterPartyUsername?: string | null } | { readonly __typename: 'SettlementViaLn', readonly preImage?: string | null } | { readonly __typename: 'SettlementViaOnChain', readonly transactionHash?: string | null } } }> | null } | null } } | null };
 
 export type DeviceNotificationTokenCreateMutationVariables = Exact<{
   input: DeviceNotificationTokenCreateInput;
@@ -2633,7 +2815,7 @@ export const TransactionFragmentDoc = gql`
       counterPartyUsername
     }
     ... on SettlementViaLn {
-      paymentSecret
+      preImage
     }
     ... on SettlementViaOnChain {
       transactionHash
@@ -3819,8 +4001,7 @@ export const OnboardingFlowStartDocument = gql`
     mutation onboardingFlowStart($input: OnboardingFlowStartInput!) {
   onboardingFlowStart(input: $input) {
     workflowRunId
-    tokenAndroid
-    tokenIos
+    tokenWeb
   }
 }
     `;
@@ -3940,6 +4121,9 @@ export const HomeAuthedDocument = gql`
       id
       level
       defaultWalletId
+      pendingIncomingTransactions {
+        ...Transaction
+      }
       transactions(first: 20) {
         ...TransactionList
       }
@@ -3951,7 +4135,8 @@ export const HomeAuthedDocument = gql`
     }
   }
 }
-    ${TransactionListFragmentDoc}`;
+    ${TransactionFragmentDoc}
+${TransactionListFragmentDoc}`;
 
 /**
  * __useHomeAuthedQuery__
@@ -4637,9 +4822,9 @@ export const LnNoAmountInvoiceCreateDocument = gql`
       message
     }
     invoice {
+      createdAt
       paymentHash
       paymentRequest
-      paymentSecret
       paymentStatus
     }
   }
@@ -4678,9 +4863,9 @@ export const LnInvoiceCreateDocument = gql`
       message
     }
     invoice {
+      createdAt
       paymentHash
       paymentRequest
-      paymentSecret
       paymentStatus
       satoshis
     }
@@ -4756,9 +4941,9 @@ export const LnUsdInvoiceCreateDocument = gql`
       message
     }
     invoice {
+      createdAt
       paymentHash
       paymentRequest
-      paymentSecret
       paymentStatus
       satoshis
     }
@@ -6647,13 +6832,17 @@ export const TransactionListForDefaultAccountDocument = gql`
     id
     defaultAccount {
       id
+      pendingIncomingTransactions {
+        ...Transaction
+      }
       transactions(first: $first, after: $after, last: $last, before: $before) {
         ...TransactionList
       }
     }
   }
 }
-    ${TransactionListFragmentDoc}`;
+    ${TransactionFragmentDoc}
+${TransactionListFragmentDoc}`;
 
 /**
  * __useTransactionListForDefaultAccountQuery__
@@ -6866,6 +7055,11 @@ export type ResolversTypes = {
   AccountUpdateDisplayCurrencyInput: AccountUpdateDisplayCurrencyInput;
   AccountUpdateDisplayCurrencyPayload: ResolverTypeWrapper<AccountUpdateDisplayCurrencyPayload>;
   AccountUpdateNotificationSettingsPayload: ResolverTypeWrapper<AccountUpdateNotificationSettingsPayload>;
+  ApiKey: ResolverTypeWrapper<ApiKey>;
+  ApiKeyCreateInput: ApiKeyCreateInput;
+  ApiKeyCreatePayload: ResolverTypeWrapper<ApiKeyCreatePayload>;
+  ApiKeyRevokeInput: ApiKeyRevokeInput;
+  ApiKeyRevokePayload: ResolverTypeWrapper<ApiKeyRevokePayload>;
   AuthToken: ResolverTypeWrapper<Scalars['AuthToken']['output']>;
   AuthTokenPayload: ResolverTypeWrapper<AuthTokenPayload>;
   BTCWallet: ResolverTypeWrapper<BtcWallet>;
@@ -6911,6 +7105,8 @@ export type ResolversTypes = {
   IntraLedgerUpdate: ResolverTypeWrapper<IntraLedgerUpdate>;
   IntraLedgerUsdPaymentSendInput: IntraLedgerUsdPaymentSendInput;
   Invoice: ResolverTypeWrapper<ResolversInterfaceTypes<ResolversTypes>['Invoice']>;
+  InvoiceConnection: ResolverTypeWrapper<InvoiceConnection>;
+  InvoiceEdge: ResolverTypeWrapper<InvoiceEdge>;
   InvoicePaymentStatus: InvoicePaymentStatus;
   Language: ResolverTypeWrapper<Scalars['Language']['output']>;
   Leader: ResolverTypeWrapper<Leader>;
@@ -7074,6 +7270,11 @@ export type ResolversParentTypes = {
   AccountUpdateDisplayCurrencyInput: AccountUpdateDisplayCurrencyInput;
   AccountUpdateDisplayCurrencyPayload: AccountUpdateDisplayCurrencyPayload;
   AccountUpdateNotificationSettingsPayload: AccountUpdateNotificationSettingsPayload;
+  ApiKey: ApiKey;
+  ApiKeyCreateInput: ApiKeyCreateInput;
+  ApiKeyCreatePayload: ApiKeyCreatePayload;
+  ApiKeyRevokeInput: ApiKeyRevokeInput;
+  ApiKeyRevokePayload: ApiKeyRevokePayload;
   AuthToken: Scalars['AuthToken']['output'];
   AuthTokenPayload: AuthTokenPayload;
   BTCWallet: BtcWallet;
@@ -7118,6 +7319,8 @@ export type ResolversParentTypes = {
   IntraLedgerUpdate: IntraLedgerUpdate;
   IntraLedgerUsdPaymentSendInput: IntraLedgerUsdPaymentSendInput;
   Invoice: ResolversInterfaceTypes<ResolversParentTypes>['Invoice'];
+  InvoiceConnection: InvoiceConnection;
+  InvoiceEdge: InvoiceEdge;
   Language: Scalars['Language']['output'];
   Leader: Leader;
   Leaderboard: Leaderboard;
@@ -7265,9 +7468,11 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
   defaultWalletId?: Resolver<ResolversTypes['WalletId'], ParentType, ContextType>;
   displayCurrency?: Resolver<ResolversTypes['DisplayCurrency'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  invoices?: Resolver<Maybe<ResolversTypes['InvoiceConnection']>, ParentType, ContextType, Partial<AccountInvoicesArgs>>;
   level?: Resolver<ResolversTypes['AccountLevel'], ParentType, ContextType>;
   limits?: Resolver<ResolversTypes['AccountLimits'], ParentType, ContextType>;
   notificationSettings?: Resolver<ResolversTypes['NotificationSettings'], ParentType, ContextType>;
+  pendingIncomingTransactions?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType, Partial<AccountPendingIncomingTransactionsArgs>>;
   realtimePrice?: Resolver<ResolversTypes['RealtimePrice'], ParentType, ContextType>;
   transactions?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, Partial<AccountTransactionsArgs>>;
   usdWallet?: Resolver<Maybe<ResolversTypes['UsdWallet']>, ParentType, ContextType>;
@@ -7313,6 +7518,29 @@ export type AccountUpdateNotificationSettingsPayloadResolvers<ContextType = any,
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ApiKeyResolvers<ContextType = any, ParentType extends ResolversParentTypes['ApiKey'] = ResolversParentTypes['ApiKey']> = {
+  createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  expired?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  expiresAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lastUsedAt?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  readOnly?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  revoked?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ApiKeyCreatePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ApiKeyCreatePayload'] = ResolversParentTypes['ApiKeyCreatePayload']> = {
+  apiKey?: Resolver<ResolversTypes['ApiKey'], ParentType, ContextType>;
+  apiKeySecret?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ApiKeyRevokePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['ApiKeyRevokePayload'] = ResolversParentTypes['ApiKeyRevokePayload']> = {
+  apiKey?: Resolver<ResolversTypes['ApiKey'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface AuthTokenScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['AuthToken'], any> {
   name: 'AuthToken';
 }
@@ -7329,7 +7557,10 @@ export type BtcWalletResolvers<ContextType = any, ParentType extends ResolversPa
   balance?: Resolver<ResolversTypes['SignedAmount'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   invoiceByPaymentHash?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<BtcWalletInvoiceByPaymentHashArgs, 'paymentHash'>>;
+  invoices?: Resolver<Maybe<ResolversTypes['InvoiceConnection']>, ParentType, ContextType, Partial<BtcWalletInvoicesArgs>>;
   pendingIncomingBalance?: Resolver<ResolversTypes['SignedAmount'], ParentType, ContextType>;
+  pendingIncomingTransactions?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType>;
+  pendingIncomingTransactionsByAddress?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<BtcWalletPendingIncomingTransactionsByAddressArgs, 'address'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<BtcWalletTransactionByIdArgs, 'transactionId'>>;
   transactions?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, Partial<BtcWalletTransactionsArgs>>;
   transactionsByAddress?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, RequireFields<BtcWalletTransactionsByAddressArgs, 'address'>>;
@@ -7388,10 +7619,12 @@ export type ConsumerAccountResolvers<ContextType = any, ParentType extends Resol
   defaultWalletId?: Resolver<ResolversTypes['WalletId'], ParentType, ContextType>;
   displayCurrency?: Resolver<ResolversTypes['DisplayCurrency'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  invoices?: Resolver<Maybe<ResolversTypes['InvoiceConnection']>, ParentType, ContextType, Partial<ConsumerAccountInvoicesArgs>>;
   level?: Resolver<ResolversTypes['AccountLevel'], ParentType, ContextType>;
   limits?: Resolver<ResolversTypes['AccountLimits'], ParentType, ContextType>;
   notificationSettings?: Resolver<ResolversTypes['NotificationSettings'], ParentType, ContextType>;
   onboardingStatus?: Resolver<Maybe<ResolversTypes['OnboardingStatus']>, ParentType, ContextType>;
+  pendingIncomingTransactions?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType, Partial<ConsumerAccountPendingIncomingTransactionsArgs>>;
   quiz?: Resolver<ReadonlyArray<ResolversTypes['Quiz']>, ParentType, ContextType>;
   realtimePrice?: Resolver<ResolversTypes['RealtimePrice'], ParentType, ContextType>;
   transactions?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, Partial<ConsumerAccountTransactionsArgs>>;
@@ -7530,6 +7763,7 @@ export type InitiationViaOnChainResolvers<ContextType = any, ParentType extends 
 export type IntraLedgerUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['IntraLedgerUpdate'] = ResolversParentTypes['IntraLedgerUpdate']> = {
   amount?: Resolver<ResolversTypes['SatAmount'], ParentType, ContextType>;
   displayCurrencyPerSat?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
   txNotificationType?: Resolver<ResolversTypes['TxNotificationType'], ParentType, ContextType>;
   usdPerSat?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   walletId?: Resolver<ResolversTypes['WalletId'], ParentType, ContextType>;
@@ -7538,10 +7772,23 @@ export type IntraLedgerUpdateResolvers<ContextType = any, ParentType extends Res
 
 export type InvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Invoice'] = ResolversParentTypes['Invoice']> = {
   __resolveType: TypeResolveFn<'LnInvoice' | 'LnNoAmountInvoice', ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   paymentRequest?: Resolver<ResolversTypes['LnPaymentRequest'], ParentType, ContextType>;
   paymentSecret?: Resolver<ResolversTypes['LnPaymentSecret'], ParentType, ContextType>;
   paymentStatus?: Resolver<ResolversTypes['InvoicePaymentStatus'], ParentType, ContextType>;
+};
+
+export type InvoiceConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceConnection'] = ResolversParentTypes['InvoiceConnection']> = {
+  edges?: Resolver<Maybe<ReadonlyArray<ResolversTypes['InvoiceEdge']>>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InvoiceEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvoiceEdge'] = ResolversParentTypes['InvoiceEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export interface LanguageScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Language'], any> {
@@ -7566,11 +7813,12 @@ export interface LeaderboardNameScalarConfig extends GraphQLScalarTypeConfig<Res
 }
 
 export type LnInvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['LnInvoice'] = ResolversParentTypes['LnInvoice']> = {
+  createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   paymentRequest?: Resolver<ResolversTypes['LnPaymentRequest'], ParentType, ContextType>;
   paymentSecret?: Resolver<ResolversTypes['LnPaymentSecret'], ParentType, ContextType>;
   paymentStatus?: Resolver<ResolversTypes['InvoicePaymentStatus'], ParentType, ContextType>;
-  satoshis?: Resolver<Maybe<ResolversTypes['SatAmount']>, ParentType, ContextType>;
+  satoshis?: Resolver<ResolversTypes['SatAmount'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -7587,6 +7835,7 @@ export type LnInvoicePaymentStatusPayloadResolvers<ContextType = any, ParentType
 };
 
 export type LnNoAmountInvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['LnNoAmountInvoice'] = ResolversParentTypes['LnNoAmountInvoice']> = {
+  createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   paymentRequest?: Resolver<ResolversTypes['LnPaymentRequest'], ParentType, ContextType>;
   paymentSecret?: Resolver<ResolversTypes['LnPaymentSecret'], ParentType, ContextType>;
@@ -7615,6 +7864,7 @@ export interface LnPaymentSecretScalarConfig extends GraphQLScalarTypeConfig<Res
 export type LnUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['LnUpdate'] = ResolversParentTypes['LnUpdate']> = {
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['InvoicePaymentStatus'], ParentType, ContextType>;
+  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
   walletId?: Resolver<ResolversTypes['WalletId'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -7654,6 +7904,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   accountEnableNotificationChannel?: Resolver<ResolversTypes['AccountUpdateNotificationSettingsPayload'], ParentType, ContextType, RequireFields<MutationAccountEnableNotificationChannelArgs, 'input'>>;
   accountUpdateDefaultWalletId?: Resolver<ResolversTypes['AccountUpdateDefaultWalletIdPayload'], ParentType, ContextType, RequireFields<MutationAccountUpdateDefaultWalletIdArgs, 'input'>>;
   accountUpdateDisplayCurrency?: Resolver<ResolversTypes['AccountUpdateDisplayCurrencyPayload'], ParentType, ContextType, RequireFields<MutationAccountUpdateDisplayCurrencyArgs, 'input'>>;
+  apiKeyCreate?: Resolver<ResolversTypes['ApiKeyCreatePayload'], ParentType, ContextType, RequireFields<MutationApiKeyCreateArgs, 'input'>>;
+  apiKeyRevoke?: Resolver<ResolversTypes['ApiKeyRevokePayload'], ParentType, ContextType, RequireFields<MutationApiKeyRevokeArgs, 'input'>>;
   callbackEndpointAdd?: Resolver<ResolversTypes['CallbackEndpointAddPayload'], ParentType, ContextType, RequireFields<MutationCallbackEndpointAddArgs, 'input'>>;
   callbackEndpointDelete?: Resolver<ResolversTypes['SuccessPayload'], ParentType, ContextType, RequireFields<MutationCallbackEndpointDeleteArgs, 'input'>>;
   captchaCreateChallenge?: Resolver<ResolversTypes['CaptchaCreateChallengePayload'], ParentType, ContextType>;
@@ -7745,6 +7997,7 @@ export interface OnChainTxHashScalarConfig extends GraphQLScalarTypeConfig<Resol
 export type OnChainUpdateResolvers<ContextType = any, ParentType extends ResolversParentTypes['OnChainUpdate'] = ResolversParentTypes['OnChainUpdate']> = {
   amount?: Resolver<ResolversTypes['SatAmount'], ParentType, ContextType>;
   displayCurrencyPerSat?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
   txHash?: Resolver<ResolversTypes['OnChainTxHash'], ParentType, ContextType>;
   txNotificationType?: Resolver<ResolversTypes['TxNotificationType'], ParentType, ContextType>;
   usdPerSat?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -7760,6 +8013,7 @@ export type OnChainUsdTxFeeResolvers<ContextType = any, ParentType extends Resol
 export type OnboardingFlowStartResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['OnboardingFlowStartResult'] = ResolversParentTypes['OnboardingFlowStartResult']> = {
   tokenAndroid?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tokenIos?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  tokenWeb?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   workflowRunId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -7790,6 +8044,7 @@ export interface PaymentHashScalarConfig extends GraphQLScalarTypeConfig<Resolve
 export type PaymentSendPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['PaymentSendPayload'] = ResolversParentTypes['PaymentSendPayload']> = {
   errors?: Resolver<ReadonlyArray<ResolversTypes['Error']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['PaymentSendResult']>, ParentType, ContextType>;
+  transaction?: Resolver<Maybe<ResolversTypes['Transaction']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -8038,7 +8293,10 @@ export type UsdWalletResolvers<ContextType = any, ParentType extends ResolversPa
   balance?: Resolver<ResolversTypes['SignedAmount'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   invoiceByPaymentHash?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<UsdWalletInvoiceByPaymentHashArgs, 'paymentHash'>>;
+  invoices?: Resolver<Maybe<ResolversTypes['InvoiceConnection']>, ParentType, ContextType, Partial<UsdWalletInvoicesArgs>>;
   pendingIncomingBalance?: Resolver<ResolversTypes['SignedAmount'], ParentType, ContextType>;
+  pendingIncomingTransactions?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType>;
+  pendingIncomingTransactionsByAddress?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<UsdWalletPendingIncomingTransactionsByAddressArgs, 'address'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<UsdWalletTransactionByIdArgs, 'transactionId'>>;
   transactions?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, Partial<UsdWalletTransactionsArgs>>;
   transactionsByAddress?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, RequireFields<UsdWalletTransactionsByAddressArgs, 'address'>>;
@@ -8048,6 +8306,7 @@ export type UsdWalletResolvers<ContextType = any, ParentType extends ResolversPa
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  apiKeys?: Resolver<ReadonlyArray<ResolversTypes['ApiKey']>, ParentType, ContextType>;
   contactByUsername?: Resolver<ResolversTypes['UserContact'], ParentType, ContextType, RequireFields<UserContactByUsernameArgs, 'username'>>;
   contacts?: Resolver<ReadonlyArray<ResolversTypes['UserContact']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
@@ -8159,7 +8418,10 @@ export type WalletResolvers<ContextType = any, ParentType extends ResolversParen
   balance?: Resolver<ResolversTypes['SignedAmount'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   invoiceByPaymentHash?: Resolver<ResolversTypes['Invoice'], ParentType, ContextType, RequireFields<WalletInvoiceByPaymentHashArgs, 'paymentHash'>>;
+  invoices?: Resolver<Maybe<ResolversTypes['InvoiceConnection']>, ParentType, ContextType, Partial<WalletInvoicesArgs>>;
   pendingIncomingBalance?: Resolver<ResolversTypes['SignedAmount'], ParentType, ContextType>;
+  pendingIncomingTransactions?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType>;
+  pendingIncomingTransactionsByAddress?: Resolver<ReadonlyArray<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<WalletPendingIncomingTransactionsByAddressArgs, 'address'>>;
   transactionById?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType, RequireFields<WalletTransactionByIdArgs, 'transactionId'>>;
   transactions?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, Partial<WalletTransactionsArgs>>;
   transactionsByAddress?: Resolver<Maybe<ResolversTypes['TransactionConnection']>, ParentType, ContextType, RequireFields<WalletTransactionsByAddressArgs, 'address'>>;
@@ -8192,6 +8454,9 @@ export type Resolvers<ContextType = any> = {
   AccountUpdateDefaultWalletIdPayload?: AccountUpdateDefaultWalletIdPayloadResolvers<ContextType>;
   AccountUpdateDisplayCurrencyPayload?: AccountUpdateDisplayCurrencyPayloadResolvers<ContextType>;
   AccountUpdateNotificationSettingsPayload?: AccountUpdateNotificationSettingsPayloadResolvers<ContextType>;
+  ApiKey?: ApiKeyResolvers<ContextType>;
+  ApiKeyCreatePayload?: ApiKeyCreatePayloadResolvers<ContextType>;
+  ApiKeyRevokePayload?: ApiKeyRevokePayloadResolvers<ContextType>;
   AuthToken?: GraphQLScalarType;
   AuthTokenPayload?: AuthTokenPayloadResolvers<ContextType>;
   BTCWallet?: BtcWalletResolvers<ContextType>;
@@ -8228,6 +8493,8 @@ export type Resolvers<ContextType = any> = {
   InitiationViaOnChain?: InitiationViaOnChainResolvers<ContextType>;
   IntraLedgerUpdate?: IntraLedgerUpdateResolvers<ContextType>;
   Invoice?: InvoiceResolvers<ContextType>;
+  InvoiceConnection?: InvoiceConnectionResolvers<ContextType>;
+  InvoiceEdge?: InvoiceEdgeResolvers<ContextType>;
   Language?: GraphQLScalarType;
   Leader?: LeaderResolvers<ContextType>;
   Leaderboard?: LeaderboardResolvers<ContextType>;

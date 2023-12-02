@@ -6,8 +6,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
   TouchableWithoutFeedback,
+  Pressable,
 } from "react-native"
 import Modal from "react-native-modal"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -29,10 +29,13 @@ import { SVGs } from "./earn-svg-factory"
 import { augmentCardWithGqlData, getQuizQuestionsContent } from "./earns-utils"
 import { useQuizServer } from "../earns-map-screen/use-quiz-server"
 import { makeStyles, useTheme } from "@rneui/themed"
+import { ScrollView } from "react-native-gesture-handler"
 
 const useStyles = makeStyles(({ colors }) => ({
-  answersView: {
+  answersViewInner: {
     rowGap: 20,
+  },
+  answersView: {
     padding: 20,
   },
   scrollViewStyle: {
@@ -142,11 +145,13 @@ const useStyles = makeStyles(({ colors }) => ({
 
   text: {
     fontSize: 24,
+    color: colors._black,
   },
 
   answerChoiceText: {
     fontSize: 20,
     flex: 1,
+    color: colors._black,
   },
 
   textContainer: {
@@ -164,6 +169,7 @@ const useStyles = makeStyles(({ colors }) => ({
     fontSize: 32,
     fontWeight: "bold",
     paddingBottom: 12,
+    color: colors._black,
   },
 
   titleStyle: {
@@ -281,8 +287,8 @@ export const EarnQuiz = ({ route }: Props) => {
   let j: ZeroTo2 = 0
   permutation.forEach((i) => {
     answersShuffled.push(
-      <View style={styles.buttonRowWithFeedback}>
-        <TouchableOpacity key={i} onPress={() => addRecordedAnswer(i)}>
+      <View key={i} style={styles.buttonRowWithFeedback}>
+        <TouchableOpacity onPress={() => addRecordedAnswer(i)}>
           <View style={styles.buttonRow}>
             <View style={buttonStyleHelper(i)}>
               <Text style={styles.quizButtonTitleStyle}>{mappingLetter[j]}</Text>
@@ -320,7 +326,7 @@ export const EarnQuiz = ({ route }: Props) => {
         <View style={styles.modalBackground}>
           <View style={{ height: 14 }}>
             <Icon
-              name="ios-remove"
+              name="remove"
               size={72}
               color={colors._lightGrey}
               style={{ height: 40, top: -30 }}
@@ -330,8 +336,10 @@ export const EarnQuiz = ({ route }: Props) => {
             style={styles.scrollViewStyle}
             contentContainerStyle={styles.answersView}
           >
-            <Text style={styles.title}>{question ?? title}</Text>
-            {answersShuffled}
+            <Pressable style={styles.answersViewInner}>
+              <Text style={styles.title}>{question ?? title}</Text>
+              {answersShuffled}
+            </Pressable>
           </ScrollView>
           <View>
             {recordedAnswer.indexOf(0) === -1 ? null : (

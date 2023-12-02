@@ -22,6 +22,9 @@ gql`
       id
       defaultAccount {
         id
+        pendingIncomingTransactions {
+          ...Transaction
+        }
         transactions(first: $first, after: $after, last: $last, before: $before) {
           ...TransactionList
         }

@@ -1,6 +1,5 @@
 import React from "react"
 import { View } from "react-native"
-import Icon from "react-native-vector-icons/Ionicons"
 
 // eslint-disable-next-line camelcase
 import { useFragment } from "@apollo/client"
@@ -18,11 +17,12 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { useAppConfig } from "@app/hooks"
 import { toWalletAmount } from "@app/types/amounts"
 import { Text, makeStyles, ListItem } from "@rneui/themed"
-import HideableArea from "../hideable-area/hideable-area"
 import { IconTransaction } from "../icon-transactions"
 import { TransactionDate } from "../transaction-date"
 import { useI18nContext } from "@app/i18n/i18n-react"
 import { DeepPartialObject } from "./index.types"
+import HideableArea from "../hideable-area/hideable-area"
+import Icon from "react-native-vector-icons/Ionicons"
 
 // This should extend the Transaction directly from the cache
 export const useDescriptionDisplay = ({
@@ -147,6 +147,8 @@ export const TransactionItem: React.FC<Props> = ({
   const isReceive = tx.direction === "RECEIVE"
   const isPending = tx.status === "PENDING"
 
+  const walletCurrency = tx.settlementCurrency as WalletCurrency
+
   const formattedSettlementAmount = formatMoneyAmount({
     moneyAmount: toWalletAmount({
       amount: tx.settlementAmount,
@@ -179,7 +181,7 @@ export const TransactionItem: React.FC<Props> = ({
         onChain={tx.settlementVia?.__typename === "SettlementViaOnChain"}
         isReceive={isReceive}
         pending={isPending}
-        walletCurrency={WalletCurrency}
+        walletCurrency={walletCurrency}
       />
       <ListItem.Content {...testProps("list-item-content")}>
         <ListItem.Title

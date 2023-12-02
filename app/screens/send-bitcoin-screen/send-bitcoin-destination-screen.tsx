@@ -106,7 +106,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   const [goToNextScreenWhenValid, setGoToNextScreenWhenValid] = React.useState(false)
 
   const { data } = useSendBitcoinDestinationQuery({
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     returnPartialData: true,
     skip: !isAuthed,
   })
@@ -206,7 +206,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
       }
 
       dispatchDestinationStateAction({
-        type: "set-validating",
+        type: SendBitcoinActions.SetValidating,
         payload: {
           unparsedDestination: rawInput,
         },
@@ -253,11 +253,11 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
             .includes(destination.validDestination.handle.toLowerCase())
         ) {
           dispatchDestinationStateAction({
-            type: SendBitcoinActions.SetRequiresConfirmation,
+            type: SendBitcoinActions.SetRequiresUsernameConfirmation,
             payload: {
               validDestination: destination,
               unparsedDestination: rawInput,
-              confirmationType: {
+              confirmationUsernameType: {
                 type: "new-username",
                 username: destination.validDestination.handle,
               },
@@ -316,7 +316,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   const parseBtcDest = useCallback(
     (newDestination: string) => {
       dispatchDestinationStateAction({
-        type: "set-unparsed-destination",
+        type: SendBitcoinActions.SetUnparsedDestination,
         payload: { unparsedDestination: newDestination },
       })
       setGoToNextScreenWhenValid(false)
@@ -362,12 +362,14 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     setGoToNextScreenWhenValid,
   ])
 
-  const initiateGoToNextScreen =
-    validateDestination &&
-    (async () => {
-      validateDestination(destinationState.unparsedDestination)
-      setGoToNextScreenWhenValid(true)
-    })
+  const initiateGoToNextScreen = useMemo(() => {
+    return async () => {
+      if (validateDestination) {
+        await validateDestination(destinationState.unparsedDestination)
+        setGoToNextScreenWhenValid(true)
+      }
+    }
+  }, [validateDestination, destinationState.unparsedDestination])
 
   useEffect(() => {
     if (route.params?.payment) {
@@ -399,13 +401,13 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
       inputContainerStyle = styles.errorInputContainer
       break
     case "valid":
-      if (!destinationState.confirmationType) {
+      if (!destinationState.confirmationUsernameType) {
         inputContainerStyle = styles.validInputContainer
         break
       }
       inputContainerStyle = styles.warningInputContainer
       break
-    case "requires-confirmation":
+    case "requires-destination-confirmation":
       inputContainerStyle = styles.warningInputContainer
   }
 

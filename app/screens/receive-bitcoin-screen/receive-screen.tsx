@@ -18,6 +18,8 @@ import Icon from "react-native-vector-icons/Ionicons"
 import { SetLightningAddressModal } from "@app/components/set-lightning-address-modal"
 import { GaloyCurrencyBubble } from "@app/components/atomic/galoy-currency-bubble"
 import { ModalNfc } from "@app/components/modal-nfc"
+import { CustomIcon } from "@app/components/custom-icon"
+import nfcManager from "react-native-nfc-manager"
 
 const ReceiveScreen = () => {
   const {
@@ -35,26 +37,34 @@ const ReceiveScreen = () => {
   const [displayReceiveNfc, setDisplayReceiveNfc] = useState(false)
 
   useEffect(() => {
-    if (request?.type === "Lightning" && request.state === "Created")
-      navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity
-            style={styles.rotateIconHeaderRight}
-            onPress={() => setDisplayReceiveNfc(true)}
-          >
-            <Icon name="wifi" color={colors.black} size={25} />
-          </TouchableOpacity>
-        ),
-      })
-    else {
-      navigation.setOptions({ headerRight: () => <></> })
-    }
+    ;(async () => {
+      if (
+        request?.type === "Lightning" &&
+        request?.state === "Created" &&
+        (await nfcManager.isSupported())
+      )
+        navigation.setOptions({
+          headerRight: () => (
+            <TouchableOpacity
+              style={styles.nfcIcon}
+              onPress={() => setDisplayReceiveNfc(true)}
+            >
+              <Text type="p2">{LL.ReceiveScreen.nfc()}</Text>
+              <CustomIcon name="nfc" color={colors.black} />
+            </TouchableOpacity>
+          ),
+        })
+      else {
+        navigation.setOptions({ headerRight: () => <></> })
+      }
+    })()
   }, [
+    LL.ReceiveScreen,
     colors.black,
     navigation,
     request?.state,
     request?.type,
-    styles.rotateIconHeaderRight,
+    styles.nfcIcon,
   ])
 
   // notification permission
@@ -363,10 +373,15 @@ const useStyles = makeStyles(({ colors }) => ({
     fontWeight: "700",
   },
   btcLow: {},
-  rotateIconHeaderRight: {
-    transform: [{ rotate: "90deg" }],
-    marginRight: 2,
+  nfcIcon: {
+    marginTop: -1,
+    marginRight: 14,
     padding: 8,
+    display: "flex",
+    flexDirection: "row",
+    columnGap: 4,
+    backgroundColor: colors.grey5,
+    borderRadius: 4,
   },
 }))
 

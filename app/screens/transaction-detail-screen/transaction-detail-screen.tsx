@@ -1,8 +1,7 @@
 import * as React from "react"
-import { Linking, TouchableWithoutFeedback, View } from "react-native"
+import { Linking, RefreshControl, TouchableWithoutFeedback, View } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 
-// eslint-disable-next-line camelcase
 import { useFragment } from "@apollo/client"
 import { TransactionDate } from "@app/components/transaction-date"
 import { useDescriptionDisplay } from "@app/components/transaction-item"
@@ -11,6 +10,7 @@ import {
   SettlementVia,
   TransactionFragment,
   TransactionFragmentDoc,
+  useTransactionListForDefaultAccountLazyQuery,
   WalletCurrency,
 } from "@app/graphql/generated"
 import { useDisplayCurrency } from "@app/hooks/use-display-currency"
@@ -29,6 +29,7 @@ import { isIos } from "@app/utils/helper"
 import { GaloyInfo } from "@app/components/atomic/galoy-info"
 import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
 import { DeepPartialObject } from "@app/components/transaction-item/index.types"
+import { ScrollView } from "react-native-gesture-handler"
 
 const Row = ({
   entry,
@@ -37,7 +38,7 @@ const Row = ({
   content,
 }: {
   entry: string
-  value?: string | JSX.Element
+  value?: string | null | undefined | JSX.Element
   __typename?: "SettlementViaIntraLedger" | "SettlementViaLn" | "SettlementViaOnChain"
   content?: unknown
 }) => {
@@ -111,6 +112,8 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
       id: txid,
     },
   })
+
+  const [refetch, { loading }] = useTransactionListForDefaultAccountLazyQuery()
 
   const { LL } = useI18nContext()
   const { formatCurrency } = useDisplayCurrency()
@@ -207,7 +210,7 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
   )
 
   return (
-    <Screen unsafe preset="scroll">
+    <Screen unsafe preset="fixed">
       <View
         style={[
           styles.amountDetailsContainer,
@@ -236,7 +239,19 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
         </View>
       </View>
 
-      <View style={styles.transactionDetailView}>
+      <ScrollView
+        contentContainerStyle={styles.transactionDetailView}
+        refreshControl={
+          onChainTxNotBroadcasted ? (
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={refetch}
+              colors={[colors.primary]} // Android refresh indicator colors
+              tintColor={colors.primary} // iOS refresh indicator color
+            />
+          ) : undefined
+        }
+      >
         {onChainTxNotBroadcasted && (
           <View style={styles.txNotBroadcast}>
             <GaloyInfo>{LL.TransactionDetailScreen.txNotBroadcast()}</GaloyInfo>
@@ -267,6 +282,10 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
           initiationVia?.__typename === "InitiationViaLn" && (
             <Row entry="Hash" value={initiationVia?.paymentHash} />
           )}
+        {settlementVia?.__typename === "SettlementViaLn" &&
+          initiationVia?.__typename === "InitiationViaLn" && (
+            <Row entry="Preimage" value={settlementVia?.preImage} />
+          )}
         {onChainTxBroadcasted && (
           <TouchableWithoutFeedback
             onPress={() => viewInExplorer(settlementVia.transactionHash || "")}
@@ -281,7 +300,7 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
           </TouchableWithoutFeedback>
         )}
         {id && <Row entry="id" value={id} />}
-      </View>
+      </ScrollView>
     </Screen>
   )
 }
@@ -318,7 +337,7 @@ const useStyles = makeStyles(({ colors }) => ({
 
   transactionDetailView: {
     marginHorizontal: 24,
-    marginVertical: 12,
+    marginVertical: 30,
   },
   valueContainer: {
     flexDirection: "row",
