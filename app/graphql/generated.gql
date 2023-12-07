@@ -26,6 +26,7 @@ fragment Transaction on Transaction {
     }
     ... on InitiationViaLn {
       paymentHash
+      paymentRequest
       __typename
     }
     ... on InitiationViaOnChain {
@@ -46,6 +47,7 @@ fragment Transaction on Transaction {
     }
     ... on SettlementViaOnChain {
       transactionHash
+      arrivalInMempoolEstimatedAt
       __typename
     }
     __typename
@@ -416,6 +418,16 @@ mutation onChainAddressCurrent($input: OnChainAddressCurrentInput!) {
 
 mutation onChainPaymentSend($input: OnChainPaymentSendInput!) {
   onChainPaymentSend(input: $input) {
+    transaction {
+      settlementVia {
+        ... on SettlementViaOnChain {
+          arrivalInMempoolEstimatedAt
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
     errors {
       message
       __typename

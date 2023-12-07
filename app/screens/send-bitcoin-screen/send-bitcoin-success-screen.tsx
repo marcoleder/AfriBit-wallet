@@ -8,7 +8,7 @@ import {
 } from "@app/components/success-animation"
 import { useI18nContext } from "@app/i18n/i18n-react"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
-import { useNavigation } from "@react-navigation/native"
+import { RouteProp, useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { makeStyles, Text } from "@rneui/themed"
 import { View, Alert } from "react-native"
@@ -19,8 +19,14 @@ import { setFeedbackModalShown } from "@app/graphql/client-only-query"
 import { SuggestionModal } from "./suggestion-modal"
 import { logAppFeedback } from "@app/utils/analytics"
 import InAppReview from "react-native-in-app-review"
+import { formatTimeToMempool } from "../transaction-detail-screen/format-time"
 
-const SendBitcoinSuccessScreen = () => {
+type Props = {
+  route: RouteProp<RootStackParamList, "sendBitcoinSuccess">
+}
+
+const SendBitcoinSuccessScreen: React.FC<Props> = ({ route }) => {
+  const extraInfo = route.params.extraInfo
   const styles = useStyles()
   const [showSuggestionModal, setShowSuggestionModal] = React.useState(false)
   const navigation =
@@ -29,7 +35,7 @@ const SendBitcoinSuccessScreen = () => {
   const client = useApolloClient()
   const feedbackShownData = useFeedbackModalShownQuery()
   const feedbackModalShown = feedbackShownData?.data?.feedbackModalShown
-  const { LL } = useI18nContext()
+  const { LL, locale } = useI18nContext()
 
   const dismiss = () => {
     logAppFeedback({
@@ -95,6 +101,15 @@ const SendBitcoinSuccessScreen = () => {
             {LL.SendBitcoinScreen.success()}
           </Text>
         </SuccessTextAnimation>
+        {extraInfo?.arrivalAtMempoolEstimate && (
+          <SuccessTextAnimation>
+            <Text {...testProps("Success Text")} style={styles.successText}>
+              {LL.SendBitcoinScreen.willBeSentToMempoolBy()}
+              {"\n"}
+              {formatTimeToMempool(extraInfo.arrivalAtMempoolEstimate, LL, locale)}
+            </Text>
+          </SuccessTextAnimation>
+        )}
       </View>
       <SuggestionModal
         navigation={navigation}

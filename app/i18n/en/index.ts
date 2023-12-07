@@ -2253,6 +2253,7 @@ const en: BaseTranslation = {
     clipboardError: "Error getting value from clipboard",
   },
   SendBitcoinScreen: {
+    willBeSentToMempoolBy: "Transaction should be submitted to mempool",
     amount: "Amount",
     amountExceed: "Amount exceeds your balance of {balance: string}",
     amountExceedsLimit: "Amount exceeds your remaining daily limit of {limit: string}",
@@ -2428,7 +2429,8 @@ const en: BaseTranslation = {
     receivingAccount: "Receiving Account",
     sendingAccount: "Sending Account",
     txNotBroadcast:
-      "Your transaction is currently pending and will be broadcasted to the Bitcoin network in a moment.",
+      "Your transaction is queued. It should appear in the mempool {countdown: string}.",
+    now: "now",
   },
   TransactionLimitsScreen: {
     receive: "Receive",
@@ -2609,8 +2611,10 @@ const en: BaseTranslation = {
     ok: "OK",
     or: "or",
     openWallet: "Open Wallet",
+    paymentRequest: "Payment Request",
     phone: "Phone",
     phoneNumber: "Phone Number",
+    preimageProofOfPayment: "Preimage / Proof of Payment",
     rate: "Rate",
     reauth: "Your session has expired. Please log in again.",
     restart: "Restart",

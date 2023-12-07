@@ -6986,6 +6986,10 @@ type RootTranslation = {
 	}
 	SendBitcoinScreen: {
 		/**
+		 * T​r​a​n​s​a​c​t​i​o​n​ ​s​h​o​u​l​d​ ​b​e​ ​s​u​b​m​i​t​t​e​d​ ​t​o​ ​m​e​m​p​o​o​l
+		 */
+		willBeSentToMempoolBy: string
+		/**
 		 * A​m​o​u​n​t
 		 */
 		amount: string
@@ -7522,9 +7526,14 @@ type RootTranslation = {
 		 */
 		sendingAccount: string
 		/**
-		 * Y​o​u​r​ ​t​r​a​n​s​a​c​t​i​o​n​ ​i​s​ ​c​u​r​r​e​n​t​l​y​ ​p​e​n​d​i​n​g​ ​a​n​d​ ​w​i​l​l​ ​b​e​ ​b​r​o​a​d​c​a​s​t​e​d​ ​t​o​ ​t​h​e​ ​B​i​t​c​o​i​n​ ​n​e​t​w​o​r​k​ ​i​n​ ​a​ ​m​o​m​e​n​t​.
+		 * Y​o​u​r​ ​t​r​a​n​s​a​c​t​i​o​n​ ​i​s​ ​q​u​e​u​e​d​.​ ​I​t​ ​s​h​o​u​l​d​ ​a​p​p​e​a​r​ ​i​n​ ​t​h​e​ ​m​e​m​p​o​o​l​ ​{​c​o​u​n​t​d​o​w​n​}​.
+		 * @param {string} countdown
 		 */
-		txNotBroadcast: string
+		txNotBroadcast: RequiredParams<'countdown'>
+		/**
+		 * n​o​w
+		 */
+		now: string
 	}
 	TransactionLimitsScreen: {
 		/**
@@ -8113,6 +8122,10 @@ type RootTranslation = {
 		 */
 		openWallet: string
 		/**
+		 * P​a​y​m​e​n​t​ ​R​e​q​u​e​s​t
+		 */
+		paymentRequest: string
+		/**
 		 * P​h​o​n​e
 		 */
 		phone: string
@@ -8120,6 +8133,10 @@ type RootTranslation = {
 		 * P​h​o​n​e​ ​N​u​m​b​e​r
 		 */
 		phoneNumber: string
+		/**
+		 * P​r​e​i​m​a​g​e​ ​/​ ​P​r​o​o​f​ ​o​f​ ​P​a​y​m​e​n​t
+		 */
+		preimageProofOfPayment: string
 		/**
 		 * R​a​t​e
 		 */
@@ -15740,6 +15757,10 @@ export type TranslationFunctions = {
 	}
 	SendBitcoinScreen: {
 		/**
+		 * Transaction should be submitted to mempool
+		 */
+		willBeSentToMempoolBy: () => LocalizedString
+		/**
 		 * Amount
 		 */
 		amount: () => LocalizedString
@@ -16267,9 +16288,13 @@ export type TranslationFunctions = {
 		 */
 		sendingAccount: () => LocalizedString
 		/**
-		 * Your transaction is currently pending and will be broadcasted to the Bitcoin network in a moment.
+		 * Your transaction is queued. It should appear in the mempool {countdown}.
 		 */
-		txNotBroadcast: () => LocalizedString
+		txNotBroadcast: (arg: { countdown: string }) => LocalizedString
+		/**
+		 * now
+		 */
+		now: () => LocalizedString
 	}
 	TransactionLimitsScreen: {
 		/**
@@ -16845,6 +16870,10 @@ export type TranslationFunctions = {
 		 */
 		openWallet: () => LocalizedString
 		/**
+		 * Payment Request
+		 */
+		paymentRequest: () => LocalizedString
+		/**
 		 * Phone
 		 */
 		phone: () => LocalizedString
@@ -16852,6 +16881,10 @@ export type TranslationFunctions = {
 		 * Phone Number
 		 */
 		phoneNumber: () => LocalizedString
+		/**
+		 * Preimage / Proof of Payment
+		 */
+		preimageProofOfPayment: () => LocalizedString
 		/**
 		 * Rate
 		 */

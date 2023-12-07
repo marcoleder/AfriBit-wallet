@@ -29,6 +29,7 @@ export default gql`
       }
       ... on InitiationViaLn {
         paymentHash
+        paymentRequest
       }
       ... on InitiationViaOnChain {
         address
@@ -44,6 +45,7 @@ export default gql`
       }
       ... on SettlementViaOnChain {
         transactionHash
+        arrivalInMempoolEstimatedAt
       }
     }
   }
