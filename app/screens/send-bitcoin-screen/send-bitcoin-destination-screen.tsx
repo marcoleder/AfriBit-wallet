@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useReducer, useState } from "react"
-import { TouchableWithoutFeedback, View, ActivityIndicator } from "react-native"
+import React, { useCallback, useEffect, useMemo, useReducer } from "react"
+import { TextInput, TouchableWithoutFeedback, View } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Screen } from "@app/components/screen"
 import { gql } from "@apollo/client"
@@ -8,7 +8,6 @@ import {
   useAccountDefaultWalletLazyQuery,
   useRealtimePriceQuery,
   useSendBitcoinDestinationQuery,
-  useContactsQuery,
 } from "@app/graphql/generated"
 import { useI18nContext } from "@app/i18n/i18n-react"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
@@ -18,13 +17,11 @@ import { PaymentType } from "@galoymoney/client"
 import Clipboard from "@react-native-clipboard/clipboard"
 import crashlytics from "@react-native-firebase/crashlytics"
 import { StackNavigationProp } from "@react-navigation/stack"
-import { SearchBar } from "@rneui/base"
-import { FlatList } from "react-native-gesture-handler"
 
 import { LNURL_DOMAINS } from "@app/config"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { RouteProp, useNavigation } from "@react-navigation/native"
-import { makeStyles, useTheme, Text, ListItem } from "@rneui/themed"
+import { makeStyles, useTheme, Text } from "@rneui/themed"
 import { testProps } from "../../utils/testProps"
 import { ConfirmDestinationModal } from "./confirm-destination-modal"
 import { DestinationInformation } from "./destination-information"
@@ -64,18 +61,6 @@ gql`
   query accountDefaultWallet($username: Username!) {
     accountDefaultWallet(username: $username) {
       id
-    }
-  }
-
-  query contacts {
-    me {
-      id
-      contacts {
-        id
-        username
-        alias
-        transactionsCount
-      }
     }
   }
 `
@@ -125,75 +110,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   const [accountDefaultWalletQuery] = useAccountDefaultWalletLazyQuery({
     fetchPolicy: "no-cache",
   })
-
-  const [matchingContacts, setMatchingContacts] = useState<Contact[]>([])
-  const {
-    loading,
-    data: contactsData,
-    error,
-  } = useContactsQuery({
-    skip: !isAuthed,
-    fetchPolicy: "cache-and-network",
-  })
-
-  const allContacts: Contact[] = useMemo(() => {
-    const contactsCopy = contactsData?.me?.contacts.slice() ?? []
-    const compareUsernames = (a: Contact, b: Contact) => {
-      return a.username.toLocaleLowerCase().localeCompare(b.username.toLocaleLowerCase())
-    }
-    contactsCopy.sort(compareUsernames)
-
-    return contactsCopy
-  }, [contactsData])
-
-  if (error) {
-    toastShow({ message: error.message, LL })
-  }
-
-  const reset = useCallback(() => {
-    dispatchDestinationStateAction({
-      type: "set-unparsed-destination",
-      payload: { unparsedDestination: "" },
-    })
-    setGoToNextScreenWhenValid(false)
-    setSelectedId(null)
-    setMatchingContacts(allContacts)
-  }, [allContacts])
-
-  const updateMatchingContacts = useCallback(
-    (newSearchText: string) => {
-      if (newSearchText.length > 0) {
-        const searchWordArray = newSearchText
-          .split(" ")
-          .filter((text) => text.trim().length > 0)
-        const matchingContacts = allContacts.filter((contact) =>
-          searchWordArray.some((word) => wordMatchesContact(word, contact)),
-        )
-        setMatchingContacts(matchingContacts)
-      } else {
-        setMatchingContacts(allContacts)
-      }
-    },
-    [allContacts],
-  )
-
-  const wordMatchesContact = (searchWord: string, contact: Contact): boolean => {
-    let contactPrettyNameMatchesSearchWord: boolean
-
-    const contactNameMatchesSearchWord = contact.username
-      .toLowerCase()
-      .includes(searchWord.toLowerCase())
-
-    if (contact.alias) {
-      contactPrettyNameMatchesSearchWord = contact.alias
-        .toLowerCase()
-        .includes(searchWord.toLowerCase())
-    } else {
-      contactPrettyNameMatchesSearchWord = false
-    }
-
-    return contactNameMatchesSearchWord || contactPrettyNameMatchesSearchWord
-  }
 
   const validateDestination = useMemo(() => {
     if (!bitcoinNetwork || !wallets || !contacts) {
@@ -285,35 +201,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     navigation,
   ])
 
-  let ListEmptyContent: React.ReactNode
-
-  if (allContacts.length > 0) {
-    ListEmptyContent = (
-      <View style={styles.emptyListNoMatching}>
-        <Text style={styles.emptyListTitle}>{LL.PeopleScreen.noMatchingContacts()}</Text>
-      </View>
-    )
-  } else if (loading) {
-    ListEmptyContent = (
-      <View style={styles.activityIndicatorContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    )
-  } else {
-    ListEmptyContent = (
-      <View style={styles.emptyListNoContacts}>
-        <Text
-          {...testProps(LL.PeopleScreen.noContactsTitle())}
-          style={styles.emptyListTitle}
-        >
-          {LL.PeopleScreen.noContactsTitle()}
-        </Text>
-        <Text style={styles.emptyListText}>{LL.PeopleScreen.noContactsYet()}</Text>
-      </View>
-    )
-  }
-
-  const parseBtcDest = useCallback(
+  const handleChangeText = useCallback(
     (newDestination: string) => {
       dispatchDestinationStateAction({
         type: SendBitcoinActions.SetUnparsedDestination,
@@ -323,10 +211,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     },
     [dispatchDestinationStateAction, setGoToNextScreenWhenValid],
   )
-
-  useEffect(() => {
-    setMatchingContacts(allContacts)
-  }, [allContacts])
 
   useEffect(() => {
     if (
@@ -354,13 +238,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         receiveDestination: destinationState.destination,
       })
     }
-  }, [
-    allContacts,
-    destinationState,
-    goToNextScreenWhenValid,
-    navigation,
-    setGoToNextScreenWhenValid,
-  ])
+  }, [destinationState, goToNextScreenWhenValid, navigation, setGoToNextScreenWhenValid])
 
   const initiateGoToNextScreen = useMemo(() => {
     return async () => {
@@ -373,9 +251,9 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
   useEffect(() => {
     if (route.params?.payment) {
-      parseBtcDest(route.params?.payment)
+      handleChangeText(route.params?.payment)
     }
-  }, [route.params?.payment, parseBtcDest])
+  }, [route.params?.payment, handleChangeText])
 
   useEffect(() => {
     if (route.params?.autoValidate) {
@@ -387,9 +265,9 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     // If we scan a QR code encoded with a payment url for a specific user e.g. https://{domain}/{username}
     // then we want to detect the username as the destination
     if (route.params?.username) {
-      parseBtcDest(route.params?.username)
+      handleChangeText(route.params?.username)
     }
-  }, [route.params?.username, parseBtcDest])
+  }, [route.params?.username, handleChangeText])
 
   let inputContainerStyle
   switch (destinationState.destinationState) {
@@ -411,15 +289,9 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
       inputContainerStyle = styles.warningInputContainer
   }
 
-  const [selectedId, setSelectedId] = useState(null)
-
-  const handleSelection = (id) => {
-    if (selectedId === id) setSelectedId(null)
-    else setSelectedId(id)
-  }
-
   return (
     <Screen
+      preset="scroll"
       style={styles.screenStyle}
       keyboardOffset="navigationHeader"
       keyboardShouldPersistTaps="handled"
@@ -428,119 +300,82 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
         destinationState={destinationState}
         dispatchDestinationStateAction={dispatchDestinationStateAction}
       />
-      <View style={[styles.fieldBackground, inputContainerStyle]}>
-        <SearchBar
-          {...testProps(LL.SendBitcoinScreen.placeholder())}
-          placeholder={LL.SendBitcoinScreen.placeholder()}
-          value={destinationState.unparsedDestination}
-          onChangeText={(text) => {
-            parseBtcDest(text)
-            updateMatchingContacts(text)
-          }}
-          onSubmitEditing={() =>
-            validateDestination &&
-            validateDestination(destinationState.unparsedDestination)
-          }
-          platform="default"
-          showLoading={false}
-          containerStyle={styles.searchBarContainer}
-          inputContainerStyle={styles.searchBarInputContainerStyle}
-          inputStyle={styles.searchBarText}
-          searchIcon={<></>}
-          autoCapitalize="none"
-          autoCorrect={false}
-          clearIcon={
-            <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
-          }
-        />
-        <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
-          <View style={styles.iconContainer}>
-            <ScanIcon fill={colors.black} />
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={async () => {
-            try {
-              const clipboard = await Clipboard.getString()
-              dispatchDestinationStateAction({
-                type: "set-unparsed-destination",
-                payload: {
-                  unparsedDestination: clipboard,
-                },
-              })
-              if (clipboard.length > 0) {
-                const searchWordArray = clipboard
-                  .split(" ")
-                  .filter((text) => text.trim().length > 0)
-                const matchingContacts = allContacts.filter((contact) =>
-                  searchWordArray.some((word) => wordMatchesContact(word, contact)),
-                )
-                setMatchingContacts(matchingContacts)
-              } else {
-                setMatchingContacts(allContacts)
-              }
-              validateDestination && (await validateDestination(clipboard))
-            } catch (err) {
-              if (err instanceof Error) {
-                crashlytics().recordError(err)
-              }
-              toastShow({
-                type: "error",
-                message: (translations) =>
-                  translations.SendBitcoinDestinationScreen.clipboardError(),
-                LL,
-              })
-            }
-          }}
+      <View style={styles.sendBitcoinDestinationContainer}>
+        <Text
+          {...testProps(LL.SendBitcoinScreen.destination())}
+          style={styles.fieldTitleText}
         >
-          <View style={styles.iconContainer}>
-            {/* we could Paste from "FontAwesome" but as svg*/}
-            <Icon name="ios-clipboard-outline" color={colors.black} size={22} />
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-      <DestinationInformation destinationState={destinationState} />
-      <FlatList
-        style={styles.flatList}
-        contentContainerStyle={styles.flatListContainer}
-        data={matchingContacts}
-        extraData={selectedId}
-        ListEmptyComponent={ListEmptyContent}
-        renderItem={({ item }) => (
-          <ListItem
-            key={item.username}
-            style={styles.item}
-            containerStyle={
-              item.id === selectedId ? styles.selectedContainer : styles.itemContainer
+          {LL.SendBitcoinScreen.destination()}
+        </Text>
+
+        <View style={[styles.fieldBackground, inputContainerStyle]}>
+          <TextInput
+            {...testProps(LL.SendBitcoinScreen.placeholder())}
+            style={styles.input}
+            placeholder={LL.SendBitcoinScreen.placeholder()}
+            placeholderTextColor={colors.grey2}
+            onChangeText={handleChangeText}
+            value={destinationState.unparsedDestination}
+            onSubmitEditing={() =>
+              validateDestination &&
+              validateDestination(destinationState.unparsedDestination)
             }
-            onPress={() => {
-              handleSelection(item.id)
-              parseBtcDest(item.username)
+            selectTextOnFocus
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TouchableWithoutFeedback onPress={() => navigation.navigate("scanningQRCode")}>
+            <View style={styles.iconContainer}>
+              <ScanIcon fill={colors.primary} />
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={async () => {
+              try {
+                const clipboard = await Clipboard.getString()
+                dispatchDestinationStateAction({
+                  type: SendBitcoinActions.SetUnparsedDestination,
+                  payload: {
+                    unparsedDestination: clipboard,
+                  },
+                })
+                validateDestination && (await validateDestination(clipboard))
+              } catch (err) {
+                if (err instanceof Error) {
+                  crashlytics().recordError(err)
+                }
+                toastShow({
+                  type: "error",
+                  message: (translations) =>
+                    translations.SendBitcoinDestinationScreen.clipboardError(),
+                  LL,
+                })
+              }
             }}
           >
-            <Icon name={"ios-person-outline"} size={24} color={colors.black} />
-            <ListItem.Content>
-              <ListItem.Title style={styles.itemText}>{item.alias}</ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        )}
-        keyExtractor={(item) => item.username}
-      />
-      <View style={styles.buttonContainer}>
-        <GaloyPrimaryButton
-          title={
-            destinationState.unparsedDestination
-              ? LL.common.next()
-              : LL.SendBitcoinScreen.destinationIsRequired()
-          }
-          loading={destinationState.destinationState === "validating"}
-          disabled={
-            destinationState.destinationState === "invalid" ||
-            !destinationState.unparsedDestination ||
-            !initiateGoToNextScreen
-          }
-          onPress={initiateGoToNextScreen || undefined}
-        />
+            <View style={styles.iconContainer}>
+              {/* we could Paste from "FontAwesome" but as svg*/}
+              <Icon name="clipboard-outline" color={colors.primary} size={22} />
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+        <DestinationInformation destinationState={destinationState} />
+        <View style={styles.buttonContainer}>
+          <GaloyPrimaryButton
+            title={
+              destinationState.unparsedDestination
+                ? LL.common.next()
+                : LL.SendBitcoinScreen.destinationIsRequired()
+            }
+            loading={destinationState.destinationState === "validating"}
+            disabled={
+              destinationState.destinationState === "invalid" ||
+              !destinationState.unparsedDestination ||
+              !initiateGoToNextScreen
+            }
+            onPress={initiateGoToNextScreen || undefined}
+          />
+        </View>
       </View>
     </Screen>
   )
@@ -549,81 +384,12 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 export default SendBitcoinDestinationScreen
 
 const usestyles = makeStyles(({ colors }) => ({
-  activityIndicatorContainer: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-  },
-
-  emptyListNoContacts: {
-    marginHorizontal: 12,
-    marginTop: 32,
-  },
-
-  emptyListNoMatching: {
-    marginHorizontal: 26,
-    marginTop: 8,
-  },
-
-  emptyListText: {
-    fontSize: 18,
-    marginTop: 30,
-    textAlign: "center",
-    color: colors.black,
-  },
-
-  emptyListTitle: {
-    color: colors.warning,
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-
-  flatList: {
-    flex: 1,
-  },
-
-  flatListContainer: {
-    margin: 0,
-  },
-
-  item: {
-    marginHorizontal: 32,
-    marginBottom: 16,
-  },
-
-  itemContainer: {
-    borderRadius: 8,
-    backgroundColor: colors.grey5,
-  },
-  selectedContainer: {
-    borderRadius: 8,
-    backgroundColor: colors.grey3,
-  },
-
-  searchBarContainer: {
-    flex: 1,
-    backgroundColor: colors.grey5,
-    borderBottomColor: colors.grey5,
-    borderTopColor: colors.grey5,
-    padding: 0,
-  },
-
-  searchBarInputContainerStyle: {
-    backgroundColor: colors.grey5,
-  },
-
-  searchBarText: {
-    color: colors.black,
-    textDecorationLine: "none",
-  },
-  itemText: { color: colors.black },
-  icon: {
-    color: colors.black,
-  },
   screenStyle: {
     padding: 20,
     flexGrow: 1,
+  },
+  sendBitcoinDestinationContainer: {
+    flex: 1,
   },
   fieldBackground: {
     flexDirection: "row",
@@ -634,7 +400,7 @@ const usestyles = makeStyles(({ colors }) => ({
     justifyContent: "center",
     alignItems: "center",
     height: 60,
-    marginBottom: 26,
+    marginBottom: 10,
   },
   enteringInputContainer: {},
   errorInputContainer: {
@@ -650,7 +416,8 @@ const usestyles = makeStyles(({ colors }) => ({
     borderWidth: 1,
   },
   buttonContainer: {
-    marginTop: 26,
+    flex: 1,
+    justifyContent: "flex-end",
   },
   input: {
     flex: 1,
@@ -663,7 +430,6 @@ const usestyles = makeStyles(({ colors }) => ({
   },
   iconContainer: {
     width: 50,
-    height: 50,
     justifyContent: "center",
     alignItems: "center",
   },
