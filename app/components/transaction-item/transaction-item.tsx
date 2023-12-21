@@ -285,7 +285,7 @@ const useStyles = makeStyles(({ colors }, props: UseStyleProps) => ({
     flexWrap: "wrap",
   },
   receiveUsd: {
-    color: colors.green,
+    color: colors._green,
     textAlign: "right",
     flexWrap: "wrap",
   },

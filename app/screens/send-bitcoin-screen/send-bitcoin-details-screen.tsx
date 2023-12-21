@@ -12,6 +12,7 @@ import {
   WalletCurrency,
 } from "@app/graphql/generated"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
+import Clipboard from "@react-native-clipboard/clipboard"
 import { useLevel } from "@app/graphql/level-context"
 import { usePriceConversion } from "@app/hooks"
 import { useDisplayCurrency } from "@app/hooks/use-display-currency"
@@ -29,7 +30,7 @@ import crashlytics from "@react-native-firebase/crashlytics"
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native"
 import { makeStyles, Text, useTheme } from "@rneui/themed"
 import React, { useEffect, useState } from "react"
-import { TouchableWithoutFeedback, View } from "react-native"
+import { TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { testProps } from "../../utils/testProps"
 import { isValidAmount } from "./payment-details"
 import { PaymentDetail } from "./payment-details/index.types"
@@ -40,6 +41,8 @@ import { getBtcWallet, getDefaultWallet, getUsdWallet } from "@app/graphql/walle
 import { PaymentDestinationDisplay } from "@app/components/payment-destination-display"
 import { useHideAmount } from "@app/graphql/hide-amount-context"
 import { ConfirmFeesModal } from "./confirm-fees-modal"
+import { GaloyIcon } from "@app/components/atomic/galoy-icon"
+import { toastShow } from "@app/utils/toast"
 
 gql`
   query sendBitcoinDetailsScreen {
@@ -242,6 +245,15 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
 
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible)
+  }
+
+  const copyToClipboard = () => {
+    Clipboard.setString(paymentDetail.destination)
+    toastShow({
+      type: "success",
+      message: LL.SendBitcoinScreen.copiedDestination(),
+      LL,
+    })
   }
 
   const chooseWallet = (wallet: Pick<Wallet, "id" | "walletCurrency">) => {
@@ -492,11 +504,20 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
       <View style={styles.sendBitcoinAmountContainer}>
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldTitleText}>{LL.SendBitcoinScreen.destination()}</Text>
-          <View style={styles.disabledFieldBackground}>
-            <PaymentDestinationDisplay
-              destination={paymentDetail.destination}
-              paymentType={paymentDetail.paymentType}
-            />
+          <View style={styles.destinationFieldContainer}>
+            <View style={styles.disabledFieldBackground}>
+              <PaymentDestinationDisplay
+                destination={paymentDetail.destination}
+                paymentType={paymentDetail.paymentType}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.iconContainer}
+              onPress={copyToClipboard}
+              hitSlop={30}
+            >
+              <GaloyIcon name={"copy-paste"} size={18} color={colors.primary} />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.fieldContainer}>
@@ -563,7 +584,7 @@ const useStyles = makeStyles(({ colors }) => ({
     padding: 14,
     minHeight: 60,
   },
-  disabledFieldBackground: {
+  destinationFieldContainer: {
     flexDirection: "row",
     borderStyle: "solid",
     overflow: "hidden",
@@ -572,7 +593,12 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "center",
     padding: 14,
     minHeight: 60,
+  },
+  disabledFieldBackground: {
+    flex: 1,
     opacity: 0.5,
+    flexDirection: "row",
+    alignItems: "center",
   },
   walletContainerBtcSelected: {
     flexDirection: "row",
@@ -597,7 +623,7 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "center",
     marginBottom: 10,
     minHeight: 60,
-    borderColor: colors.green,
+    borderColor: colors._green,
     borderWidth: 1,
   },
   walletContainerNoSelection: {
@@ -641,7 +667,7 @@ const useStyles = makeStyles(({ colors }) => ({
     height: 30,
     width: 50,
     backgroundColor: colors.grey5,
-    borderColor: colors.green,
+    borderColor: colors._green,
     borderWidth: 3,
     borderRadius: 10,
     justifyContent: "center",
@@ -650,7 +676,7 @@ const useStyles = makeStyles(({ colors }) => ({
   walletSelectorTypeLabelUsdSelected: {
     height: 30,
     width: 50,
-    backgroundColor: colors.green,
+    backgroundColor: colors._green,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -736,6 +762,11 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "center",
     marginBottom: 8,
     height: 18,
+  },
+  iconContainer: {
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingLeft: 20,
   },
 }))
 

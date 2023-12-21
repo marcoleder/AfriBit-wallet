@@ -102,7 +102,7 @@ const useStyles = makeStyles(({ colors }, { selected }: { selected: boolean }) =
   },
   textUsd: {
     fontSize: 16,
-    color: selected ? colors.green : colors.grey1, // change here
+    color: selected ? colors._green : colors.grey1, // change here
   },
   buttonGroup: {
     flexDirection: "row",

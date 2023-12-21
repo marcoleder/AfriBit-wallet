@@ -55,7 +55,7 @@ import RedeemBitcoinResultScreen from "@app/screens/redeem-lnurl-withdrawal-scre
 import SendBitcoinConfirmationScreen from "@app/screens/send-bitcoin-screen/send-bitcoin-confirmation-screen"
 import SendBitcoinDestinationScreen from "@app/screens/send-bitcoin-screen/send-bitcoin-destination-screen"
 import SendBitcoinDetailsScreen from "@app/screens/send-bitcoin-screen/send-bitcoin-details-screen"
-import SendBitcoinSuccessScreen from "@app/screens/send-bitcoin-screen/send-bitcoin-success-screen"
+import SendBitcoinCompletedScreen from "@app/screens/send-bitcoin-screen/send-bitcoin-completed-screen"
 import { AccountScreen } from "@app/screens/settings-screen/account-screen"
 import { DefaultWalletScreen } from "@app/screens/settings-screen/default-wallet"
 import { DisplayCurrencyScreen } from "@app/screens/settings-screen/display-currency-screen"
@@ -163,9 +163,9 @@ export const RootStack = () => {
         options={{ title: LL.SendBitcoinScreen.sendBitcoinConfirmation() }}
       />
       <RootNavigator.Screen
-        name="sendBitcoinSuccess"
-        component={SendBitcoinSuccessScreen}
-        options={{ title: LL.SendBitcoinScreen.sendBitcoinSuccess() }}
+        name="sendBitcoinCompleted"
+        component={SendBitcoinCompletedScreen}
+        options={{ title: LL.SendBitcoinScreen.title() }}
       />
       <RootNavigator.Screen
         name="receiveBitcoin"

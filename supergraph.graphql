@@ -26,7 +26,8 @@ interface Account
 {
   callbackEndpoints: [CallbackEndpoint!]!
   csvTransactions(walletIds: [WalletId!]!): String!
-  defaultWalletId: WalletId!
+  defaultWallet: PublicWallet!
+  defaultWalletId: WalletId! @deprecated(reason: "Shifting property to 'defaultWallet.id'")
   displayCurrency: DisplayCurrency!
   id: ID!
   invoices(
@@ -379,6 +380,7 @@ type ConsumerAccount implements Account
   return CSV stream, base64 encoded, of the list of transactions in the wallet
   """
   csvTransactions(walletIds: [WalletId!]!): String! @join__field(graph: GALOY)
+  defaultWallet: PublicWallet! @join__field(graph: GALOY)
   defaultWalletId: WalletId! @join__field(graph: GALOY)
   displayCurrency: DisplayCurrency! @join__field(graph: GALOY)
 
@@ -426,6 +428,8 @@ type ConsumerAccount implements Account
   walletById(walletId: WalletId!): Wallet! @join__field(graph: GALOY)
   wallets: [Wallet!]! @join__field(graph: GALOY)
   onboardingStatus: OnboardingStatus @join__field(graph: KYC)
+  firstName: String @join__field(graph: KYC)
+  lastName: String @join__field(graph: KYC)
 }
 
 """
@@ -1168,8 +1172,8 @@ type Mutation
   userPhoneDelete: UserPhoneDeletePayload! @join__field(graph: GALOY)
   userPhoneRegistrationInitiate(input: UserPhoneRegistrationInitiateInput!): SuccessPayload! @join__field(graph: GALOY)
   userPhoneRegistrationValidate(input: UserPhoneRegistrationValidateInput!): UserPhoneRegistrationValidatePayload! @join__field(graph: GALOY)
-  userTotpDelete(input: UserTotpDeleteInput!): UserTotpDeletePayload! @join__field(graph: GALOY)
-  userTotpRegistrationInitiate(input: UserTotpRegistrationInitiateInput!): UserTotpRegistrationInitiatePayload! @join__field(graph: GALOY)
+  userTotpDelete: UserTotpDeletePayload! @join__field(graph: GALOY)
+  userTotpRegistrationInitiate: UserTotpRegistrationInitiatePayload! @join__field(graph: GALOY)
   userTotpRegistrationValidate(input: UserTotpRegistrationValidateInput!): UserTotpRegistrationValidatePayload! @join__field(graph: GALOY)
   userUpdateLanguage(input: UserUpdateLanguageInput!): UserUpdateLanguagePayload! @join__field(graph: GALOY)
   userUpdateUsername(input: UserUpdateUsernameInput!): UserUpdateUsernamePayload! @join__field(graph: GALOY) @deprecated(reason: "Username will be moved to @Handle in Accounts. Also SetUsername naming should be used instead of UpdateUsername to reflect the idempotency of Handles")
@@ -1507,8 +1511,9 @@ A public view of a generic wallet which stores value in one of our supported cur
 type PublicWallet
   @join__type(graph: GALOY)
 {
+  currency: WalletCurrency!
   id: ID!
-  walletCurrency: WalletCurrency!
+  walletCurrency: WalletCurrency! @deprecated(reason: "Shifting property to 'currency'")
 }
 
 type Query
@@ -1528,7 +1533,6 @@ type Query
   onChainTxFee(address: OnChainAddress!, amount: SatAmount!, speed: PayoutSpeed! = FAST, walletId: WalletId!): OnChainTxFee! @join__field(graph: GALOY)
   onChainUsdTxFee(address: OnChainAddress!, amount: CentAmount!, speed: PayoutSpeed! = FAST, walletId: WalletId!): OnChainUsdTxFee! @join__field(graph: GALOY)
   onChainUsdTxFeeAsBtcDenominated(address: OnChainAddress!, amount: SatAmount!, speed: PayoutSpeed! = FAST, walletId: WalletId!): OnChainUsdTxFee! @join__field(graph: GALOY)
-  quizQuestions: [QuizQuestion] @join__field(graph: GALOY) @deprecated(reason: "TODO: remove. we don't need a non authenticated version of this query. the users can only do the query while authenticated")
 
   """Returns 1 Sat and 1 Usd Cent price for the given currency"""
   realtimePrice(currency: DisplayCurrency = "USD"): RealtimePrice! @join__field(graph: GALOY)
@@ -1556,14 +1560,6 @@ type QuizCompletedPayload
 {
   errors: [Error!]!
   quiz: Quiz
-}
-
-type QuizQuestion
-  @join__type(graph: GALOY)
-{
-  """The earn reward in Satoshis for the quiz question"""
-  earnAmount: SatAmount!
-  id: ID!
 }
 
 type RealtimePrice
@@ -1884,9 +1880,6 @@ type User
   """Phone number with international calling code."""
   phone: Phone
 
-  """List the quiz questions the user may have completed."""
-  quizQuestions: [UserQuizQuestion!]! @deprecated(reason: "use Quiz from Account instead")
-
   """Whether TOTP is enabled for this user."""
   totpEnabled: Boolean!
 
@@ -2025,30 +2018,11 @@ type UserPhoneRegistrationValidatePayload
   me: User
 }
 
-type UserQuizQuestion
-  @join__type(graph: GALOY)
-{
-  completed: Boolean!
-  question: QuizQuestion!
-}
-
-input UserTotpDeleteInput
-  @join__type(graph: GALOY)
-{
-  authToken: AuthToken!
-}
-
 type UserTotpDeletePayload
   @join__type(graph: GALOY)
 {
   errors: [Error!]!
   me: User
-}
-
-input UserTotpRegistrationInitiateInput
-  @join__type(graph: GALOY)
-{
-  authToken: AuthToken!
 }
 
 type UserTotpRegistrationInitiatePayload
@@ -2062,7 +2036,7 @@ type UserTotpRegistrationInitiatePayload
 input UserTotpRegistrationValidateInput
   @join__type(graph: GALOY)
 {
-  authToken: AuthToken!
+  authToken: AuthToken
   totpCode: TotpCode!
   totpRegistrationId: TotpRegistrationId!
 }
