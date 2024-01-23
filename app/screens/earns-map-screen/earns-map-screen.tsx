@@ -1,19 +1,21 @@
 import { StackNavigationProp } from "@react-navigation/stack"
 import * as React from "react"
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native"
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import { SvgProps } from "react-native-svg"
 import { MountainHeader } from "../../components/mountain-header"
 import { Screen } from "../../components/screen"
 import { RootStackParamList } from "../../navigation/stack-param-lists"
-import { getQuizQuestionsContent, sectionCompletedPct } from "../earns-screen"
+import {
+  augmentCardWithGqlData,
+  getCardsFromSection,
+  getQuizQuestionsContent,
+} from "../earns-screen"
 
 import { useI18nContext } from "@app/i18n/i18n-react"
 import { useNavigation } from "@react-navigation/native"
 import { earnSections, EarnSectionType } from "../earns-screen/sections"
 import BitcoinCircle from "./bitcoin-circle-01.svg"
-import BottomOngoing from "./bottom-ongoing-01.svg"
-import BottomStart from "./bottom-start-01.svg"
 import LeftFinish from "./left-finished-01.svg"
 import LeftLastOngoing from "./left-last-section-ongoing-01.svg"
 import LeftLastTodo from "./left-last-section-to-do-01.svg"
@@ -28,13 +30,9 @@ import RightComplete from "./right-section-completed-01.svg"
 import RightOngoing from "./right-section-ongoing-01.svg"
 import RightTodo from "./right-section-to-do-01.svg"
 import TextBlock from "./text-block-medium.svg"
+import BottomStart from "./bottom-start-01.svg"
 import { useQuizServer } from "./use-quiz-server"
 import { makeStyles, useTheme } from "@rneui/themed"
-
-const BottomOngoingEN = React.lazy(() => import("./bottom-ongoing-01.en.svg"))
-const BottomOngoingES = React.lazy(() => import("./bottom-ongoing-01.es.svg"))
-const BottomStartEN = React.lazy(() => import("./bottom-start-01.en.svg"))
-const BottomStartES = React.lazy(() => import("./bottom-start-01.es.svg"))
 
 type SideType = "left" | "right"
 interface IInBetweenTile {
@@ -44,17 +42,19 @@ interface IInBetweenTile {
 }
 
 interface IBoxAdding {
+  section: EarnSectionType
   text: string
   Icon: React.FunctionComponent<SvgProps>
   side: SideType
   position: number
   length: number
-  onPress: () => void
 }
 
 type ProgressProps = {
   progress: number
 }
+
+const BADGER_WIDTH = 134
 
 const ProgressBar = ({ progress }: ProgressProps) => {
   const {
@@ -81,20 +81,13 @@ type FinishProps = {
   length: number
 }
 
-export type MyQuizQuestions = {
-  readonly __typename: "Quiz"
-  readonly id: string
-  readonly amount: number
-  readonly completed: boolean
-}[]
-
 export const EarnMapScreen: React.FC = () => {
   const {
     theme: { colors },
   } = useTheme()
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, "Earn">>()
-  const { LL, locale } = useI18nContext()
+  const { LL } = useI18nContext()
   const quizQuestionsContent = getQuizQuestionsContent({ LL })
   const sections = Object.keys(earnSections) as EarnSectionType[]
 
@@ -102,33 +95,39 @@ export const EarnMapScreen: React.FC = () => {
     index: section,
     text: LL.EarnScreen.earnSections[section].title(),
     icon: BitcoinCircle,
-    onPress: () => navigation.navigate("earnsSection", { section }),
   }))
   const styles = useStyles()
 
   let currSection = 0
   let progress = NaN
 
-  const { loading, quizServerData } = useQuizServer({ fetchPolicy: "network-only" })
+  const { loading, quizServerData, earnedSats } = useQuizServer({
+    fetchPolicy: "network-only",
+  })
+
+  let canDoNextSection: boolean
 
   for (const section of sections) {
-    const sectionCompletion = sectionCompletedPct({
-      quizServerData,
+    const cardsOnSection = getCardsFromSection({
       section,
       quizQuestionsContent,
     })
+    const cards = cardsOnSection.map((card) =>
+      augmentCardWithGqlData({ card, quizServerData }),
+    )
 
-    if (sectionCompletion === 1) {
+    const sectionCompleted = cards?.every((item) => item?.completed) ?? false
+
+    if (sectionCompleted) {
       currSection += 1
     } else if (isNaN(progress)) {
-      // only do it once for the first uncompleted section
-      progress = sectionCompletion
+      // get progress of the current section
+      progress = cards?.filter((item) => item?.completed).length / cards.length ?? 0
+
+      const notBefore = cards[cards.length - 1]?.notBefore
+      canDoNextSection = !notBefore || new Date() > notBefore
     }
   }
-
-  const earnedSat = quizServerData
-    .filter((quiz) => quiz.completed)
-    .reduce((acc, { amount }) => acc + amount, 0)
 
   const Finish = ({ currSection, length }: FinishProps) => {
     if (currSection !== sectionsData.length) return null
@@ -173,17 +172,24 @@ export const EarnMapScreen: React.FC = () => {
   }
 
   const BoxAdding: React.FC<IBoxAdding> = ({
+    section,
     text,
     Icon,
     side,
     position,
     length,
-    onPress,
   }: IBoxAdding) => {
     const styles = useStyles()
 
     const disabled = currSection < position
+    const nextSectionNotYetAvailable = currSection === position && !canDoNextSection
     const progressSection = disabled ? 0 : currSection > position ? 1 : progress
+
+    const onPress = () => {
+      nextSectionNotYetAvailable
+        ? Alert.alert(LL.EarnScreen.notYet(), LL.EarnScreen.availableTomorrow())
+        : navigation.navigate("earnsSection", { section })
+    }
 
     // rework this to pass props into the style object
     const boxStyle = StyleSheet.create({
@@ -220,12 +226,12 @@ export const EarnMapScreen: React.FC = () => {
     .map((item, index) => (
       <BoxAdding
         key={item.index}
+        section={item.index}
         text={item.text}
         Icon={item.icon}
         side={index % 2 ? "left" : "right"}
         position={index}
         length={sectionsData.length}
-        onPress={item.onPress}
       />
     ))
     .reverse()
@@ -250,24 +256,6 @@ export const EarnMapScreen: React.FC = () => {
 
   const backgroundColor = currSection < sectionsData.length ? colors._sky : colors._orange
 
-  const translatedBottomOngoing = () => {
-    switch (locale) {
-      case "es":
-        return <BottomOngoingES />
-      default:
-        return <BottomOngoingEN />
-    }
-  }
-
-  const translatedBottomStart = () => {
-    switch (locale) {
-      case "es":
-        return <BottomStartES />
-      default:
-        return <BottomStartEN />
-    }
-  }
-
   return (
     <Screen unsafe statusBar="light-content">
       <ScrollView
@@ -281,20 +269,21 @@ export const EarnMapScreen: React.FC = () => {
           }
         }}
       >
-        <MountainHeader amount={earnedSat.toString()} color={backgroundColor} />
+        <MountainHeader amount={earnedSats.toString()} color={backgroundColor} />
         <View style={styles.mainView}>
           <Finish currSection={currSection} length={sectionsData.length} />
           {SectionsComp}
           {currSection === 0 ? (
-            progress === 0 ? (
-              <React.Suspense fallback={<BottomStart />}>
-                {translatedBottomStart()}
-              </React.Suspense>
-            ) : (
-              <React.Suspense fallback={<BottomOngoing />}>
-                {translatedBottomOngoing()}
-              </React.Suspense>
-            )
+            <View style={styles.bottomContainer}>
+              <View style={styles.spacingBox}>
+                {progress === 0 && <BottomStart height={159} width={BADGER_WIDTH} />}
+              </View>
+              <View style={styles.bottomSectionInner}>
+                <Text style={styles.bottomSectionText}>
+                  {LL.EarnScreen.motivatingBadger()}
+                </Text>
+              </View>
+            </View>
           ) : (
             <View style={styles.position} />
           )}
@@ -309,7 +298,27 @@ const useStyles = makeStyles(({ colors }) => ({
     backgroundColor: colors._lightBlue,
     flexGrow: 1,
   },
-
+  bottomContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    columnGap: 30,
+    height: 200,
+    padding: 10,
+  },
+  spacingBox: {
+    height: 159,
+    width: BADGER_WIDTH,
+  },
+  bottomSectionText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 16,
+  },
+  bottomSectionInner: {
+    width: BADGER_WIDTH,
+  },
   finishText: {
     color: colors._white,
     fontSize: 18,

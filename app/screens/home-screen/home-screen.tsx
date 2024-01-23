@@ -32,8 +32,10 @@ import { isIos } from "@app/utils/helper"
 import { useState } from "react"
 import { BalanceHeader } from "../../components/balance-header"
 import { Screen } from "../../components/screen"
+import { MemoizedTransactionItem } from "../../components/transaction-item"
 import { RootStackParamList } from "../../navigation/stack-param-lists"
 import { PhoneLoginInitiateType } from "../phone-auth-screen"
+import { NotificationCard } from "@app/components/notifications"
 
 const TransactionCountToTriggerSetDefaultAccountModal = 1
 
@@ -290,7 +292,7 @@ export const HomeScreen: React.FC = () => {
         </Pressable>
       </View>
       <ScrollView
-        contentContainerStyle={[styles.scrollView, styles.container]}
+        contentContainerStyle={styles.scrollViewContainer}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -335,8 +337,10 @@ export const HomeScreen: React.FC = () => {
 }
 
 const useStyles = makeStyles(({ colors }) => ({
-  scrollView: {
-    paddingBottom: 12,
+  scrollViewContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    rowGap: 20,
   },
   listItemsContainer: {
     paddingHorizontal: 15,
@@ -357,9 +361,6 @@ const useStyles = makeStyles(({ colors }) => ({
   icon: {
     height: 34,
     top: -22,
-  },
-  marginButtonContainer: {
-    marginBottom: 20,
   },
   modal: {
     marginBottom: 0,

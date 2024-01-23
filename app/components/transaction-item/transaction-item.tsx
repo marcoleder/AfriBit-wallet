@@ -94,7 +94,7 @@ type DummyProps = {
   isBalanceHidden?: boolean
 }
 
-export const TransactionItem: React.FC<Props> = ({
+const TransactionItem: React.FC<Props> = ({
   txid,
   subtitle = false,
   isFirst = false,
@@ -194,9 +194,9 @@ export const TransactionItem: React.FC<Props> = ({
         <ListItem.Subtitle>
           {subtitle ? (
             <TransactionDate
-              diffDate={true}
               createdAt={tx.createdAt}
               status={tx.status}
+              includeTime={false}
             />
           ) : undefined}
         </ListItem.Subtitle>
@@ -220,6 +220,8 @@ export const TransactionItem: React.FC<Props> = ({
     </ListItem>
   )
 }
+
+export const MemoizedTransactionItem = React.memo(TransactionItem)
 
 type UseStyleProps = {
   isFirst?: boolean

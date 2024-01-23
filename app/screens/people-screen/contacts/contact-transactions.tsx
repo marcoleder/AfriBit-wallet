@@ -2,7 +2,7 @@ import { gql } from "@apollo/client"
 import { useI18nContext } from "@app/i18n/i18n-react"
 import * as React from "react"
 import { SectionList, Text, View } from "react-native"
-import { TransactionItem } from "@app/components/transaction-item"
+import { MemoizedTransactionItem } from "@app/components/transaction-item"
 import { toastShow } from "../../../utils/toast"
 
 import { useTransactionListForContactQuery } from "@app/graphql/generated"
@@ -35,8 +35,9 @@ type Props = {
 
 export const ContactTransactions = ({ contactUsername }: Props) => {
   const styles = useStyles()
-  const { LL } = useI18nContext()
+  const { LL, locale } = useI18nContext()
   const isAuthed = useIsAuthed()
+
   const { error, data, fetchMore } = useTransactionListForContactQuery({
     variables: { username: contactUsername },
     skip: !isAuthed,
@@ -48,9 +49,10 @@ export const ContactTransactions = ({ contactUsername }: Props) => {
     () =>
       groupTransactionsByDate({
         txs: transactions?.edges?.map((edge) => edge.node) ?? [],
-        common: LL.common,
+        LL,
+        locale,
       }),
-    [transactions, LL],
+    [transactions, LL, locale],
   )
 
   if (error) {
@@ -82,7 +84,7 @@ export const ContactTransactions = ({ contactUsername }: Props) => {
     <View style={styles.screen}>
       <SectionList
         renderItem={({ item }) => (
-          <TransactionItem key={`txn-${item.id}`} txid={item.id} />
+          <MemoizedTransactionItem key={`txn-${item.id}`} txid={item.id} />
         )}
         initialNumToRender={20}
         renderSectionHeader={({ section: { title } }) => (

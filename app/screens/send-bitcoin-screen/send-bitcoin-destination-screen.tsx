@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { ActivityIndicator, TouchableOpacity, View } from "react-native"
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import { ActivityIndicator, TouchableOpacity, View } from "react-native"
 import Icon from "react-native-vector-icons/Ionicons"
 import { Screen } from "@app/components/screen"
 import { gql } from "@apollo/client"
 import ScanIcon from "@app/assets/icons/scan.svg"
 import {
+  UserContact,
   useAccountDefaultWalletLazyQuery,
   useRealtimePriceQuery,
   useSendBitcoinDestinationQuery,
@@ -19,10 +22,13 @@ import crashlytics from "@react-native-firebase/crashlytics"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { SearchBar } from "@rneui/base"
 import { FlatList } from "react-native-gesture-handler"
+import { SearchBar } from "@rneui/base"
+import { FlatList } from "react-native-gesture-handler"
 
 import { LNURL_DOMAINS } from "@app/config"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { RouteProp, useNavigation } from "@react-navigation/native"
+import { makeStyles, useTheme, Text, ListItem } from "@rneui/themed"
 import { makeStyles, useTheme, Text, ListItem } from "@rneui/themed"
 import { testProps } from "../../utils/testProps"
 import { ConfirmDestinationModal } from "./confirm-destination-modal"
@@ -56,6 +62,8 @@ gql`
       contacts {
         id
         username
+        alias
+        transactionsCount
       }
     }
   }
@@ -76,6 +84,38 @@ type Props = {
   route: RouteProp<RootStackParamList, "sendBitcoinDestination">
 }
 
+const wordMatchesContact = (searchWord: string, contact: UserContact): boolean => {
+  let contactPrettyNameMatchesSearchWord: boolean
+
+  const contactNameMatchesSearchWord = contact.username
+    .toLowerCase()
+    .includes(searchWord.toLowerCase())
+
+  if (contact.username) {
+    contactPrettyNameMatchesSearchWord = contact.username
+      .toLowerCase()
+      .includes(searchWord.toLowerCase())
+  } else {
+    contactPrettyNameMatchesSearchWord = false
+  }
+
+  return contactNameMatchesSearchWord || contactPrettyNameMatchesSearchWord
+}
+
+const matchCheck = (newSearchText: string, allContacts: UserContact[]): UserContact[] => {
+  if (newSearchText.length > 0) {
+    const searchWordArray = newSearchText
+      .split(" ")
+      .filter((text) => text.trim().length > 0)
+    const matchingContacts = allContacts.filter((contact) =>
+      searchWordArray.some((word) => wordMatchesContact(word, contact)),
+    )
+    return matchingContacts
+  }
+  // no match found
+  return allContacts
+}
+
 const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   const styles = usestyles()
   const {
@@ -92,6 +132,7 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
   )
   const [goToNextScreenWhenValid, setGoToNextScreenWhenValid] = React.useState(false)
 
+  const { loading, data } = useSendBitcoinDestinationQuery({
   const { loading, data } = useSendBitcoinDestinationQuery({
     fetchPolicy: "cache-and-network",
     returnPartialData: true,
@@ -116,16 +157,15 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     fetchPolicy: "no-cache",
   })
 
-  const [matchingContacts, setMatchingContacts] = useState<Contact[]>([])
-  const allContacts: Contact[] = useMemo(() => {
-    const contactsCopy = contacts.slice() ?? []
-    const compareUsernames = (a: Contact, b: Contact) => {
-      return a.username.toLocaleLowerCase().localeCompare(b.username.toLocaleLowerCase())
-    }
-    contactsCopy.sort(compareUsernames)
+  const [matchingContacts, setMatchingContacts] = useState<UserContact[]>([])
 
-    return contactsCopy
-  }, [contacts])
+  const allContacts: UserContact[] = useMemo(
+    () =>
+      (contacts.slice() ?? []).sort((a, b) => {
+        return b.transactionsCount - a.transactionsCount
+      }),
+    [contacts],
+  )
 
   const [selectedId, setSelectedId] = useState("")
 
@@ -143,24 +183,6 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     setSelectedId("")
     setMatchingContacts(allContacts)
   }, [allContacts])
-
-  const wordMatchesContact = (searchWord: string, contact: Contact): boolean => {
-    let contactPrettyNameMatchesSearchWord: boolean
-
-    const contactNameMatchesSearchWord = contact.username
-      .toLowerCase()
-      .includes(searchWord.toLowerCase())
-
-    if (contact.username) {
-      contactPrettyNameMatchesSearchWord = contact.username
-        .toLowerCase()
-        .includes(searchWord.toLowerCase())
-    } else {
-      contactPrettyNameMatchesSearchWord = false
-    }
-
-    return contactNameMatchesSearchWord || contactPrettyNameMatchesSearchWord
-  }
 
   let ListEmptyContent: React.ReactNode
 
@@ -192,17 +214,8 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
   const updateMatchingContacts = useCallback(
     (newSearchText: string) => {
-      if (newSearchText.length > 0) {
-        const searchWordArray = newSearchText
-          .split(" ")
-          .filter((text) => text.trim().length > 0)
-        const matchingContacts = allContacts.filter((contact) =>
-          searchWordArray.some((word) => wordMatchesContact(word, contact)),
-        )
-        setMatchingContacts(matchingContacts)
-      } else {
-        setMatchingContacts(allContacts)
-      }
+      const matching = matchCheck(newSearchText, allContacts)
+      setMatchingContacts(matching)
     },
     [allContacts],
   )
@@ -308,6 +321,10 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
     },
     [dispatchDestinationStateAction, setGoToNextScreenWhenValid],
   )
+
+  useEffect(() => {
+    setMatchingContacts(allContacts)
+  }, [allContacts])
 
   useEffect(() => {
     setMatchingContacts(allContacts)
@@ -455,9 +472,15 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 
         <View style={[styles.fieldBackground, inputContainerStyle]}>
           <SearchBar
+          <SearchBar
             {...testProps(LL.SendBitcoinScreen.placeholder())}
             placeholder={LL.SendBitcoinScreen.placeholder()}
             value={destinationState.unparsedDestination}
+            onChangeText={(text) => {
+              handleChangeText(text)
+              updateMatchingContacts(text)
+            }}
+            onSubmitEditing={() =>
             onChangeText={(text) => {
               handleChangeText(text)
               updateMatchingContacts(text)
@@ -472,8 +495,17 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
             inputContainerStyle={styles.searchBarInputContainerStyle}
             inputStyle={styles.searchBarText}
             searchIcon={<></>}
+            platform="default"
+            showLoading={false}
+            containerStyle={styles.searchBarContainer}
+            inputContainerStyle={styles.searchBarInputContainerStyle}
+            inputStyle={styles.searchBarText}
+            searchIcon={<></>}
             autoCapitalize="none"
             autoCorrect={false}
+            clearIcon={
+              <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
+            }
             clearIcon={
               <Icon name="close" size={24} onPress={reset} color={styles.icon.color} />
             }
@@ -490,6 +522,32 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
           </TouchableOpacity>
         </View>
         <DestinationInformation destinationState={destinationState} />
+        <FlatList
+          style={styles.flatList}
+          contentContainerStyle={styles.flatListContainer}
+          data={matchingContacts}
+          extraData={selectedId}
+          ListEmptyComponent={ListEmptyContent}
+          renderItem={({ item }) => (
+            <ListItem
+              key={item.username}
+              style={styles.item}
+              containerStyle={
+                item.id === selectedId ? styles.selectedContainer : styles.itemContainer
+              }
+              onPress={() => {
+                handleSelection(item.id)
+                handleChangeText(item.username)
+              }}
+            >
+              <Icon name={"person-outline"} size={24} color={colors.primary} />
+              <ListItem.Content>
+                <ListItem.Title style={styles.itemText}>{item.username}</ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          )}
+          keyExtractor={(item) => item.username}
+        />
         <FlatList
           style={styles.flatList}
           contentContainerStyle={styles.flatListContainer}
@@ -540,11 +598,8 @@ const SendBitcoinDestinationScreen: React.FC<Props> = ({ route }) => {
 export default SendBitcoinDestinationScreen
 
 const usestyles = makeStyles(({ colors }) => ({
-  screenStyle: {
-    padding: 20,
-    flexGrow: 1,
-  },
   sendBitcoinDestinationContainer: {
+    padding: 20,
     flex: 1,
   },
   fieldBackground: {
@@ -562,16 +617,21 @@ const usestyles = makeStyles(({ colors }) => ({
   errorInputContainer: {
     borderColor: colors.error,
     borderWidth: 1,
+    borderWidth: 1,
   },
   validInputContainer: {
     borderColor: colors._green,
+    borderWidth: 1,
     borderWidth: 1,
   },
   warningInputContainer: {
     borderColor: colors.warning,
     borderWidth: 1,
+    borderWidth: 1,
   },
   buttonContainer: {
+    marginTop: 26,
+    flex: 0,
     marginTop: 26,
     flex: 0,
     justifyContent: "flex-end",
@@ -590,6 +650,67 @@ const usestyles = makeStyles(({ colors }) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  searchBarContainer: {
+    flex: 1,
+    backgroundColor: colors.grey5,
+    borderBottomColor: colors.grey5,
+    borderTopColor: colors.grey5,
+    padding: 0,
+  },
+  searchBarInputContainerStyle: {
+    backgroundColor: colors.grey5,
+  },
+  searchBarText: {
+    color: colors.black,
+    textDecorationLine: "none",
+  },
+  icon: {
+    color: colors.primary,
+  },
+  activityIndicatorContainer: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+  emptyListNoContacts: {
+    marginHorizontal: 12,
+    marginTop: 32,
+  },
+  emptyListNoMatching: {
+    marginHorizontal: 26,
+    marginTop: 8,
+  },
+  emptyListText: {
+    fontSize: 18,
+    marginTop: 30,
+    textAlign: "center",
+    color: colors.black,
+  },
+  emptyListTitle: {
+    color: colors.warning,
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  flatList: {
+    flex: 1,
+  },
+  flatListContainer: {
+    margin: 0,
+  },
+  item: {
+    marginHorizontal: 32,
+    marginBottom: 16,
+  },
+  itemContainer: {
+    borderRadius: 8,
+    backgroundColor: colors.grey5,
+  },
+  selectedContainer: {
+    borderRadius: 8,
+    backgroundColor: colors.grey3,
+  },
+  itemText: { color: colors.black },
   searchBarContainer: {
     flex: 1,
     backgroundColor: colors.grey5,

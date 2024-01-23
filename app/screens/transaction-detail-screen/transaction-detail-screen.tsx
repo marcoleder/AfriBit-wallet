@@ -218,9 +218,6 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
   const isReceive = tx.direction === "RECEIVE"
 
   const walletCurrency = settlementCurrency as WalletCurrency
-  const spendOrReceiveText = isReceive
-    ? LL.TransactionDetailScreen.received()
-    : LL.TransactionDetailScreen.spent()
 
   const displayAmount = formatCurrency({
     amountInMajorUnits: settlementDisplayAmount,
@@ -267,6 +264,15 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
       message: LL.TransactionDetailScreen.hasBeenCopiedToClipboard({ type }),
       LL,
     })
+  }
+
+  let spendOrReceiveText = ""
+  if (isReceive) {
+    spendOrReceiveText = LL.TransactionDetailScreen.received()
+  } else if (onChainTxNotBroadcasted) {
+    spendOrReceiveText = LL.TransactionDetailScreen.sending()
+  } else {
+    spendOrReceiveText = LL.TransactionDetailScreen.spent()
   }
 
   return (
@@ -369,7 +375,9 @@ export const TransactionDetailScreen: React.FC<Props> = ({ route }) => {
 
         <Row
           entry={LL.common.date()}
-          value={<TransactionDate createdAt={createdAt} status={status} />}
+          value={
+            <TransactionDate createdAt={createdAt} status={status} includeTime={true} />
+          }
         />
         {!isReceive && <Row entry={LL.common.fees()} value={formattedFeeText} />}
         <Row entry={LL.common.description()} value={description} />

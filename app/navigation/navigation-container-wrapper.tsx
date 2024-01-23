@@ -83,11 +83,25 @@ export const NavigationContainerWrapper: React.FC<React.PropsWithChildren> = ({
     prefixes: [...PREFIX_LINKING, "bitcoin://", "lightning://", "lapp://"],
     config: {
       screens: {
-        sendBitcoinDestination: ":payment",
         Primary: {
           screens: {
-            Home: "/",
+            Home: "home",
+            People: {
+              path: "people",
+              screens: {
+                circlesDashboard: "circles",
+              },
+            },
+            Earn: "earn",
+            Map: "map",
           },
+        },
+        sendBitcoinDestination: ":payment",
+        receiveBitcoin: "receive",
+        conversionDetails: "convert",
+        scanningQRCode: "scan-qr",
+        transactionDetail: {
+          path: "transaction/:txid",
         },
       },
     },
