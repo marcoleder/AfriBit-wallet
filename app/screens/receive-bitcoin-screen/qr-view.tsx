@@ -92,7 +92,7 @@ export const QRView: React.FC<Props> = ({
     !completed && isReady && !expired && (!isPayCode || isPayCodeAndCanUsePayCode)
 
   const styles = useStyles()
-  const { scale } = useWindowDimensions()
+  const { width, scale } = useWindowDimensions()
 
   const { LL } = useI18nContext()
 
@@ -143,7 +143,7 @@ export const QRView: React.FC<Props> = ({
       return null
     }
 
-    const qrSize = Platform.OS === "android" && scale > 3 ? 240 : size
+    const qrSize = Platform.OS === "android" && scale > 3 ? width - 75 : size
 
     if (displayingQR && getFullUri) {
       const uri = getFullUri({ uppercase: true })

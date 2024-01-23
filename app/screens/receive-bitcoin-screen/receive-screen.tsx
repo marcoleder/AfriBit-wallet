@@ -38,7 +38,7 @@ const ReceiveScreen = () => {
 
   const nfcText = LL.ReceiveScreen.nfc()
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (
         request?.type === "Lightning" &&
         request?.state === "Created" &&
@@ -87,8 +87,8 @@ const ReceiveScreen = () => {
 
   const OnChainCharge =
     request.feesInformation?.deposit.minBankFee &&
-    request.feesInformation?.deposit.minBankFeeThreshold &&
-    request.type === Invoice.OnChain ? (
+      request.feesInformation?.deposit.minBankFeeThreshold &&
+      request.type === Invoice.OnChain ? (
       <View style={styles.onchainCharges}>
         <Text type="p4">
           {LL.ReceiveScreen.fees({
@@ -179,7 +179,7 @@ const ReceiveScreen = () => {
                   </TouchableOpacity>
                 </View>
                 <View style={styles.extraDetailsContainer}>
-                  <TouchableOpacity onPress={request.copyToClipboard} hitSlop={10}>
+                  <TouchableOpacity style={styles.extraDetails} onPress={request.copyToClipboard} hitSlop={10}>
                     {request.readablePaymentRequest ? (
                       request.type === Invoice.OnChain ? (
                         <View style={styles.btcHighContainer}>
@@ -225,42 +225,13 @@ const ReceiveScreen = () => {
             )}
         </View>
 
-        <TouchableOpacity style={styles.extraDetails} onPress={request.copyToClipboard}>
-          {request.readablePaymentRequest ? (
-            request.type === Invoice.OnChain ? (
-              <View style={styles.btcHighContainer}>
-                <Text ellipsizeMode="middle" numberOfLines={1}>
-                  <Text style={styles.btcHigh}>
-                    {request.readablePaymentRequest.slice(0, 6)}
-                  </Text>
-                  <Text style={styles.btcLow}>
-                    {request.readablePaymentRequest.substring(
-                      6,
-                      request.readablePaymentRequest.length - 6,
-                    )}
-                  </Text>
-                  <Text style={styles.btcHigh}>
-                    {request.readablePaymentRequest.slice(-6)}
-                  </Text>
-                </Text>
-              </View>
-            ) : (
-              <Text {...testProps("readable-payment-request")}>
-                {request.readablePaymentRequest}
-              </Text>
-            )
-          ) : (
-            <></>
-          )}
-        </TouchableOpacity>
-
         <ButtonGroup
           selectedId={request.type}
           buttons={[
             {
               id: Invoice.Lightning,
               text: "Lightning",
-              icon: "md-flash",
+              icon: "flash",
               color: request.receivingWalletDescriptor.currency,
             },
             {
@@ -272,7 +243,7 @@ const ReceiveScreen = () => {
             {
               id: Invoice.PayCode,
               text: "Paycode",
-              icon: "md-at",
+              icon: "at",
               color: request.receivingWalletDescriptor.currency,
             },
           ]}
@@ -362,7 +333,7 @@ const useStyles = makeStyles(({ colors }) => ({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    marginVertical: 10,
     minHeight: 20,
   },
   invoiceActions: {

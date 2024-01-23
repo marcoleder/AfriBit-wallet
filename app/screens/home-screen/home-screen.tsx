@@ -307,11 +307,7 @@ export const HomeScreen: React.FC = () => {
           loading={loading}
           setIsStablesatModalVisible={setIsStablesatModalVisible}
         />
-        {error && (
-          <View style={styles.marginButtonContainer}>
-            <GaloyErrorBox errorMessage={getErrorMessages(error)} />
-          </View>
-        )}
+        {error && <GaloyErrorBox errorMessage={getErrorMessages(error)} />}
 
         <AppUpdate />
         <SetDefaultAccountModal

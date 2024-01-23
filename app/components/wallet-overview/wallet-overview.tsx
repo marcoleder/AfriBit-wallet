@@ -22,7 +22,7 @@ import { GaloyIcon } from "../atomic/galoy-icon"
 import HideableArea from "../hideable-area/hideable-area"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
 import { RootStackParamList } from "@app/navigation/stack-param-lists"
-import { TransactionItem, DummyTransactionItem } from "../../components/transaction-item"
+import { MemoizedTransactionItem, DummyTransactionItem } from "../../components/transaction-item"
 
 const Loader = () => {
   const styles = useStyles()
@@ -144,7 +144,7 @@ const WalletOverview: React.FC<Props> = ({
               .map(
                 ({ node }, index, array) =>
                   node && (
-                    <TransactionItem
+                    <MemoizedTransactionItem
                       key={`transaction-${node.id}`}
                       txid={node.id}
                       subtitle
@@ -175,7 +175,7 @@ const WalletOverview: React.FC<Props> = ({
               .map(
                 ({ node }, index, array) =>
                   node && (
-                    <TransactionItem
+                    <MemoizedTransactionItem
                       key={`transaction-${node.id}`}
                       txid={node.id}
                       subtitle
