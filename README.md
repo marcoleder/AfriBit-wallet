@@ -1,6 +1,7 @@
 # AfriBit wallet powered by:
 
 <img src=".readme/galoy-logo.png" alt="Galoy Logo" width="300">
+![demo](https://github.com/marcoleder/AfriBit-wallet/assets/32636827/33e7ca9c-3a6c-42bc-adad-e290c2b07894)
 
 ## Goal
 
