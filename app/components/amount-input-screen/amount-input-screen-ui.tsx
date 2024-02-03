@@ -48,15 +48,13 @@ export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
     <View style={styles.amountInputScreenContainer}>
       <View style={styles.headerContainer}>
         <Text type={"h1"}>{LL.AmountInputScreen.enterAmount()}</Text>
-        <GaloyIconButton iconOnly={true} size={"medium"} name="close" onPress={goBack} />
+        <GaloyIconButton size={"medium"} name="close" onPress={goBack} />
       </View>
       <View style={styles.bodyContainer}>
         <View style={styles.amountContainer}>
           <View style={styles.primaryAmountContainer}>
-            {primaryCurrencySymbol && (
-              <Text style={styles.primaryCurrencySymbol}>{primaryCurrencySymbol}</Text>
-            )}
             <Input
+              style={styles.input}
               value={primaryCurrencyFormattedAmount}
               showSoftInputOnFocus={false}
               onChangeText={(e) => {
@@ -70,7 +68,6 @@ export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
                   onPaste(num)
                 }
               }}
-              containerStyle={styles.primaryNumberContainer}
               inputStyle={styles.primaryNumberText}
               placeholder="0"
               placeholderTextColor={theme.colors.grey3}
@@ -80,22 +77,20 @@ export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
             <Text style={styles.primaryCurrencyCodeText}>{primaryCurrencyCode}</Text>
           </View>
           {Boolean(secondaryCurrencyFormattedAmount) && (
-            <>
-              <View style={styles.swapContainer}>
-                <View style={styles.horizontalLine} />
-                <GaloyIconButton size={"large"} name="swap" onPress={onToggleCurrency} />
-                <View style={styles.horizontalLine} />
-              </View>
-              <View style={styles.secondaryAmountContainer}>
-                <Text style={styles.secondaryAmountText}>
-                  {secondaryCurrencySymbol}
-                  {secondaryCurrencyFormattedAmount}
-                </Text>
-                <Text style={styles.secondaryAmountCurrencyCodeText}>
-                  {secondaryCurrencyCode}
-                </Text>
-              </View>
-            </>
+            <View style={styles.swapContainer}>
+              <GaloyIconButton size={"large"} name="swapHorizontal" onPress={onToggleCurrency} />
+            </View>
+          )}
+          {Boolean(secondaryCurrencyFormattedAmount) && (
+            <View style={styles.secondaryAmountContainer}>
+              <Text style={styles.secondaryAmountText}>
+                {secondaryCurrencySymbol}
+                {secondaryCurrencyFormattedAmount}
+              </Text>
+              <Text style={styles.secondaryAmountCurrencyCodeText}>
+                {secondaryCurrencyCode}
+              </Text>
+            </View>
           )}
         </View>
         <View style={styles.infoContainer}>
@@ -123,47 +118,66 @@ const useStyles = makeStyles(({ colors }) => ({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    borderBottomColor: colors.primary4,
+    borderBottomColor: colors.black,
     borderBottomWidth: 1,
   },
   amountContainer: {
-    marginBottom: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingBottom: 16,
+    borderBottomColor: colors.black,
+    borderBottomWidth: 1,
   },
-  primaryNumberContainer: {
-    flex: 1,
-  },
-  primaryAmountContainer: {
+  usdInput: {
     flexDirection: "row",
     alignItems: "center",
   },
+  input: {
+    padding: 0,
+    margin: 0,
+  },
+  satContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  primaryAmountContainer: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    width: "40%",
+  },
   primaryCurrencySymbol: {
-    fontSize: 28,
-    lineHeight: 32,
+    fontSize: 22,
     fontWeight: "bold",
+    alignItems: "center",
+    justifyContent: "center",
   },
   primaryNumberText: {
-    fontSize: 28,
-    lineHeight: 32,
-    flex: 1,
+    fontSize: 22,
     fontWeight: "bold",
+    alignItems: "flex-start",
   },
   primaryNumberInputContainer: {
     borderBottomWidth: 0,
   },
   primaryCurrencyCodeText: {
-    fontSize: 28,
-    lineHeight: 32,
+    fontSize: 22,
     fontWeight: "bold",
-    textAlign: "right",
+    textAlign: "left",
+    paddingLeft: 10,
   },
   secondaryAmountContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    justifyContent: "center",
+    width: "40%",
+    paddingRight: 10,
   },
   secondaryAmountText: {
     fontSize: 18,
     lineHeight: 24,
     fontWeight: "bold",
-    flex: 1,
   },
   secondaryAmountCurrencyCodeText: {
     fontSize: 18,
@@ -172,8 +186,7 @@ const useStyles = makeStyles(({ colors }) => ({
   },
   swapContainer: {
     alignItems: "center",
-    flexDirection: "row",
-    marginVertical: 8,
+    width: "20%",
   },
   horizontalLine: {
     borderBottomColor: colors.primary4,
@@ -186,7 +199,7 @@ const useStyles = makeStyles(({ colors }) => ({
   },
   bodyContainer: {
     flex: 1,
-    padding: 24,
+    padding: 12,
   },
   buttonContainer: {},
   keyboardContainer: {
