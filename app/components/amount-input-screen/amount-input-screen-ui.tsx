@@ -25,8 +25,31 @@ export type AmountInputScreenUIProps = {
   goBack: () => void
 }
 
+const primaryCurrencyDisplayStyle = (
+  primaryCurrencyCode: string
+) => {
+  const styles = useStyles()
+
+  if (primaryCurrencyCode === "SAT") {
+    return styles.satCurrencyCodeText
+  } else {
+    return styles.usdCurrencyCodeText
+  }
+}
+
+const primaryAmountDisplayStyle = (
+  primaryCurrencyCode: string
+) => {
+  const styles = useStyles()
+
+  if (primaryCurrencyCode === "SAT") {
+    return styles.inputSat
+  } else {
+    return styles.inputUsd
+  }
+}
+
 export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
-  primaryCurrencySymbol,
   primaryCurrencyFormattedAmount,
   primaryCurrencyCode,
   secondaryCurrencySymbol,
@@ -54,7 +77,7 @@ export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
         <View style={styles.amountContainer}>
           <View style={styles.primaryAmountContainer}>
             <Input
-              style={styles.input}
+              style={primaryAmountDisplayStyle(primaryCurrencyCode)}
               value={primaryCurrencyFormattedAmount}
               showSoftInputOnFocus={false}
               onChangeText={(e) => {
@@ -74,7 +97,7 @@ export const AmountInputScreenUI: React.FC<AmountInputScreenUIProps> = ({
               inputContainerStyle={styles.primaryNumberInputContainer}
               renderErrorMessage={false}
             />
-            <Text style={styles.primaryCurrencyCodeText}>{primaryCurrencyCode}</Text>
+            <Text style={primaryCurrencyDisplayStyle(primaryCurrencyCode)}>{primaryCurrencyCode}</Text>
           </View>
           {Boolean(secondaryCurrencyFormattedAmount) && (
             <View style={styles.swapContainer}>
@@ -134,13 +157,33 @@ const useStyles = makeStyles(({ colors }) => ({
     flexDirection: "row",
     alignItems: "center",
   },
-  input: {
+  usdCurrencyCodeText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "left",
+    paddingLeft: 10,
+    color: colors._green,
+  },
+  inputUsd: {
     padding: 0,
     margin: 0,
+    color: colors._green,
   },
   satContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  satCurrencyCodeText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "left",
+    paddingLeft: 10,
+    color: colors.primary,
+  },
+  inputSat: {
+    padding: 0,
+    margin: 0,
+    color: colors.primary,
   },
   primaryAmountContainer: {
     flexDirection: "column",
@@ -160,12 +203,6 @@ const useStyles = makeStyles(({ colors }) => ({
   },
   primaryNumberInputContainer: {
     borderBottomWidth: 0,
-  },
-  primaryCurrencyCodeText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "left",
-    paddingLeft: 10,
   },
   secondaryAmountContainer: {
     flexDirection: "column",
@@ -204,6 +241,5 @@ const useStyles = makeStyles(({ colors }) => ({
   buttonContainer: {},
   keyboardContainer: {
     paddingHorizontal: 16,
-    marginBottom: 30,
   },
 }))

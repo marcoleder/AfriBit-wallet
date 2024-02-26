@@ -1,11 +1,16 @@
 import React from "react"
-import { Pressable, StyleProp, View, ViewStyle } from "react-native"
+import { Dimensions, Pressable, StyleProp, View, ViewStyle } from "react-native"
 import { makeStyles, useTheme, Text } from "@rneui/themed"
 import { Key as KeyType } from "../amount-input-screen/number-pad-reducer"
 import { testProps } from "@app/utils/testProps"
 
 const useStyles = makeStyles(({ colors }) => ({
-  container: {},
+  container: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    alignContent: "flex-start",
+  },
   keyRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -40,26 +45,18 @@ export const CurrencyKeyboard: React.FC<CurrencyKeyboardProps> = ({ onPress }) =
   const styles = useStyles()
   return (
     <View style={styles.container}>
-      <View style={styles.keyRow}>
         <Key numberPadKey={KeyType[1]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[2]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[3]} handleKeyPress={onPress} />
-      </View>
-      <View style={styles.keyRow}>
         <Key numberPadKey={KeyType[4]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[5]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[6]} handleKeyPress={onPress} />
-      </View>
-      <View style={styles.keyRow}>
         <Key numberPadKey={KeyType[7]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[8]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[9]} handleKeyPress={onPress} />
-      </View>
-      <View style={styles.lastKeyRow}>
         <Key numberPadKey={KeyType.Decimal} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType[0]} handleKeyPress={onPress} />
         <Key numberPadKey={KeyType.Backspace} handleKeyPress={onPress} />
-      </View>
     </View>
   )
 }
@@ -75,11 +72,13 @@ const Key = ({
     theme: { colors },
   } = useTheme()
   const styles = useStyles()
+  const height = Dimensions.get("window").height
+  const width = Dimensions.get("window").width
   const pressableStyle = ({ pressed }: { pressed: boolean }): StyleProp<ViewStyle> => {
     const baseStyle: StyleProp<ViewStyle> = {
-      height: 40,
-      width: 40,
-      borderRadius: 40,
+      height: "30%",
+      width: "30%",
+      borderRadius: 100,
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -97,7 +96,7 @@ const Key = ({
   return (
     <Pressable
       style={pressableStyle}
-      hitSlop={20}
+      hitSlop={10}
       onPress={() => handleKeyPress(numberPadKey)}
       {...testProps(`Key ${numberPadKey}`)}
     >
