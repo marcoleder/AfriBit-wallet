@@ -2035,8 +2035,8 @@ const en: BaseTranslation = {
     youEarned: "You Earned",
     registerTitle: "Need to upgrade your account",
     registerContent: "Register with your phone number to receive sats",
-    notYet: "Not yet",
-    availableTomorrow: "This section will be available tomorrow!",
+    oneSectionADay: "One section a day!",
+    availableTomorrow: "Come back tomorrow to continue learning about Bitcoin!",
     motivatingBadger: "Dig your way through these lessons and earn as you learn",
   },
   GetStartedScreen: {
@@ -2059,14 +2059,12 @@ const en: BaseTranslation = {
     },
   },
   MapScreen: {
-    locationPermissionMessage:
-      "Activate your location so you know where you are on the map",
-    locationPermissionNegative: "Cancel",
-    locationPermissionNeutral: "Ask Me Later",
-    locationPermissionPositive: "OK",
-    locationPermissionTitle: "Locate yourself on the map",
+    navToSettingsTitle: "Location permissions",
+    navToSettingsText: "If you'd like to give Blink location permissions, please navigate to your settings and enable it there",
     payBusiness: "Pay this business",
+    openSettings: "Open settings",
     title: "Map",
+    error: 'Oops. Something went wrong while getting your location'
   },
   HomeScreen: {
     receive: "Receive",
@@ -2219,7 +2217,8 @@ const en: BaseTranslation = {
     paymentAlreadyAttempted: "Payment already attempted.\n\nIf you want to send this payment again, start from scratch.",
     slideToConfirm: "Slide to Confirm",
     slideConfirming: "Confirming...",
-    copiedDestination: "Copied destination to clipboard"
+    copiedDestination: "Copied destination to clipboard",
+    lightningRecommended: "High fee! We recommend Lightning.",
   },
   SendBitcoinDestinationScreen: {
     usernameNowAddress:
@@ -2610,12 +2609,14 @@ const en: BaseTranslation = {
     hour: "hour",
     hours: "hours",
     invoice: "Invoice",
+    intraledger: "Intraledger",
     language: "Language",
     languagePreference: "Language preference",
     lastName: "Last Name",
     later: "Later",
     loggedOut: "You have been logged out.",
     logout: "Log Out",
+    lightning: "Lightning",
     minutes: "minutes",
     errorAuthToken: "Missing auth token",
     needWallet: "Log in or create an account to access your wallet",
@@ -2626,6 +2627,7 @@ const en: BaseTranslation = {
     ok: "OK",
     or: "or",
     openWallet: "Open Wallet",
+    onchain: "Onchain",
     paymentRequest: "Payment Request",
     phone: "Phone",
     phoneNumber: "Phone Number",
@@ -2805,6 +2807,16 @@ const en: BaseTranslation = {
       description: "+10 outer circle in January for a chance at $100!",
       details: "Grow your OUTER circle by 10 in January for a chance at $100!\n\nYour outer circle grows when people in your inner circle welcome others, so reach out and remind those you onboarded to share Blink with their friends and family.\n\nShare your circles on social with #blinkcircles to participate."
     },
+    februaryChallenge: {
+      title: "February Challenge!",
+      description: "+3 inner circle for a chance to win a Seedsigner hardware wallet!",
+      details: "Grow your inner circle by 3 in February for a chance to win a Seedsigner hardware wallet!\n\nReminder: your circles grow when you send a new Blink user their first sats.\n\nShare your circles on social with #blinkcircles to participate."
+    },
+    marchChallenge: {
+      title: "March Challenge!",
+      description: "+3 inner circle and +3 outer circle for a chance to win $100",
+      details: "Grow your inner circle by 3 and your outer circle by 3 for a chance at winning $100!\n\nReminder: your circles grow when you send a new Blink user their first sats.\n\nShare your circles on social with #blinkcircles to participate."
+    }
   },
   FullOnboarding: {
     title: "Full onboarding",

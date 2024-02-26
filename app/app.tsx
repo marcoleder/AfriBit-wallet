@@ -12,7 +12,6 @@ import "react-native-url-polyfill/auto"
 import "react-native-reanimated"
 
 import "@react-native-firebase/crashlytics"
-import { ThemeProvider } from "@rneui/themed"
 import "node-libs-react-native/globals" // needed for Buffer?
 import * as React from "react"
 import ErrorBoundary from "react-native-error-boundary"
@@ -25,15 +24,15 @@ import { loadAllLocales } from "./i18n/i18n-util.sync"
 import { AppStateWrapper } from "./navigation/app-state"
 import { NavigationContainerWrapper } from "./navigation/navigation-container-wrapper"
 import { RootStack } from "./navigation/root-navigator"
-import theme from "./rne-theme/theme"
 import { ErrorScreen } from "./screens/error-screen"
 import { PersistentStateProvider } from "./store/persistent-state"
-import { ThemeSyncGraphql } from "./utils/theme-sync"
+import { detectDefaultLocale } from "./utils/locale-detector"
 import { NetworkErrorComponent } from "./graphql/network-error-component"
 import { FeatureFlagContextProvider } from "./config/feature-flags-context"
 import "./utils/logs"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { NotificationsProvider } from "./components/notifications/index"
+import { GaloyThemeProvider } from "./components/galoy-theme-provider"
 
 // FIXME should we only load the currently used local?
 // this would help to make the app load faster
@@ -50,9 +49,9 @@ export const App = () => (
   /* eslint-disable-next-line react-native/no-inline-styles */
   <GestureHandlerRootView style={{ flex: 1 }}>
     <PersistentStateProvider>
-      <TypesafeI18n locale={"sw"}>
-        <ThemeProvider theme={theme}>
-          <GaloyClient>
+      <TypesafeI18n locale={detectDefaultLocale()}>
+        <GaloyClient>
+          <GaloyThemeProvider>
             <FeatureFlagContextProvider>
               <ErrorBoundary FallbackComponent={ErrorScreen}>
                 <NavigationContainerWrapper>
@@ -67,10 +66,9 @@ export const App = () => (
                   </RootSiblingParent>
                 </NavigationContainerWrapper>
               </ErrorBoundary>
-              <ThemeSyncGraphql />
             </FeatureFlagContextProvider>
-          </GaloyClient>
-        </ThemeProvider>
+          </GaloyThemeProvider>
+        </GaloyClient>
       </TypesafeI18n>
     </PersistentStateProvider>
   </GestureHandlerRootView>

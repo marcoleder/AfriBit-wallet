@@ -30,7 +30,7 @@ parameters:
 jobs:
   test_android_in_pr:
     docker:
-      - image: cimg/android:2022.12
+      - image: cimg/android:2024.01
     resource_class: xlarge
     environment:
       TERM: dumb
@@ -90,7 +90,7 @@ jobs:
 
   test_ios_in_pr:
     macos:
-      xcode: 14.2.0
+      xcode: 15.2.0
     resource_class: macos.x86.medium.gen2
     working_directory: ~/galoy-mobile
     environment:
@@ -166,7 +166,7 @@ jobs:
 
   build_android:
     docker:
-      - image: cimg/android:2022.12
+      - image: cimg/android:2024.01
     resource_class: xlarge
     environment:
       TERM: dumb
@@ -201,6 +201,7 @@ jobs:
 
       - restore_cache:
           key: 2-yarn-{{ checksum "yarn.lock" }}-android
+      - run: yarn global add node-gyp
       - run: yarn install
       - save_cache:
           key: 2-yarn-{{ checksum "yarn.lock" }}-android
@@ -224,7 +225,7 @@ jobs:
 
   build_ios:
     macos:
-      xcode: 14.2.0
+      xcode: 15.2.0
     resource_class: macos.x86.medium.gen2
     environment:
       PUBLIC_VERSION: << pipeline.parameters.version >>
@@ -257,6 +258,9 @@ jobs:
       - run: gcloud auth activate-service-account --key-file key.json
       - restore_cache:
           key: 1-gem-{{ checksum "ios/Gemfile.lock" }}
+      - run: |
+          rbenv install 2.7.7
+          rbenv global 2.7.7
       - run: cd ios && bundle config set deployment 'true'
       - run: cd ios && bundle config set --local path 'vendor/bundle'
       - run: cd ios && bundle check || bundle install
@@ -296,7 +300,7 @@ jobs:
 
   upload_to_app_store:
     macos:
-      xcode: 14.2.0
+      xcode: 15.2.0
     resource_class: macos.x86.medium.gen2
     environment:
       GCS_URL: << pipeline.parameters.gcs_url >>
@@ -349,10 +353,3 @@ workflows:
         - equal: ["api", << pipeline.trigger_source >>]
     jobs:
       - upload_to_app_store
-  test_in_pr:
-    when:
-      not:
-        equal: [main, << pipeline.git.branch >>]
-    jobs:
-      - test_android_in_pr
-      - test_ios_in_pr

@@ -77,8 +77,6 @@ yalc.lock
 
 *.log
 
-.env
-.envrc
 .dependencies
 ios/assets
 ios/GaloyApp/assets
@@ -89,3 +87,8 @@ android/app/src/main/assets
 
 # testing
 /coverage
+
+.env.local
+*.tmp.ci
+artifacts
+.direnv

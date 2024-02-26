@@ -6265,11 +6265,11 @@ type RootTranslation = {
 		 */
 		registerContent: string
 		/**
-		 * N​o​t​ ​y​e​t
+		 * O​n​e​ ​s​e​c​t​i​o​n​ ​a​ ​d​a​y​!
 		 */
-		notYet: string
+		oneSectionADay: string
 		/**
-		 * T​h​i​s​ ​s​e​c​t​i​o​n​ ​w​i​l​l​ ​b​e​ ​a​v​a​i​l​a​b​l​e​ ​t​o​m​o​r​r​o​w​!
+		 * C​o​m​e​ ​b​a​c​k​ ​t​o​m​o​r​r​o​w​ ​t​o​ ​c​o​n​t​i​n​u​e​ ​l​e​a​r​n​i​n​g​ ​a​b​o​u​t​ ​B​i​t​c​o​i​n​!
 		 */
 		availableTomorrow: string
 		/**
@@ -6339,33 +6339,29 @@ type RootTranslation = {
 	}
 	MapScreen: {
 		/**
-		 * A​c​t​i​v​a​t​e​ ​y​o​u​r​ ​l​o​c​a​t​i​o​n​ ​s​o​ ​y​o​u​ ​k​n​o​w​ ​w​h​e​r​e​ ​y​o​u​ ​a​r​e​ ​o​n​ ​t​h​e​ ​m​a​p
+		 * L​o​c​a​t​i​o​n​ ​p​e​r​m​i​s​s​i​o​n​s
 		 */
-		locationPermissionMessage: string
+		navToSettingsTitle: string
 		/**
-		 * C​a​n​c​e​l
+		 * I​f​ ​y​o​u​'​d​ ​l​i​k​e​ ​t​o​ ​g​i​v​e​ ​B​l​i​n​k​ ​l​o​c​a​t​i​o​n​ ​p​e​r​m​i​s​s​i​o​n​s​,​ ​p​l​e​a​s​e​ ​n​a​v​i​g​a​t​e​ ​t​o​ ​y​o​u​r​ ​s​e​t​t​i​n​g​s​ ​a​n​d​ ​e​n​a​b​l​e​ ​i​t​ ​t​h​e​r​e
 		 */
-		locationPermissionNegative: string
-		/**
-		 * A​s​k​ ​M​e​ ​L​a​t​e​r
-		 */
-		locationPermissionNeutral: string
-		/**
-		 * O​K
-		 */
-		locationPermissionPositive: string
-		/**
-		 * L​o​c​a​t​e​ ​y​o​u​r​s​e​l​f​ ​o​n​ ​t​h​e​ ​m​a​p
-		 */
-		locationPermissionTitle: string
+		navToSettingsText: string
 		/**
 		 * P​a​y​ ​t​h​i​s​ ​b​u​s​i​n​e​s​s
 		 */
 		payBusiness: string
 		/**
+		 * O​p​e​n​ ​s​e​t​t​i​n​g​s
+		 */
+		openSettings: string
+		/**
 		 * M​a​p
 		 */
 		title: string
+		/**
+		 * O​o​p​s​.​ ​S​o​m​e​t​h​i​n​g​ ​w​e​n​t​ ​w​r​o​n​g​ ​w​h​i​l​e​ ​g​e​t​t​i​n​g​ ​y​o​u​r​ ​l​o​c​a​t​i​o​n
+		 */
+		error: string
 	}
 	HomeScreen: {
 		/**
@@ -6907,6 +6903,10 @@ type RootTranslation = {
 		 * C​o​p​i​e​d​ ​d​e​s​t​i​n​a​t​i​o​n​ ​t​o​ ​c​l​i​p​b​o​a​r​d
 		 */
 		copiedDestination: string
+		/**
+		 * H​i​g​h​ ​f​e​e​!​ ​W​e​ ​r​e​c​o​m​m​e​n​d​ ​L​i​g​h​t​n​i​n​g​.
+		 */
+		lightningRecommended: string
 	}
 	SendBitcoinDestinationScreen: {
 		/**
@@ -8126,6 +8126,10 @@ type RootTranslation = {
 		 */
 		invoice: string
 		/**
+		 * I​n​t​r​a​l​e​d​g​e​r
+		 */
+		intraledger: string
+		/**
 		 * L​a​n​g​u​a​g​e
 		 */
 		language: string
@@ -8149,6 +8153,10 @@ type RootTranslation = {
 		 * L​o​g​ ​O​u​t
 		 */
 		logout: string
+		/**
+		 * L​i​g​h​t​n​i​n​g
+		 */
+		lightning: string
 		/**
 		 * m​i​n​u​t​e​s
 		 */
@@ -8189,6 +8197,10 @@ type RootTranslation = {
 		 * O​p​e​n​ ​W​a​l​l​e​t
 		 */
 		openWallet: string
+		/**
+		 * O​n​c​h​a​i​n
+		 */
+		onchain: string
 		/**
 		 * P​a​y​m​e​n​t​ ​R​e​q​u​e​s​t
 		 */
@@ -8785,6 +8797,42 @@ type RootTranslation = {
 			 * G​r​o​w​ ​y​o​u​r​ ​O​U​T​E​R​ ​c​i​r​c​l​e​ ​b​y​ ​1​0​ ​i​n​ ​J​a​n​u​a​r​y​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​$​1​0​0​!​
 		​
 		​Y​o​u​r​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​g​r​o​w​s​ ​w​h​e​n​ ​p​e​o​p​l​e​ ​i​n​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​w​e​l​c​o​m​e​ ​o​t​h​e​r​s​,​ ​s​o​ ​r​e​a​c​h​ ​o​u​t​ ​a​n​d​ ​r​e​m​i​n​d​ ​t​h​o​s​e​ ​y​o​u​ ​o​n​b​o​a​r​d​e​d​ ​t​o​ ​s​h​a​r​e​ ​B​l​i​n​k​ ​w​i​t​h​ ​t​h​e​i​r​ ​f​r​i​e​n​d​s​ ​a​n​d​ ​f​a​m​i​l​y​.​
+		​
+		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
+			 */
+			details: string
+		}
+		februaryChallenge: {
+			/**
+			 * F​e​b​r​u​a​r​y​ ​C​h​a​l​l​e​n​g​e​!
+			 */
+			title: string
+			/**
+			 * +​3​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​S​e​e​d​s​i​g​n​e​r​ ​h​a​r​d​w​a​r​e​ ​w​a​l​l​e​t​!
+			 */
+			description: string
+			/**
+			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​i​n​ ​F​e​b​r​u​a​r​y​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​S​e​e​d​s​i​g​n​e​r​ ​h​a​r​d​w​a​r​e​ ​w​a​l​l​e​t​!​
+		​
+		​R​e​m​i​n​d​e​r​:​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​g​r​o​w​ ​w​h​e​n​ ​y​o​u​ ​s​e​n​d​ ​a​ ​n​e​w​ ​B​l​i​n​k​ ​u​s​e​r​ ​t​h​e​i​r​ ​f​i​r​s​t​ ​s​a​t​s​.​
+		​
+		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
+			 */
+			details: string
+		}
+		marchChallenge: {
+			/**
+			 * M​a​r​c​h​ ​C​h​a​l​l​e​n​g​e​!
+			 */
+			title: string
+			/**
+			 * +​3​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​a​n​d​ ​+​3​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​$​1​0​0
+			 */
+			description: string
+			/**
+			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​a​n​d​ ​y​o​u​r​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​w​i​n​n​i​n​g​ ​$​1​0​0​!​
+		​
+		​R​e​m​i​n​d​e​r​:​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​g​r​o​w​ ​w​h​e​n​ ​y​o​u​ ​s​e​n​d​ ​a​ ​n​e​w​ ​B​l​i​n​k​ ​u​s​e​r​ ​t​h​e​i​r​ ​f​i​r​s​t​ ​s​a​t​s​.​
 		​
 		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
 			 */
@@ -15084,11 +15132,11 @@ export type TranslationFunctions = {
 		 */
 		registerContent: () => LocalizedString
 		/**
-		 * Not yet
+		 * One section a day!
 		 */
-		notYet: () => LocalizedString
+		oneSectionADay: () => LocalizedString
 		/**
-		 * This section will be available tomorrow!
+		 * Come back tomorrow to continue learning about Bitcoin!
 		 */
 		availableTomorrow: () => LocalizedString
 		/**
@@ -15158,33 +15206,29 @@ export type TranslationFunctions = {
 	}
 	MapScreen: {
 		/**
-		 * Activate your location so you know where you are on the map
+		 * Location permissions
 		 */
-		locationPermissionMessage: () => LocalizedString
+		navToSettingsTitle: () => LocalizedString
 		/**
-		 * Cancel
+		 * If you'd like to give Blink location permissions, please navigate to your settings and enable it there
 		 */
-		locationPermissionNegative: () => LocalizedString
-		/**
-		 * Ask Me Later
-		 */
-		locationPermissionNeutral: () => LocalizedString
-		/**
-		 * OK
-		 */
-		locationPermissionPositive: () => LocalizedString
-		/**
-		 * Locate yourself on the map
-		 */
-		locationPermissionTitle: () => LocalizedString
+		navToSettingsText: () => LocalizedString
 		/**
 		 * Pay this business
 		 */
 		payBusiness: () => LocalizedString
 		/**
+		 * Open settings
+		 */
+		openSettings: () => LocalizedString
+		/**
 		 * Map
 		 */
 		title: () => LocalizedString
+		/**
+		 * Oops. Something went wrong while getting your location
+		 */
+		error: () => LocalizedString
 	}
 	HomeScreen: {
 		/**
@@ -15710,6 +15754,10 @@ export type TranslationFunctions = {
 		 * Copied destination to clipboard
 		 */
 		copiedDestination: () => LocalizedString
+		/**
+		 * High fee! We recommend Lightning.
+		 */
+		lightningRecommended: () => LocalizedString
 	}
 	SendBitcoinDestinationScreen: {
 		/**
@@ -16890,6 +16938,10 @@ export type TranslationFunctions = {
 		 */
 		invoice: () => LocalizedString
 		/**
+		 * Intraledger
+		 */
+		intraledger: () => LocalizedString
+		/**
 		 * Language
 		 */
 		language: () => LocalizedString
@@ -16913,6 +16965,10 @@ export type TranslationFunctions = {
 		 * Log Out
 		 */
 		logout: () => LocalizedString
+		/**
+		 * Lightning
+		 */
+		lightning: () => LocalizedString
 		/**
 		 * minutes
 		 */
@@ -16953,6 +17009,10 @@ export type TranslationFunctions = {
 		 * Open Wallet
 		 */
 		openWallet: () => LocalizedString
+		/**
+		 * Onchain
+		 */
+		onchain: () => LocalizedString
 		/**
 		 * Payment Request
 		 */
@@ -17531,6 +17591,42 @@ export type TranslationFunctions = {
 			 * Grow your OUTER circle by 10 in January for a chance at $100!
 	
 		Your outer circle grows when people in your inner circle welcome others, so reach out and remind those you onboarded to share Blink with their friends and family.
+	
+		Share your circles on social with #blinkcircles to participate.
+			 */
+			details: () => LocalizedString
+		}
+		februaryChallenge: {
+			/**
+			 * February Challenge!
+			 */
+			title: () => LocalizedString
+			/**
+			 * +3 inner circle for a chance to win a Seedsigner hardware wallet!
+			 */
+			description: () => LocalizedString
+			/**
+			 * Grow your inner circle by 3 in February for a chance to win a Seedsigner hardware wallet!
+	
+		Reminder: your circles grow when you send a new Blink user their first sats.
+	
+		Share your circles on social with #blinkcircles to participate.
+			 */
+			details: () => LocalizedString
+		}
+		marchChallenge: {
+			/**
+			 * March Challenge!
+			 */
+			title: () => LocalizedString
+			/**
+			 * +3 inner circle and +3 outer circle for a chance to win $100
+			 */
+			description: () => LocalizedString
+			/**
+			 * Grow your inner circle by 3 and your outer circle by 3 for a chance at winning $100!
+	
+		Reminder: your circles grow when you send a new Blink user their first sats.
 	
 		Share your circles on social with #blinkcircles to participate.
 			 */

@@ -1,5 +1,6 @@
 import { useApolloClient } from "@apollo/client"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
+import { useAuthenticationContext } from "@app/navigation/navigation-container-wrapper"
 import { addDeviceToken, hasNotificationPermission } from "@app/utils/notifications"
 import messaging, { FirebaseMessagingTypes } from "@react-native-firebase/messaging"
 import { useLinkTo } from "@react-navigation/native"
@@ -21,38 +22,47 @@ export const PushNotificationComponent = (): JSX.Element => {
   const isAuthed = useIsAuthed()
 
   const linkTo = useLinkTo()
+  const isAppLocked = useAuthenticationContext().isAppLocked
 
   useEffect(() => {
+    if (isAppLocked) {
+      return
+    }
+
     const showNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
-      if (remoteMessage.notification?.body) {
-        // TODO: add notifee library to show local notifications
-        console.log(
-          remoteMessage.notification.title || "",
-          remoteMessage.notification.body,
-        )
-      }
+      try {
+        if (remoteMessage.notification?.body) {
+          // TODO: add notifee library to show local notifications
+          console.log(
+            remoteMessage.notification.title || "",
+            remoteMessage.notification.body,
+          )
+        }
 
-      const notificationType = remoteMessage.data?.notificationType ?? ""
-      if (
-        typeof notificationType === "string" &&
-        circlesNotificationTypes.includes(notificationType)
-      ) {
-        linkTo("/people/circles")
-      }
+        const notificationType = remoteMessage.data?.notificationType ?? ""
+        if (
+          typeof notificationType === "string" &&
+          circlesNotificationTypes.includes(notificationType)
+        ) {
+          linkTo("/people/circles")
+        }
 
-      const linkToScreen = remoteMessage.data?.linkTo ?? ""
-      if (typeof linkToScreen === "string") {
-        linkTo(linkToScreen)
+        const linkToScreen = remoteMessage.data?.linkTo ?? ""
+        if (
+          typeof linkToScreen === "string" &&
+          linkToScreen &&
+          linkToScreen.startsWith("/")
+        ) {
+          linkTo(linkToScreen)
+        }
+        // linkTo throws an error if the link is invalid
+      } catch (error) {
+        console.error("Error in showNotification", error)
       }
     }
 
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      console.debug("onMessage")
-      showNotification(remoteMessage)
-    })
-
     // When the application is running, but in the background.
-    messaging().onNotificationOpenedApp(
+    const unsubscribeBackground = messaging().onNotificationOpenedApp(
       (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
         showNotification(remoteMessage)
       },
@@ -67,8 +77,10 @@ export const PushNotificationComponent = (): JSX.Element => {
         }
       })
 
-    return unsubscribe
-  }, [linkTo])
+    return () => {
+      unsubscribeBackground()
+    }
+  }, [linkTo, isAppLocked])
 
   useEffect(() => {
     ;(async () => {
@@ -76,7 +88,10 @@ export const PushNotificationComponent = (): JSX.Element => {
         const hasPermission = await hasNotificationPermission()
         if (hasPermission) {
           addDeviceToken(client)
-          messaging().onTokenRefresh(() => addDeviceToken(client))
+          const unsubscribeFromRefresh = messaging().onTokenRefresh(() =>
+            addDeviceToken(client),
+          )
+          return unsubscribeFromRefresh
         }
       }
     })()

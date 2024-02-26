@@ -39,6 +39,7 @@ fragment Transaction on Transaction {
     ... on SettlementViaIntraLedger {
       counterPartyWalletId
       counterPartyUsername
+      preImage
       __typename
     }
     ... on SettlementViaLn {
@@ -780,8 +781,8 @@ query ContactsCard {
   }
 }
 
-query accountDefaultWallet($username: Username!) {
-  accountDefaultWallet(username: $username) {
+query accountDefaultWallet($walletCurrency: WalletCurrency, $username: Username!) {
+  accountDefaultWallet(walletCurrency: $walletCurrency, username: $username) {
     id
     __typename
   }
@@ -1257,6 +1258,16 @@ query realtimePrice {
       }
       __typename
     }
+    __typename
+  }
+}
+
+query region {
+  region @client {
+    latitude
+    longitude
+    latitudeDelta
+    longitudeDelta
     __typename
   }
 }

@@ -18,3 +18,9 @@ reset-ios:
 
 start:
 	yarn start
+
+tilt-up:
+	cd dev && tilt up
+
+tilt-down:
+	cd dev && tilt down
