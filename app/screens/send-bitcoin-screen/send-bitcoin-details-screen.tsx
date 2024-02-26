@@ -8,7 +8,6 @@ import { AmountInput } from "@app/components/amount-input/amount-input"
 import { GaloyIcon } from "@app/components/atomic/galoy-icon"
 import { GaloyPrimaryButton } from "@app/components/atomic/galoy-primary-button"
 import { GaloyTertiaryButton } from "@app/components/atomic/galoy-tertiary-button"
-import { NoteInput } from "@app/components/note-input"
 import { PaymentDestinationDisplay } from "@app/components/payment-destination-display"
 import { Screen } from "@app/components/screen"
 import {
@@ -45,18 +44,6 @@ import { requestInvoice, utils } from "lnurl-pay"
 import { Satoshis } from "lnurl-pay/dist/types/types"
 import React, { useEffect, useState } from "react"
 import { TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
-import { testProps } from "../../utils/testProps"
-import { isValidAmount } from "./payment-details"
-import { PaymentDetail } from "./payment-details/index.types"
-import { SendBitcoinDetailsExtraInfo } from "./send-bitcoin-details-extra-info"
-import { requestInvoice, utils } from "lnurl-pay"
-import { GaloyTertiaryButton } from "@app/components/atomic/galoy-tertiary-button"
-import { getBtcWallet, getDefaultWallet, getUsdWallet } from "@app/graphql/wallets-utils"
-import { PaymentDestinationDisplay } from "@app/components/payment-destination-display"
-import { useHideAmount } from "@app/graphql/hide-amount-context"
-import { ConfirmFeesModal } from "./confirm-fees-modal"
-import { GaloyIcon } from "@app/components/atomic/galoy-icon"
-import { toastShow } from "@app/utils/toast"
 
 gql`
   query sendBitcoinDetailsScreen {
@@ -357,6 +344,13 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
     return isWalletCurrencyBtc
       ? styles.walletBalanceText
       : styles.walletBalanceTextSelected
+  }
+
+  const transactionType = () => {
+    if (paymentDetail?.paymentType === "intraledger") return LL.common.intraledger()
+    if (paymentDetail?.paymentType === "onchain") return LL.common.onchain()
+    if (paymentDetail?.paymentType === "lightning") return LL.common.lightning()
+    if (paymentDetail?.paymentType === "lnurl") return LL.common.lightning()
   }
 
   const ChooseWalletModal = wallets && (
