@@ -1,6 +1,5 @@
 import React from "react"
 import { Dimensions, Pressable, StyleProp, View, ViewStyle } from "react-native"
-import { Pressable, StyleProp, View, ViewStyle } from "react-native"
 
 import { testProps } from "@app/utils/testProps"
 import { makeStyles, useTheme, Text } from "@rneui/themed"

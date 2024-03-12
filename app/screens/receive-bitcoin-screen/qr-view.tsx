@@ -27,9 +27,6 @@ import { SuccessIconAnimation } from "@app/components/success-animation"
 import { useI18nContext } from "@app/i18n/i18n-react"
 import { makeStyles, Text, useTheme } from "@rneui/themed"
 
-import { testProps } from "../../utils/testProps"
-import { Invoice, InvoiceType, GetFullUriFn } from "./payment/index.types"
-
 const configByType = {
   [Invoice.Lightning]: {
     copyToClipboardLabel: "ReceiveScreen.copyClipboard",

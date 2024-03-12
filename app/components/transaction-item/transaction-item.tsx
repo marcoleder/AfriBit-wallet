@@ -8,7 +8,6 @@ import {
   TransactionFragmentDoc,
   WalletCurrency,
 } from "@app/graphql/generated"
-import { useHideAmount } from "@app/graphql/hide-amount-context"
 import { useAppConfig } from "@app/hooks"
 import { useDisplayCurrency } from "@app/hooks/use-display-currency"
 import { useI18nContext } from "@app/i18n/i18n-react"
