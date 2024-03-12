@@ -8,6 +8,9 @@ import { gql } from "@apollo/client"
 import { AppUpdate } from "@app/components/app-update/app-update"
 import { GaloyIcon, icons } from "@app/components/atomic/galoy-icon"
 import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
+import { GaloyPrimaryButton } from "@app/components/atomic/galoy-primary-button"
+import { NotificationCard } from "@app/components/notifications"
+import { SetDefaultAccountModal } from "@app/components/set-default-account-modal"
 import { StableSatsModal } from "@app/components/stablesats-modal"
 import WalletOverview from "@app/components/wallet-overview/wallet-overview"
 import {
@@ -19,8 +22,10 @@ import {
 } from "@app/graphql/generated"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { getErrorMessages } from "@app/graphql/utils"
+import { useAppConfig } from "@app/hooks"
 import { useI18nContext } from "@app/i18n/i18n-react"
-import { useNavigation } from "@react-navigation/native"
+import { isIos } from "@app/utils/helper"
+import { useNavigation, useIsFocused } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
 import { Text, makeStyles, useTheme } from "@rneui/themed"
 
@@ -35,7 +40,6 @@ import { Screen } from "../../components/screen"
 import { MemoizedTransactionItem } from "../../components/transaction-item"
 import { RootStackParamList } from "../../navigation/stack-param-lists"
 import { PhoneLoginInitiateType } from "../phone-auth-screen"
-import { NotificationCard } from "@app/components/notifications"
 
 const TransactionCountToTriggerSetDefaultAccountModal = 1
 
@@ -108,6 +112,8 @@ export const HomeScreen: React.FC = () => {
       galoyInstance: { id: galoyInstanceId },
     },
   } = useAppConfig()
+
+  const isFocused = useIsFocused()
 
   const {
     data: dataAuthed,
@@ -295,7 +301,7 @@ export const HomeScreen: React.FC = () => {
         contentContainerStyle={styles.scrollViewContainer}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={loading && isFocused}
             onRefresh={refetch}
             colors={[colors.primary]} // Android refresh indicator colors
             tintColor={colors.primary} // iOS refresh indicator color

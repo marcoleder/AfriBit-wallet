@@ -1,7 +1,9 @@
 import React from "react"
 import { ActivityIndicator, TouchableOpacity, View } from "react-native"
-import { GaloyIcon, IconNamesType } from "../atomic/galoy-icon"
+
 import { makeStyles, useTheme, Text } from "@rneui/themed"
+
+import { GaloyIcon, IconNamesType } from "../atomic/galoy-icon"
 import { GaloyIconButton } from "../atomic/galoy-icon-button"
 
 export type NotificationCardUIProps = {
@@ -30,7 +32,7 @@ export const NotificationCardUI: React.FC<NotificationCardUIProps> = ({
   if (loading) {
     return (
       <TouchableOpacity style={styles.loadingButtonContainer}>
-        <ActivityIndicator size="small" color={colors.primary3} />
+        <ActivityIndicator size="small" color={colors.primary} />
       </TouchableOpacity>
     )
   }
@@ -39,7 +41,7 @@ export const NotificationCardUI: React.FC<NotificationCardUIProps> = ({
     <TouchableOpacity style={styles.buttonContainer} onPress={action}>
       <View style={styles.viewHeader}>
         <View style={styles.leftIconContainer}>
-          <GaloyIcon name={iconName} color={colors.primary3} size={24} />
+          <GaloyIcon name={iconName} color={colors.primary} size={24} />
         </View>
 
         <Text type={"p1"} bold style={styles.titleStyle}>

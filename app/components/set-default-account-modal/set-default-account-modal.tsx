@@ -1,15 +1,25 @@
 import React from "react"
+import { Platform, View, TouchableOpacity, ActivityIndicator } from "react-native"
+import { ScrollView } from "react-native-gesture-handler"
+import Modal from "react-native-modal"
+
+import { gql, useApolloClient } from "@apollo/client"
+import { setHasPromptedSetDefaultAccount } from "@app/graphql/client-only-query"
 import {
   useAccountUpdateDefaultWalletIdMutation,
   useSetDefaultAccountModalQuery,
 } from "@app/graphql/generated"
-import { gql, useApolloClient } from "@apollo/client"
 import { getBtcWallet, getUsdWallet } from "@app/graphql/wallets-utils"
+import { useI18nContext } from "@app/i18n/i18n-react"
+import { RootStackParamList } from "@app/navigation/stack-param-lists"
 import crashlytics from "@react-native-firebase/crashlytics"
 import { setHasPromptedSetDefaultAccount } from "@app/graphql/client-only-query"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigationProp } from "@react-navigation/stack"
-import { RootStackParamList } from "@app/navigation/stack-param-lists"
+import { makeStyles, Text, useTheme } from "@rneui/themed"
+
+import { GaloyCurrencyBubble } from "../atomic/galoy-currency-bubble"
+import { GaloyIcon } from "../atomic/galoy-icon"
 
 gql`
   query setDefaultAccountModal {

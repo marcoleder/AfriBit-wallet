@@ -22,10 +22,13 @@ import { WalletCurrency } from "@app/graphql/generated"
 
 import { testProps } from "../../utils/testProps"
 import { GaloyIcon } from "@app/components/atomic/galoy-icon"
-import { SuccessIconAnimation } from "@app/components/success-animation"
-import { makeStyles, Text, useTheme } from "@rneui/themed"
 import { GaloyTertiaryButton } from "@app/components/atomic/galoy-tertiary-button"
+import { SuccessIconAnimation } from "@app/components/success-animation"
 import { useI18nContext } from "@app/i18n/i18n-react"
+import { makeStyles, Text, useTheme } from "@rneui/themed"
+
+import { testProps } from "../../utils/testProps"
+import { Invoice, InvoiceType, GetFullUriFn } from "./payment/index.types"
 
 const configByType = {
   [Invoice.Lightning]: {

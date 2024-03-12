@@ -8,7 +8,7 @@ import crashlytics from "@react-native-firebase/crashlytics"
 import { makeStyles, useTheme } from "@rneui/themed"
 import * as React from "react"
 import { ActivityIndicator, SectionList, Text, View } from "react-native"
-import { TransactionItem } from "../../components/transaction-item"
+import { MemoizedTransactionItem } from "../../components/transaction-item"
 import { toastShow } from "../../utils/toast"
 
 gql`
@@ -33,30 +33,31 @@ gql`
   }
 `
 
-export const TransactionHistoryScreenBtc: React.FC = () => {
+export const TransactionHistoryScreen: React.FC = () => {
   const {
     theme: { colors },
   } = useTheme()
   const styles = useStyles()
 
-  const { LL } = useI18nContext()
+  const { LL, locale } = useI18nContext()
   const { data, error, fetchMore, refetch, loading } =
     useTransactionListForDefaultAccountQuery({ skip: !useIsAuthed() })
 
+  const pendingIncomingTransactions =
+    data?.me?.defaultAccount?.pendingIncomingTransactions
   const transactions = data?.me?.defaultAccount?.transactions
-
-  const transactionsEdges = data?.me?.defaultAccount?.transactions?.edges ?? []
-  const btcTransactions = transactionsEdges.filter(
-    ({ node }) => node?.settlementCurrency === "BTC",
-  )
 
   const sections = React.useMemo(
     () =>
       groupTransactionsByDate({
-        txs: btcTransactions.map((edge) => edge.node) ?? [],
-        common: LL.common,
+        pendingIncomingTxs: pendingIncomingTransactions
+          ? [...pendingIncomingTransactions]
+          : [],
+        txs: transactions?.edges?.map((edge) => edge.node) ?? [],
+        LL,
+        locale,
       }),
-    [btcTransactions, LL],
+    [pendingIncomingTransactions, transactions, LL, locale],
   )
 
   if (error) {
@@ -93,8 +94,10 @@ export const TransactionHistoryScreenBtc: React.FC = () => {
     <Screen>
       <SectionList
         showsVerticalScrollIndicator={false}
+        maxToRenderPerBatch={10}
+        initialNumToRender={20}
         renderItem={({ item, index, section }) => (
-          <TransactionItem
+          <MemoizedTransactionItem
             key={`txn-${item.id}`}
             isFirst={index === 0}
             isLast={index === section.data.length - 1}
@@ -102,7 +105,6 @@ export const TransactionHistoryScreenBtc: React.FC = () => {
             subtitle
           />
         )}
-        initialNumToRender={20}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.sectionHeaderContainer}>
             <Text style={styles.sectionHeaderText}>{title}</Text>
