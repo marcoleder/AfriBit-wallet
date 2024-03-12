@@ -8,7 +8,7 @@ import crashlytics from "@react-native-firebase/crashlytics"
 import { makeStyles, useTheme } from "@rneui/themed"
 import * as React from "react"
 import { ActivityIndicator, SectionList, Text, View } from "react-native"
-import { TransactionItem } from "../../components/transaction-item"
+import { MemoizedTransactionItem } from "../../components/transaction-item"
 import { toastShow } from "../../utils/toast"
 
 gql`
@@ -36,11 +36,13 @@ export const TransactionHistoryScreenUsd: React.FC = () => {
   } = useTheme()
   const styles = useStyles()
 
-  const { LL } = useI18nContext()
+  const { LL, locale } = useI18nContext()
   const { data, error, fetchMore, refetch, loading } =
     useTransactionListForDefaultAccountQuery({ skip: !useIsAuthed() })
 
   const transactions = data?.me?.defaultAccount?.transactions
+  const pendingIncomingTransactions =
+    data?.me?.defaultAccount?.pendingIncomingTransactions
 
   const transactionsEdges = data?.me?.defaultAccount?.transactions?.edges ?? []
   const usdTransactions = transactionsEdges.filter(
@@ -50,8 +52,12 @@ export const TransactionHistoryScreenUsd: React.FC = () => {
   const sections = React.useMemo(
     () =>
       groupTransactionsByDate({
+        pendingIncomingTxs: pendingIncomingTransactions
+          ? [...pendingIncomingTransactions]
+          : [],
         txs: usdTransactions.map((edge) => edge.node) ?? [],
-        common: LL.common,
+        LL,
+        locale,
       }),
     [usdTransactions, LL],
   )
@@ -91,7 +97,7 @@ export const TransactionHistoryScreenUsd: React.FC = () => {
       <SectionList
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index, section }) => (
-          <TransactionItem
+          <MemoizedTransactionItem
             key={`txn-${item.id}`}
             isFirst={index === 0}
             isLast={index === section.data.length - 1}

@@ -4,7 +4,6 @@ import { ScrollView } from "react-native-gesture-handler"
 import Modal from "react-native-modal"
 
 import { gql, useApolloClient } from "@apollo/client"
-import { setHasPromptedSetDefaultAccount } from "@app/graphql/client-only-query"
 import {
   useAccountUpdateDefaultWalletIdMutation,
   useSetDefaultAccountModalQuery,

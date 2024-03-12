@@ -22,9 +22,6 @@ gql`
       id
       defaultAccount {
         id
-        pendingIncomingTransactions {
-          ...Transaction
-        }
         transactions(first: $first, after: $after, last: $last, before: $before) {
           ...TransactionList
         }
@@ -33,7 +30,7 @@ gql`
   }
 `
 
-export const TransactionHistoryScreen: React.FC = () => {
+export const TransactionHistoryScreenBtc: React.FC = () => {
   const {
     theme: { colors },
   } = useTheme()
@@ -43,9 +40,14 @@ export const TransactionHistoryScreen: React.FC = () => {
   const { data, error, fetchMore, refetch, loading } =
     useTransactionListForDefaultAccountQuery({ skip: !useIsAuthed() })
 
+  const transactions = data?.me?.defaultAccount?.transactions
   const pendingIncomingTransactions =
     data?.me?.defaultAccount?.pendingIncomingTransactions
-  const transactions = data?.me?.defaultAccount?.transactions
+
+  const transactionsEdges = data?.me?.defaultAccount?.transactions?.edges ?? []
+  const usdTransactions = transactionsEdges.filter(
+    ({ node }) => node?.settlementCurrency === "BTC",
+  )
 
   const sections = React.useMemo(
     () =>
@@ -53,11 +55,11 @@ export const TransactionHistoryScreen: React.FC = () => {
         pendingIncomingTxs: pendingIncomingTransactions
           ? [...pendingIncomingTransactions]
           : [],
-        txs: transactions?.edges?.map((edge) => edge.node) ?? [],
+        txs: usdTransactions.map((edge) => edge.node) ?? [],
         LL,
         locale,
       }),
-    [pendingIncomingTransactions, transactions, LL, locale],
+    [usdTransactions, LL],
   )
 
   if (error) {
@@ -94,8 +96,6 @@ export const TransactionHistoryScreen: React.FC = () => {
     <Screen>
       <SectionList
         showsVerticalScrollIndicator={false}
-        maxToRenderPerBatch={10}
-        initialNumToRender={20}
         renderItem={({ item, index, section }) => (
           <MemoizedTransactionItem
             key={`txn-${item.id}`}
@@ -105,6 +105,7 @@ export const TransactionHistoryScreen: React.FC = () => {
             subtitle
           />
         )}
+        initialNumToRender={20}
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.sectionHeaderContainer}>
             <Text style={styles.sectionHeaderText}>{title}</Text>
