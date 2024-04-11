@@ -168,7 +168,6 @@ const TransactionItem: React.FC<Props> = ({
 
   return (
     <ListItem
-      {...testProps("transaction-item")}
       containerStyle={styles.container}
       onPress={() =>
         navigation.navigate("transactionDetail", {

@@ -9,7 +9,6 @@ import { AppUpdate } from "@app/components/app-update/app-update"
 import { GaloyIcon, icons } from "@app/components/atomic/galoy-icon"
 import { GaloyIconButton } from "@app/components/atomic/galoy-icon-button"
 import { GaloyPrimaryButton } from "@app/components/atomic/galoy-primary-button"
-import { NotificationCard } from "@app/components/notifications"
 import { SetDefaultAccountModal } from "@app/components/set-default-account-modal"
 import { StableSatsModal } from "@app/components/stablesats-modal"
 import WalletOverview from "@app/components/wallet-overview/wallet-overview"
@@ -19,6 +18,7 @@ import {
   useHomeAuthedQuery,
   useHomeUnauthedQuery,
   useRealtimePriceQuery,
+  useSettingsScreenQuery,
 } from "@app/graphql/generated"
 import { useIsAuthed } from "@app/graphql/is-authed-context"
 import { getErrorMessages } from "@app/graphql/utils"
@@ -36,6 +36,7 @@ import { Screen } from "../../components/screen"
 import { MemoizedTransactionItem } from "../../components/transaction-item"
 import { RootStackParamList } from "../../navigation/stack-param-lists"
 import { PhoneLoginInitiateType } from "../phone-auth-screen"
+import { testProps } from "@app/utils/testProps"
 
 const TransactionCountToTriggerSetDefaultAccountModal = 1
 
@@ -145,7 +146,15 @@ export const HomeScreen: React.FC = () => {
     nextFetchPolicy: "cache-and-network",
   })
 
-  const loading = loadingAuthed || loadingPrice || loadingUnauthed
+  // keep settings info cached and ignore network call if it's already cached
+  const { loading: loadingSettings } = useSettingsScreenQuery({
+    skip: !isAuthed,
+    fetchPolicy: "cache-first",
+    // this enables offline mode use-case
+    nextFetchPolicy: "cache-and-network",
+  })
+
+  const loading = loadingAuthed || loadingPrice || loadingUnauthed || loadingSettings
 
   const refetch = React.useCallback(() => {
     if (isAuthed) {
@@ -294,6 +303,7 @@ export const HomeScreen: React.FC = () => {
         </Pressable>
       </View>
       <ScrollView
+        {...testProps("home-screen")}
         contentContainerStyle={styles.scrollViewContainer}
         refreshControl={
           <RefreshControl

@@ -103,6 +103,7 @@ export const TransactionHistoryScreenBtc: React.FC = () => {
             isLast={index === section.data.length - 1}
             txid={item.id}
             subtitle
+            testId={`transaction-by-index-${index}`}
           />
         )}
         initialNumToRender={20}

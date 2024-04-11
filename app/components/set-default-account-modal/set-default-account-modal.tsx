@@ -18,7 +18,7 @@ import { StackNavigationProp } from "@react-navigation/stack"
 import { makeStyles, Text, useTheme } from "@rneui/themed"
 
 import { GaloyCurrencyBubble } from "../atomic/galoy-currency-bubble"
-import { GaloyIcon } from "../atomic/galoy-icon"
+import { GaloyIconButton } from "../atomic/galoy-icon-button"
 
 gql`
   query setDefaultAccountModal {

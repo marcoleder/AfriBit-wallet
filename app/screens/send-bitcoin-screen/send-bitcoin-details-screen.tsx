@@ -822,6 +822,7 @@ const useOnchainFeeAlert = (
     ;(async () => {
       const result = await getOnChainTxFee()
       const fees = result.data?.onChainTxFee.amount
+
       if (fees) {
         setOnChainTxFee(fees)
       } else {

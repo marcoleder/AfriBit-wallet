@@ -121,6 +121,7 @@ const ReceiveScreen = () => {
         keyboardOffset="navigationHeader"
         keyboardShouldPersistTaps="handled"
         style={styles.screenStyle}
+        {...testProps("receive-screen")}
       >
         <ButtonGroup
           selectedId={request.receivingWalletDescriptor.currency}
