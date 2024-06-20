@@ -28,6 +28,13 @@ const en: BaseTranslation = {
     howToUseYourCashRegisterExplainer:
       "Allow people to collect payments via the Cash Register link, without accessing your wallet.\n\nThey can create invoices and payments will be sent directly to your {bankName: string} Wallet.",
   },
+  AcceptTermsAndConditionsScreen: {
+    title: "Terms and Conditions",
+    accept: "Accept",
+    termsAndConditions: "View Terms and Conditions",
+    prohibitedCountry: "View prohibited countries",
+    text: "By clicking 'Accept', you agree to our Terms And Conditions. You also agree that you are not a resident or citizen from one of the prohibited countries.",
+  },
   SetAccountModal: {
     title: "Set default account",
     description:
@@ -75,7 +82,9 @@ const en: BaseTranslation = {
     message: "Conversion successful",
   },
   EarnScreen: {
-    earnSats: "Earn {formattedNumber|sats}",
+    satoshi: "sat",
+    satoshis: "sats",
+    earnSats: "Earn {formattedAmount: string}",
     earnSections: {
       bitcoinWhatIsIt: {
         title: "Bitcoin: What is it?",
@@ -2025,10 +2034,10 @@ const en: BaseTranslation = {
     getRewardNow: "Answer quiz",
     keepDigging: "Keep digging!",
     phoneNumberNeeded: "Phone number required",
-    quizComplete: "Quiz completed and {amount: number} sats earned",
+    quizComplete: "Quiz completed and {formattedAmount: string} earned",
     reviewQuiz: "Review quiz",
     satAccumulated: "Sats accumulated",
-    satsEarned: "{formattedNumber|sats} earned",
+    satsEarned: "{formattedAmount: string} earned",
     sectionsCompleted: "You've completed",
     title: "Earn",
     unlockQuestion: "To unlock, answer the question:",
@@ -2842,30 +2851,16 @@ const en: BaseTranslation = {
     drivingAdoption: "I'm driving Bitcoin adoption using Blink.",
     connectOnSocial: "Connect on social: ",
     fullDetails: "Full details at ",
-    decemberChallenge: {
-      title: "December Challenge!",
-      description: "+10 inner circle for a chance at $100!",
-      details: "Grow your inner circle by 10 people in December for a chance at $100!\n\nTo participate, share your circles on social once you've reached 10 for the month and tag #blinkcircles.\n\nOn January 1, three people will be chosen at random to receive $100!"
+    learnMore: "Learn more about Adopting Bitcoin at",
+    mayChallenge: {
+      title: "May Challenge!",
+      description: "Grow your inner circle by 6 for a chance to win a set of Pizzas on your next Bitcoin Meetup.",
+      details: "Want a Bitcoin Pizza Day Party?\n\nExpand your Inner Circle by 6 for a shot at winning a set of pizzas for your next Bitcoin Meetup. The challenge wraps up on May 15th.\n\nShare your circles on social with the hashtag #blinkcircles to participate.\n\nThe prize is $150 for pizzas."
     },
-    januaryChallenge: {
-      title: "January Challenge!",
-      description: "+10 outer circle in January for a chance at $100!",
-      details: "Grow your OUTER circle by 10 in January for a chance at $100!\n\nYour outer circle grows when people in your inner circle welcome others, so reach out and remind those you onboarded to share Blink with their friends and family.\n\nShare your circles on social with #blinkcircles to participate."
-    },
-    februaryChallenge: {
-      title: "February Challenge!",
-      description: "+3 inner circle for a chance to win a Seedsigner hardware wallet!",
-      details: "Grow your inner circle by 3 in February for a chance to win a Seedsigner hardware wallet!\n\nReminder: your circles grow when you send a new Blink user their first sats.\n\nShare your circles on social with #blinkcircles to participate."
-    },
-    marchChallenge: {
-      title: "March Challenge!",
-      description: "+3 inner circle and +3 outer circle for a chance to win $100",
-      details: "Grow your inner circle by 3 and your outer circle by 3 for a chance at winning $100!\n\nReminder: your circles grow when you send a new Blink user their first sats.\n\nShare your circles on social with #blinkcircles to participate."
-    },
-    aprilChallenge: {
-      title: "April Challenge!",
-      description: "Grow your inner circle by 12 and your outer circle by 3 for a chance to win a Bitbox02 hardware wallet.",
-      details: "During the halving month, expand your inner circle by 12 and your outer circle by 3 for a chance to win a Bitbox02 hardware wallet!\n\nReminder: your circles grow when you send a new Blink user their first sats.\n\nShare your circles on social with #blinkcircles to participate."
+    juneChallenge: {
+      title: "June Challenge!",
+      description: "Expand your Inner Circle by 10 for a chance to win a $1000 privilege ticket to the Adopting Bitcoin El Salvador",
+      details: "Win a privilege ticket to Adopting Bitcoin El Salvador\n\nExpand your Inner Circle by 10 for a chance to win a $1000 privilege ticket to Adopting Bitcoin El Salvador! The ticket includes exclusive access to the main conference, mezzanine with food/drinks/snacks, speakers' dinner, and the Film Festival.\n\nShare your circles on social with the hashtag #blinkcircles to participate.\n\nThis time, there will be two winners!"
     }
   },
   FullOnboarding: {
@@ -2885,6 +2880,15 @@ const en: BaseTranslation = {
     PROCESSING: "Processing",
     REVIEW: "Review",
   },
+  NotificationHistory: {
+    title: "Notifications",
+    noNotifications: "You don't have any notifications right now"
+  },
+  SupportChat: {
+    errorSendingMessage: "An error occurred while sending the message",
+    confirmChatReset: "Are you sure you want to reset the chat?",
+    errorResettingChat: "An error occurred while resetting the chat",
+  }
 }
 
 export default en

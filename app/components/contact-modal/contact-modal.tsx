@@ -19,7 +19,7 @@ export const SupportChannels = {
   StatusPage: "statusPage",
   Mattermost: "mattermost",
   Faq: "faq",
-  Chatbot: "chatbot",
+  SupportChat: "supportChat",
 } as const
 
 export type SupportChannels = (typeof SupportChannels)[keyof typeof SupportChannels]
@@ -52,11 +52,11 @@ const ContactModal: React.FC<Props> = ({
 
   const contactOptionList = [
     {
-      id: SupportChannels.Chatbot,
+      id: SupportChannels.SupportChat,
       name: LL.support.chatbot(),
       icon: <Icon name={"chatbubbles-outline"} type="ionicon" />,
       action: () => {
-        navigation.navigate("chatbot")
+        navigation.navigate("supportChat")
         toggleModal()
       },
     },

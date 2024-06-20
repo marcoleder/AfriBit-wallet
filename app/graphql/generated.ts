@@ -78,6 +78,8 @@ export type Scalars = {
   TotpRegistrationId: { input: string; output: string; }
   /** A secret to generate time-based one-time password */
   TotpSecret: { input: string; output: string; }
+  /** An external reference id that can be optionally added for transactions. */
+  TxExternalId: { input: string; output: string; }
   /** Unique identifier of a user */
   Username: { input: string; output: string; }
   /** Unique identifier of a wallet */
@@ -88,6 +90,7 @@ export type Scalars = {
 export type Account = {
   readonly btcWallet?: Maybe<BtcWallet>;
   readonly callbackEndpoints: ReadonlyArray<CallbackEndpoint>;
+  readonly callbackPortalUrl: Scalars['String']['output'];
   readonly csvTransactions: Scalars['String']['output'];
   readonly defaultWallet: PublicWallet;
   /** @deprecated Shifting property to 'defaultWallet.id' */
@@ -401,6 +404,7 @@ export type ConsumerAccount = Account & {
   readonly __typename: 'ConsumerAccount';
   readonly btcWallet?: Maybe<BtcWallet>;
   readonly callbackEndpoints: ReadonlyArray<CallbackEndpoint>;
+  readonly callbackPortalUrl: Scalars['String']['output'];
   /** return CSV stream, base64 encoded, of the list of transactions in the wallet */
   readonly csvTransactions: Scalars['String']['output'];
   readonly defaultWallet: PublicWallet;
@@ -563,6 +567,61 @@ export type GraphQlApplicationError = Error & {
   readonly path?: Maybe<ReadonlyArray<Maybe<Scalars['String']['output']>>>;
 };
 
+export const Icon = {
+  ArrowLeft: 'ARROW_LEFT',
+  ArrowRight: 'ARROW_RIGHT',
+  BackSpace: 'BACK_SPACE',
+  Bank: 'BANK',
+  Bell: 'BELL',
+  Bitcoin: 'BITCOIN',
+  Book: 'BOOK',
+  BtcBook: 'BTC_BOOK',
+  CaretDown: 'CARET_DOWN',
+  CaretLeft: 'CARET_LEFT',
+  CaretRight: 'CARET_RIGHT',
+  CaretUp: 'CARET_UP',
+  Check: 'CHECK',
+  CheckCircle: 'CHECK_CIRCLE',
+  Close: 'CLOSE',
+  CloseCrossWithBackground: 'CLOSE_CROSS_WITH_BACKGROUND',
+  Coins: 'COINS',
+  CopyPaste: 'COPY_PASTE',
+  Dollar: 'DOLLAR',
+  Eye: 'EYE',
+  EyeSlash: 'EYE_SLASH',
+  Filter: 'FILTER',
+  Globe: 'GLOBE',
+  Graph: 'GRAPH',
+  Image: 'IMAGE',
+  Info: 'INFO',
+  Lightning: 'LIGHTNING',
+  Link: 'LINK',
+  Loading: 'LOADING',
+  MagnifyingGlass: 'MAGNIFYING_GLASS',
+  Map: 'MAP',
+  Menu: 'MENU',
+  Note: 'NOTE',
+  PaymentError: 'PAYMENT_ERROR',
+  PaymentPending: 'PAYMENT_PENDING',
+  PaymentSuccess: 'PAYMENT_SUCCESS',
+  Pencil: 'PENCIL',
+  People: 'PEOPLE',
+  QrCode: 'QR_CODE',
+  Question: 'QUESTION',
+  Rank: 'RANK',
+  Receive: 'RECEIVE',
+  Refresh: 'REFRESH',
+  Send: 'SEND',
+  Settings: 'SETTINGS',
+  Share: 'SHARE',
+  Transfer: 'TRANSFER',
+  User: 'USER',
+  Video: 'VIDEO',
+  Warning: 'WARNING',
+  WarningWithBackground: 'WARNING_WITH_BACKGROUND'
+} as const;
+
+export type Icon = typeof Icon[keyof typeof Icon];
 export type InitiationVia = InitiationViaIntraLedger | InitiationViaLn | InitiationViaOnChain;
 
 export type InitiationViaIntraLedger = {
@@ -620,6 +679,8 @@ export type IntraLedgerUsdPaymentSendInput = {
 /** A lightning invoice. */
 export type Invoice = {
   readonly createdAt: Scalars['Timestamp']['output'];
+  /** The unique external id set for the invoice. */
+  readonly externalId: Scalars['TxExternalId']['output'];
   /** The payment hash of the lightning invoice. */
   readonly paymentHash: Scalars['PaymentHash']['output'];
   /** The bolt11 invoice to be paid. */
@@ -680,6 +741,7 @@ export type LnAddressPaymentSendInput = {
 export type LnInvoice = Invoice & {
   readonly __typename: 'LnInvoice';
   readonly createdAt: Scalars['Timestamp']['output'];
+  readonly externalId: Scalars['TxExternalId']['output'];
   readonly paymentHash: Scalars['PaymentHash']['output'];
   readonly paymentRequest: Scalars['LnPaymentRequest']['output'];
   readonly paymentSecret: Scalars['LnPaymentSecret']['output'];
@@ -698,6 +760,7 @@ export type LnInvoiceCreateInput = {
   readonly amount: Scalars['SatAmount']['input'];
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** Wallet ID for a BTC wallet belonging to the current account. */
@@ -710,6 +773,7 @@ export type LnInvoiceCreateOnBehalfOfRecipientInput = {
   readonly descriptionHash?: InputMaybe<Scalars['Hex32Bytes']['input']>;
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** Wallet ID for a BTC wallet which belongs to any account. */
@@ -766,6 +830,7 @@ export type LnInvoicePaymentStatusPayload = {
 export type LnNoAmountInvoice = Invoice & {
   readonly __typename: 'LnNoAmountInvoice';
   readonly createdAt: Scalars['Timestamp']['output'];
+  readonly externalId: Scalars['TxExternalId']['output'];
   readonly paymentHash: Scalars['PaymentHash']['output'];
   readonly paymentRequest: Scalars['LnPaymentRequest']['output'];
   readonly paymentSecret: Scalars['LnPaymentSecret']['output'];
@@ -775,6 +840,7 @@ export type LnNoAmountInvoice = Invoice & {
 export type LnNoAmountInvoiceCreateInput = {
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** ID for either a USD or BTC wallet belonging to the account of the current user. */
@@ -784,6 +850,7 @@ export type LnNoAmountInvoiceCreateInput = {
 export type LnNoAmountInvoiceCreateOnBehalfOfRecipientInput = {
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** ID for either a USD or BTC wallet which belongs to the account of any user. */
@@ -846,6 +913,7 @@ export type LnUsdInvoiceBtcDenominatedCreateOnBehalfOfRecipientInput = {
   readonly descriptionHash?: InputMaybe<Scalars['Hex32Bytes']['input']>;
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. Acts as a note to the recipient. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** Wallet ID for a USD wallet which belongs to the account of any user. */
@@ -857,6 +925,7 @@ export type LnUsdInvoiceCreateInput = {
   readonly amount: Scalars['CentAmount']['input'];
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** Wallet ID for a USD wallet belonging to the current user. */
@@ -869,6 +938,7 @@ export type LnUsdInvoiceCreateOnBehalfOfRecipientInput = {
   readonly descriptionHash?: InputMaybe<Scalars['Hex32Bytes']['input']>;
   /** Optional invoice expiration time in minutes. */
   readonly expiresIn?: InputMaybe<Scalars['Minutes']['input']>;
+  readonly externalId?: InputMaybe<Scalars['TxExternalId']['input']>;
   /** Optional memo for the lightning invoice. Acts as a note to the recipient. */
   readonly memo?: InputMaybe<Scalars['Memo']['input']>;
   /** Wallet ID for a USD wallet which belongs to the account of any user. */
@@ -1045,7 +1115,9 @@ export type Mutation = {
   readonly onChainUsdPaymentSendAsBtcDenominated: PaymentSendPayload;
   readonly onboardingFlowStart: OnboardingFlowStartResult;
   readonly quizClaim: QuizClaimPayload;
+  readonly statefulNotificationAcknowledge: StatefulNotificationAcknowledgePayload;
   readonly supportChatMessageAdd: SupportChatMessageAddPayload;
+  readonly supportChatReset: SuccessPayload;
   /** @deprecated will be moved to AccountContact */
   readonly userContactUpdateAlias: UserContactUpdateAliasPayload;
   readonly userEmailDelete: UserEmailDeletePayload;
@@ -1271,6 +1343,11 @@ export type MutationQuizClaimArgs = {
 };
 
 
+export type MutationStatefulNotificationAcknowledgeArgs = {
+  input: StatefulNotificationAcknowledgeInput;
+};
+
+
 export type MutationSupportChatMessageAddArgs = {
   input: SupportChatMessageAddInput;
 };
@@ -1345,6 +1422,8 @@ export const Network = {
 } as const;
 
 export type Network = typeof Network[keyof typeof Network];
+export type NotificationAction = OpenDeepLinkAction | OpenExternalLinkAction;
+
 export const NotificationChannel = {
   Push: 'PUSH'
 } as const;
@@ -1465,6 +1544,16 @@ export type OneDayAccountLimit = AccountLimit & {
   readonly remainingLimit?: Maybe<Scalars['CentAmount']['output']>;
   /** The current maximum limit for a given 24 hour period. */
   readonly totalLimit: Scalars['CentAmount']['output'];
+};
+
+export type OpenDeepLinkAction = {
+  readonly __typename: 'OpenDeepLinkAction';
+  readonly deepLink: Scalars['String']['output'];
+};
+
+export type OpenExternalLinkAction = {
+  readonly __typename: 'OpenExternalLinkAction';
+  readonly url: Scalars['String']['output'];
 };
 
 /** Information about pagination in a connection. */
@@ -1790,6 +1879,47 @@ export type SettlementViaOnChain = {
   readonly vout?: Maybe<Scalars['Int']['output']>;
 };
 
+export type StatefulNotification = {
+  readonly __typename: 'StatefulNotification';
+  readonly acknowledgedAt?: Maybe<Scalars['Timestamp']['output']>;
+  readonly action?: Maybe<NotificationAction>;
+  readonly body: Scalars['String']['output'];
+  readonly bulletinEnabled: Scalars['Boolean']['output'];
+  readonly createdAt: Scalars['Timestamp']['output'];
+  readonly deepLink?: Maybe<Scalars['String']['output']>;
+  readonly icon?: Maybe<Icon>;
+  readonly id: Scalars['ID']['output'];
+  readonly title: Scalars['String']['output'];
+};
+
+export type StatefulNotificationAcknowledgeInput = {
+  readonly notificationId: Scalars['ID']['input'];
+};
+
+export type StatefulNotificationAcknowledgePayload = {
+  readonly __typename: 'StatefulNotificationAcknowledgePayload';
+  readonly notification: StatefulNotification;
+};
+
+export type StatefulNotificationConnection = {
+  readonly __typename: 'StatefulNotificationConnection';
+  /** A list of edges. */
+  readonly edges: ReadonlyArray<StatefulNotificationEdge>;
+  /** A list of nodes. */
+  readonly nodes: ReadonlyArray<StatefulNotification>;
+  /** Information to aid in pagination. */
+  readonly pageInfo: PageInfo;
+};
+
+/** An edge in a connection. */
+export type StatefulNotificationEdge = {
+  readonly __typename: 'StatefulNotificationEdge';
+  /** A cursor for use in pagination */
+  readonly cursor: Scalars['String']['output'];
+  /** The item at the end of the edge */
+  readonly node: StatefulNotification;
+};
+
 export type Subscription = {
   readonly __typename: 'Subscription';
   /** @deprecated Deprecated in favor of lnInvoicePaymentStatusByPaymentRequest */
@@ -1868,6 +1998,7 @@ export type Transaction = {
   readonly __typename: 'Transaction';
   readonly createdAt: Scalars['Timestamp']['output'];
   readonly direction: TxDirection;
+  readonly externalId?: Maybe<Scalars['TxExternalId']['output']>;
   readonly id: Scalars['ID']['output'];
   /** From which protocol the payment has been initiated. */
   readonly initiationVia: InitiationVia;
@@ -2041,9 +2172,13 @@ export type User = {
   readonly language: Scalars['Language']['output'];
   /** Phone number with international calling code. */
   readonly phone?: Maybe<Scalars['Phone']['output']>;
+  readonly statefulNotifications: StatefulNotificationConnection;
+  readonly statefulNotificationsWithoutBulletinEnabled: StatefulNotificationConnection;
   readonly supportChat: ReadonlyArray<SupportMessage>;
   /** Whether TOTP is enabled for this user. */
   readonly totpEnabled: Scalars['Boolean']['output'];
+  readonly unacknowledgedStatefulNotificationsWithBulletinEnabled: StatefulNotificationConnection;
+  readonly unacknowledgedStatefulNotificationsWithoutBulletinEnabledCount: Scalars['Int']['output'];
   /**
    * Optional immutable user friendly identifier.
    * @deprecated will be moved to @Handle in Account and Wallet
@@ -2054,6 +2189,24 @@ export type User = {
 
 export type UserContactByUsernameArgs = {
   username: Scalars['Username']['input'];
+};
+
+
+export type UserStatefulNotificationsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first: Scalars['Int']['input'];
+};
+
+
+export type UserStatefulNotificationsWithoutBulletinEnabledArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first: Scalars['Int']['input'];
+};
+
+
+export type UserUnacknowledgedStatefulNotificationsWithBulletinEnabledArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first: Scalars['Int']['input'];
 };
 
 export type UserContact = {
@@ -2468,18 +2621,6 @@ export type UserLogoutMutationVariables = Exact<{
 
 export type UserLogoutMutation = { readonly __typename: 'Mutation', readonly userLogout: { readonly __typename: 'SuccessPayload', readonly success?: boolean | null } };
 
-export type SupportChatQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type SupportChatQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly supportChat: ReadonlyArray<{ readonly __typename: 'SupportMessage', readonly id: string, readonly message: string, readonly role: SupportRole, readonly timestamp: number }> } | null };
-
-export type SupportChatMessageAddMutationVariables = Exact<{
-  input: SupportChatMessageAddInput;
-}>;
-
-
-export type SupportChatMessageAddMutation = { readonly __typename: 'Mutation', readonly supportChatMessageAdd: { readonly __typename: 'SupportChatMessageAddPayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly supportMessage?: ReadonlyArray<{ readonly __typename: 'SupportMessage', readonly id: string, readonly message: string, readonly role: SupportRole, readonly timestamp: number } | null> | null } };
-
 export type ConversionScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2543,10 +2684,32 @@ export type HomeUnauthedQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type HomeUnauthedQuery = { readonly __typename: 'Query', readonly globals?: { readonly __typename: 'Globals', readonly network: Network } | null, readonly currencyList: ReadonlyArray<{ readonly __typename: 'Currency', readonly id: string, readonly flag: string, readonly name: string, readonly symbol: string, readonly fractionDigits: number }> };
 
+export type BulletinsQueryVariables = Exact<{
+  first: Scalars['Int']['input'];
+  after?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type BulletinsQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly unacknowledgedStatefulNotificationsWithBulletinEnabled: { readonly __typename: 'StatefulNotificationConnection', readonly pageInfo: { readonly __typename: 'PageInfo', readonly endCursor?: string | null, readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null }, readonly edges: ReadonlyArray<{ readonly __typename: 'StatefulNotificationEdge', readonly cursor: string, readonly node: { readonly __typename: 'StatefulNotification', readonly id: string, readonly title: string, readonly body: string, readonly createdAt: number, readonly acknowledgedAt?: number | null, readonly bulletinEnabled: boolean, readonly icon?: Icon | null, readonly action?: { readonly __typename: 'OpenDeepLinkAction', readonly deepLink: string } | { readonly __typename: 'OpenExternalLinkAction', readonly url: string } | null } }> } } | null };
+
 export type BusinessMapMarkersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type BusinessMapMarkersQuery = { readonly __typename: 'Query', readonly businessMapMarkers: ReadonlyArray<{ readonly __typename: 'MapMarker', readonly username: string, readonly mapInfo: { readonly __typename: 'MapInfo', readonly title: string, readonly coordinates: { readonly __typename: 'Coordinates', readonly longitude: number, readonly latitude: number } } }> };
+
+export type StatefulNotificationsQueryVariables = Exact<{
+  after?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type StatefulNotificationsQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly statefulNotificationsWithoutBulletinEnabled: { readonly __typename: 'StatefulNotificationConnection', readonly nodes: ReadonlyArray<{ readonly __typename: 'StatefulNotification', readonly id: string, readonly title: string, readonly body: string, readonly createdAt: number, readonly acknowledgedAt?: number | null, readonly bulletinEnabled: boolean, readonly icon?: Icon | null, readonly action?: { readonly __typename: 'OpenDeepLinkAction', readonly deepLink: string } | { readonly __typename: 'OpenExternalLinkAction', readonly url: string } | null }>, readonly pageInfo: { readonly __typename: 'PageInfo', readonly endCursor?: string | null, readonly hasNextPage: boolean, readonly hasPreviousPage: boolean, readonly startCursor?: string | null } } } | null };
+
+export type StatefulNotificationAcknowledgeMutationVariables = Exact<{
+  input: StatefulNotificationAcknowledgeInput;
+}>;
+
+
+export type StatefulNotificationAcknowledgeMutation = { readonly __typename: 'Mutation', readonly statefulNotificationAcknowledge: { readonly __typename: 'StatefulNotificationAcknowledgePayload', readonly notification: { readonly __typename: 'StatefulNotification', readonly acknowledgedAt?: number | null } } };
 
 export type CirclesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2641,14 +2804,14 @@ export type LnNoAmountInvoiceCreateMutationVariables = Exact<{
 }>;
 
 
-export type LnNoAmountInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnNoAmountInvoiceCreate: { readonly __typename: 'LnNoAmountInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnNoAmountInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus } | null } };
+export type LnNoAmountInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnNoAmountInvoiceCreate: { readonly __typename: 'LnNoAmountInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnNoAmountInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly externalId: string } | null } };
 
 export type LnInvoiceCreateMutationVariables = Exact<{
   input: LnInvoiceCreateInput;
 }>;
 
 
-export type LnInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly satoshis: number } | null } };
+export type LnInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly externalId: string, readonly satoshis: number } | null } };
 
 export type OnChainAddressCurrentMutationVariables = Exact<{
   input: OnChainAddressCurrentInput;
@@ -2662,7 +2825,7 @@ export type LnUsdInvoiceCreateMutationVariables = Exact<{
 }>;
 
 
-export type LnUsdInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnUsdInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly satoshis: number } | null } };
+export type LnUsdInvoiceCreateMutation = { readonly __typename: 'Mutation', readonly lnUsdInvoiceCreate: { readonly __typename: 'LnInvoicePayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly invoice?: { readonly __typename: 'LnInvoice', readonly createdAt: number, readonly paymentHash: string, readonly paymentRequest: string, readonly paymentStatus: InvoicePaymentStatus, readonly externalId: string, readonly satoshis: number } | null } };
 
 export type ScanningQrCodeScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2911,6 +3074,11 @@ export type AccountDisableNotificationCategoryMutationVariables = Exact<{
 
 export type AccountDisableNotificationCategoryMutation = { readonly __typename: 'Mutation', readonly accountDisableNotificationCategory: { readonly __typename: 'AccountUpdateNotificationSettingsPayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly account?: { readonly __typename: 'ConsumerAccount', readonly id: string, readonly notificationSettings: { readonly __typename: 'NotificationSettings', readonly push: { readonly __typename: 'NotificationChannelSettings', readonly enabled: boolean, readonly disabledCategories: ReadonlyArray<string> } } } | null } };
 
+export type UnacknowledgedNotificationCountQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UnacknowledgedNotificationCountQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly unacknowledgedStatefulNotificationsWithoutBulletinEnabledCount: number } | null };
+
 export type SettingsScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2932,6 +3100,23 @@ export type AccountLimitsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AccountLimitsQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly defaultAccount: { readonly __typename: 'ConsumerAccount', readonly id: string, readonly limits: { readonly __typename: 'AccountLimits', readonly withdrawal: ReadonlyArray<{ readonly __typename: 'OneDayAccountLimit', readonly totalLimit: number, readonly remainingLimit?: number | null, readonly interval?: number | null }>, readonly internalSend: ReadonlyArray<{ readonly __typename: 'OneDayAccountLimit', readonly totalLimit: number, readonly remainingLimit?: number | null, readonly interval?: number | null }>, readonly convert: ReadonlyArray<{ readonly __typename: 'OneDayAccountLimit', readonly totalLimit: number, readonly remainingLimit?: number | null, readonly interval?: number | null }> } } } | null };
+
+export type SupportChatQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SupportChatQuery = { readonly __typename: 'Query', readonly me?: { readonly __typename: 'User', readonly id: string, readonly supportChat: ReadonlyArray<{ readonly __typename: 'SupportMessage', readonly id: string, readonly message: string, readonly role: SupportRole, readonly timestamp: number }> } | null };
+
+export type SupportChatMessageAddMutationVariables = Exact<{
+  input: SupportChatMessageAddInput;
+}>;
+
+
+export type SupportChatMessageAddMutation = { readonly __typename: 'Mutation', readonly supportChatMessageAdd: { readonly __typename: 'SupportChatMessageAddPayload', readonly errors: ReadonlyArray<{ readonly __typename: 'GraphQLApplicationError', readonly message: string }>, readonly supportMessage?: ReadonlyArray<{ readonly __typename: 'SupportMessage', readonly id: string, readonly message: string, readonly role: SupportRole, readonly timestamp: number } | null> | null } };
+
+export type SupportChatResetMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SupportChatResetMutation = { readonly __typename: 'Mutation', readonly supportChatReset: { readonly __typename: 'SuccessPayload', readonly success?: boolean | null } };
 
 export type TotpRegistrationScreenQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3070,8 +3255,13 @@ export function useMobileUpdateLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<MobileUpdateQuery, MobileUpdateQueryVariables>(MobileUpdateDocument, options);
         }
+export function useMobileUpdateSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<MobileUpdateQuery, MobileUpdateQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MobileUpdateQuery, MobileUpdateQueryVariables>(MobileUpdateDocument, options);
+        }
 export type MobileUpdateQueryHookResult = ReturnType<typeof useMobileUpdateQuery>;
 export type MobileUpdateLazyQueryHookResult = ReturnType<typeof useMobileUpdateLazyQuery>;
+export type MobileUpdateSuspenseQueryHookResult = ReturnType<typeof useMobileUpdateSuspenseQuery>;
 export type MobileUpdateQueryResult = Apollo.QueryResult<MobileUpdateQuery, MobileUpdateQueryVariables>;
 export const BalanceHeaderDocument = gql`
     query balanceHeader {
@@ -3112,8 +3302,13 @@ export function useBalanceHeaderLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<BalanceHeaderQuery, BalanceHeaderQueryVariables>(BalanceHeaderDocument, options);
         }
+export function useBalanceHeaderSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BalanceHeaderQuery, BalanceHeaderQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BalanceHeaderQuery, BalanceHeaderQueryVariables>(BalanceHeaderDocument, options);
+        }
 export type BalanceHeaderQueryHookResult = ReturnType<typeof useBalanceHeaderQuery>;
 export type BalanceHeaderLazyQueryHookResult = ReturnType<typeof useBalanceHeaderLazyQuery>;
+export type BalanceHeaderSuspenseQueryHookResult = ReturnType<typeof useBalanceHeaderSuspenseQuery>;
 export type BalanceHeaderQueryResult = Apollo.QueryResult<BalanceHeaderQuery, BalanceHeaderQueryVariables>;
 export const InviteDocument = gql`
     query invite {
@@ -3147,8 +3342,13 @@ export function useInviteLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Inv
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<InviteQuery, InviteQueryVariables>(InviteDocument, options);
         }
+export function useInviteSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<InviteQuery, InviteQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<InviteQuery, InviteQueryVariables>(InviteDocument, options);
+        }
 export type InviteQueryHookResult = ReturnType<typeof useInviteQuery>;
 export type InviteLazyQueryHookResult = ReturnType<typeof useInviteLazyQuery>;
+export type InviteSuspenseQueryHookResult = ReturnType<typeof useInviteSuspenseQuery>;
 export type InviteQueryResult = Apollo.QueryResult<InviteQuery, InviteQueryVariables>;
 export const BtcPriceListDocument = gql`
     query btcPriceList($range: PriceGraphRange!) {
@@ -3179,7 +3379,7 @@ export const BtcPriceListDocument = gql`
  *   },
  * });
  */
-export function useBtcPriceListQuery(baseOptions: Apollo.QueryHookOptions<BtcPriceListQuery, BtcPriceListQueryVariables>) {
+export function useBtcPriceListQuery(baseOptions: Apollo.QueryHookOptions<BtcPriceListQuery, BtcPriceListQueryVariables> & ({ variables: BtcPriceListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<BtcPriceListQuery, BtcPriceListQueryVariables>(BtcPriceListDocument, options);
       }
@@ -3187,8 +3387,13 @@ export function useBtcPriceListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<BtcPriceListQuery, BtcPriceListQueryVariables>(BtcPriceListDocument, options);
         }
+export function useBtcPriceListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BtcPriceListQuery, BtcPriceListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BtcPriceListQuery, BtcPriceListQueryVariables>(BtcPriceListDocument, options);
+        }
 export type BtcPriceListQueryHookResult = ReturnType<typeof useBtcPriceListQuery>;
 export type BtcPriceListLazyQueryHookResult = ReturnType<typeof useBtcPriceListLazyQuery>;
+export type BtcPriceListSuspenseQueryHookResult = ReturnType<typeof useBtcPriceListSuspenseQuery>;
 export type BtcPriceListQueryResult = Apollo.QueryResult<BtcPriceListQuery, BtcPriceListQueryVariables>;
 export const SetDefaultAccountModalDocument = gql`
     query setDefaultAccountModal {
@@ -3230,8 +3435,13 @@ export function useSetDefaultAccountModalLazyQuery(baseOptions?: Apollo.LazyQuer
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SetDefaultAccountModalQuery, SetDefaultAccountModalQueryVariables>(SetDefaultAccountModalDocument, options);
         }
+export function useSetDefaultAccountModalSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SetDefaultAccountModalQuery, SetDefaultAccountModalQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SetDefaultAccountModalQuery, SetDefaultAccountModalQueryVariables>(SetDefaultAccountModalDocument, options);
+        }
 export type SetDefaultAccountModalQueryHookResult = ReturnType<typeof useSetDefaultAccountModalQuery>;
 export type SetDefaultAccountModalLazyQueryHookResult = ReturnType<typeof useSetDefaultAccountModalLazyQuery>;
+export type SetDefaultAccountModalSuspenseQueryHookResult = ReturnType<typeof useSetDefaultAccountModalSuspenseQuery>;
 export type SetDefaultAccountModalQueryResult = Apollo.QueryResult<SetDefaultAccountModalQuery, SetDefaultAccountModalQueryVariables>;
 export const UserUpdateUsernameDocument = gql`
     mutation userUpdateUsername($input: UserUpdateUsernameInput!) {
@@ -3303,8 +3513,13 @@ export function useMyUserIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<M
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<MyUserIdQuery, MyUserIdQueryVariables>(MyUserIdDocument, options);
         }
+export function useMyUserIdSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<MyUserIdQuery, MyUserIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MyUserIdQuery, MyUserIdQueryVariables>(MyUserIdDocument, options);
+        }
 export type MyUserIdQueryHookResult = ReturnType<typeof useMyUserIdQuery>;
 export type MyUserIdLazyQueryHookResult = ReturnType<typeof useMyUserIdLazyQuery>;
+export type MyUserIdSuspenseQueryHookResult = ReturnType<typeof useMyUserIdSuspenseQuery>;
 export type MyUserIdQueryResult = Apollo.QueryResult<MyUserIdQuery, MyUserIdQueryVariables>;
 export const WalletOverviewScreenDocument = gql`
     query walletOverviewScreen {
@@ -3345,8 +3560,13 @@ export function useWalletOverviewScreenLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<WalletOverviewScreenQuery, WalletOverviewScreenQueryVariables>(WalletOverviewScreenDocument, options);
         }
+export function useWalletOverviewScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<WalletOverviewScreenQuery, WalletOverviewScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<WalletOverviewScreenQuery, WalletOverviewScreenQueryVariables>(WalletOverviewScreenDocument, options);
+        }
 export type WalletOverviewScreenQueryHookResult = ReturnType<typeof useWalletOverviewScreenQuery>;
 export type WalletOverviewScreenLazyQueryHookResult = ReturnType<typeof useWalletOverviewScreenLazyQuery>;
+export type WalletOverviewScreenSuspenseQueryHookResult = ReturnType<typeof useWalletOverviewScreenSuspenseQuery>;
 export type WalletOverviewScreenQueryResult = Apollo.QueryResult<WalletOverviewScreenQuery, WalletOverviewScreenQueryVariables>;
 export const AnalyticsDocument = gql`
     query analytics {
@@ -3383,8 +3603,13 @@ export function useAnalyticsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<AnalyticsQuery, AnalyticsQueryVariables>(AnalyticsDocument, options);
         }
+export function useAnalyticsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AnalyticsQuery, AnalyticsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AnalyticsQuery, AnalyticsQueryVariables>(AnalyticsDocument, options);
+        }
 export type AnalyticsQueryHookResult = ReturnType<typeof useAnalyticsQuery>;
 export type AnalyticsLazyQueryHookResult = ReturnType<typeof useAnalyticsLazyQuery>;
+export type AnalyticsSuspenseQueryHookResult = ReturnType<typeof useAnalyticsSuspenseQuery>;
 export type AnalyticsQueryResult = Apollo.QueryResult<AnalyticsQuery, AnalyticsQueryVariables>;
 export const RealtimePriceDocument = gql`
     query realtimePrice {
@@ -3433,8 +3658,13 @@ export function useRealtimePriceLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<RealtimePriceQuery, RealtimePriceQueryVariables>(RealtimePriceDocument, options);
         }
+export function useRealtimePriceSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<RealtimePriceQuery, RealtimePriceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<RealtimePriceQuery, RealtimePriceQueryVariables>(RealtimePriceDocument, options);
+        }
 export type RealtimePriceQueryHookResult = ReturnType<typeof useRealtimePriceQuery>;
 export type RealtimePriceLazyQueryHookResult = ReturnType<typeof useRealtimePriceLazyQuery>;
+export type RealtimePriceSuspenseQueryHookResult = ReturnType<typeof useRealtimePriceSuspenseQuery>;
 export type RealtimePriceQueryResult = Apollo.QueryResult<RealtimePriceQuery, RealtimePriceQueryVariables>;
 export const HideBalanceDocument = gql`
     query hideBalance {
@@ -3465,8 +3695,13 @@ export function useHideBalanceLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<HideBalanceQuery, HideBalanceQueryVariables>(HideBalanceDocument, options);
         }
+export function useHideBalanceSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<HideBalanceQuery, HideBalanceQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<HideBalanceQuery, HideBalanceQueryVariables>(HideBalanceDocument, options);
+        }
 export type HideBalanceQueryHookResult = ReturnType<typeof useHideBalanceQuery>;
 export type HideBalanceLazyQueryHookResult = ReturnType<typeof useHideBalanceLazyQuery>;
+export type HideBalanceSuspenseQueryHookResult = ReturnType<typeof useHideBalanceSuspenseQuery>;
 export type HideBalanceQueryResult = Apollo.QueryResult<HideBalanceQuery, HideBalanceQueryVariables>;
 export const HiddenBalanceToolTipDocument = gql`
     query hiddenBalanceToolTip {
@@ -3497,8 +3732,13 @@ export function useHiddenBalanceToolTipLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<HiddenBalanceToolTipQuery, HiddenBalanceToolTipQueryVariables>(HiddenBalanceToolTipDocument, options);
         }
+export function useHiddenBalanceToolTipSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<HiddenBalanceToolTipQuery, HiddenBalanceToolTipQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<HiddenBalanceToolTipQuery, HiddenBalanceToolTipQueryVariables>(HiddenBalanceToolTipDocument, options);
+        }
 export type HiddenBalanceToolTipQueryHookResult = ReturnType<typeof useHiddenBalanceToolTipQuery>;
 export type HiddenBalanceToolTipLazyQueryHookResult = ReturnType<typeof useHiddenBalanceToolTipLazyQuery>;
+export type HiddenBalanceToolTipSuspenseQueryHookResult = ReturnType<typeof useHiddenBalanceToolTipSuspenseQuery>;
 export type HiddenBalanceToolTipQueryResult = Apollo.QueryResult<HiddenBalanceToolTipQuery, HiddenBalanceToolTipQueryVariables>;
 export const BetaDocument = gql`
     query beta {
@@ -3529,8 +3769,13 @@ export function useBetaLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BetaQ
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<BetaQuery, BetaQueryVariables>(BetaDocument, options);
         }
+export function useBetaSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BetaQuery, BetaQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BetaQuery, BetaQueryVariables>(BetaDocument, options);
+        }
 export type BetaQueryHookResult = ReturnType<typeof useBetaQuery>;
 export type BetaLazyQueryHookResult = ReturnType<typeof useBetaLazyQuery>;
+export type BetaSuspenseQueryHookResult = ReturnType<typeof useBetaSuspenseQuery>;
 export type BetaQueryResult = Apollo.QueryResult<BetaQuery, BetaQueryVariables>;
 export const ColorSchemeDocument = gql`
     query colorScheme {
@@ -3561,8 +3806,13 @@ export function useColorSchemeLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ColorSchemeQuery, ColorSchemeQueryVariables>(ColorSchemeDocument, options);
         }
+export function useColorSchemeSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ColorSchemeQuery, ColorSchemeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ColorSchemeQuery, ColorSchemeQueryVariables>(ColorSchemeDocument, options);
+        }
 export type ColorSchemeQueryHookResult = ReturnType<typeof useColorSchemeQuery>;
 export type ColorSchemeLazyQueryHookResult = ReturnType<typeof useColorSchemeLazyQuery>;
+export type ColorSchemeSuspenseQueryHookResult = ReturnType<typeof useColorSchemeSuspenseQuery>;
 export type ColorSchemeQueryResult = Apollo.QueryResult<ColorSchemeQuery, ColorSchemeQueryVariables>;
 export const CountryCodeDocument = gql`
     query countryCode {
@@ -3593,8 +3843,13 @@ export function useCountryCodeLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<CountryCodeQuery, CountryCodeQueryVariables>(CountryCodeDocument, options);
         }
+export function useCountryCodeSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CountryCodeQuery, CountryCodeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CountryCodeQuery, CountryCodeQueryVariables>(CountryCodeDocument, options);
+        }
 export type CountryCodeQueryHookResult = ReturnType<typeof useCountryCodeQuery>;
 export type CountryCodeLazyQueryHookResult = ReturnType<typeof useCountryCodeLazyQuery>;
+export type CountryCodeSuspenseQueryHookResult = ReturnType<typeof useCountryCodeSuspenseQuery>;
 export type CountryCodeQueryResult = Apollo.QueryResult<CountryCodeQuery, CountryCodeQueryVariables>;
 export const RegionDocument = gql`
     query region {
@@ -3630,8 +3885,13 @@ export function useRegionLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Reg
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<RegionQuery, RegionQueryVariables>(RegionDocument, options);
         }
+export function useRegionSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<RegionQuery, RegionQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<RegionQuery, RegionQueryVariables>(RegionDocument, options);
+        }
 export type RegionQueryHookResult = ReturnType<typeof useRegionQuery>;
 export type RegionLazyQueryHookResult = ReturnType<typeof useRegionLazyQuery>;
+export type RegionSuspenseQueryHookResult = ReturnType<typeof useRegionSuspenseQuery>;
 export type RegionQueryResult = Apollo.QueryResult<RegionQuery, RegionQueryVariables>;
 export const FeedbackModalShownDocument = gql`
     query feedbackModalShown {
@@ -3662,8 +3922,13 @@ export function useFeedbackModalShownLazyQuery(baseOptions?: Apollo.LazyQueryHoo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<FeedbackModalShownQuery, FeedbackModalShownQueryVariables>(FeedbackModalShownDocument, options);
         }
+export function useFeedbackModalShownSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<FeedbackModalShownQuery, FeedbackModalShownQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FeedbackModalShownQuery, FeedbackModalShownQueryVariables>(FeedbackModalShownDocument, options);
+        }
 export type FeedbackModalShownQueryHookResult = ReturnType<typeof useFeedbackModalShownQuery>;
 export type FeedbackModalShownLazyQueryHookResult = ReturnType<typeof useFeedbackModalShownLazyQuery>;
+export type FeedbackModalShownSuspenseQueryHookResult = ReturnType<typeof useFeedbackModalShownSuspenseQuery>;
 export type FeedbackModalShownQueryResult = Apollo.QueryResult<FeedbackModalShownQuery, FeedbackModalShownQueryVariables>;
 export const HasPromptedSetDefaultAccountDocument = gql`
     query hasPromptedSetDefaultAccount {
@@ -3694,8 +3959,13 @@ export function useHasPromptedSetDefaultAccountLazyQuery(baseOptions?: Apollo.La
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<HasPromptedSetDefaultAccountQuery, HasPromptedSetDefaultAccountQueryVariables>(HasPromptedSetDefaultAccountDocument, options);
         }
+export function useHasPromptedSetDefaultAccountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<HasPromptedSetDefaultAccountQuery, HasPromptedSetDefaultAccountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<HasPromptedSetDefaultAccountQuery, HasPromptedSetDefaultAccountQueryVariables>(HasPromptedSetDefaultAccountDocument, options);
+        }
 export type HasPromptedSetDefaultAccountQueryHookResult = ReturnType<typeof useHasPromptedSetDefaultAccountQuery>;
 export type HasPromptedSetDefaultAccountLazyQueryHookResult = ReturnType<typeof useHasPromptedSetDefaultAccountLazyQuery>;
+export type HasPromptedSetDefaultAccountSuspenseQueryHookResult = ReturnType<typeof useHasPromptedSetDefaultAccountSuspenseQuery>;
 export type HasPromptedSetDefaultAccountQueryResult = Apollo.QueryResult<HasPromptedSetDefaultAccountQuery, HasPromptedSetDefaultAccountQueryVariables>;
 export const IntroducingCirclesModalShownDocument = gql`
     query introducingCirclesModalShown {
@@ -3726,8 +3996,13 @@ export function useIntroducingCirclesModalShownLazyQuery(baseOptions?: Apollo.La
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<IntroducingCirclesModalShownQuery, IntroducingCirclesModalShownQueryVariables>(IntroducingCirclesModalShownDocument, options);
         }
+export function useIntroducingCirclesModalShownSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<IntroducingCirclesModalShownQuery, IntroducingCirclesModalShownQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<IntroducingCirclesModalShownQuery, IntroducingCirclesModalShownQueryVariables>(IntroducingCirclesModalShownDocument, options);
+        }
 export type IntroducingCirclesModalShownQueryHookResult = ReturnType<typeof useIntroducingCirclesModalShownQuery>;
 export type IntroducingCirclesModalShownLazyQueryHookResult = ReturnType<typeof useIntroducingCirclesModalShownLazyQuery>;
+export type IntroducingCirclesModalShownSuspenseQueryHookResult = ReturnType<typeof useIntroducingCirclesModalShownSuspenseQuery>;
 export type IntroducingCirclesModalShownQueryResult = Apollo.QueryResult<IntroducingCirclesModalShownQuery, IntroducingCirclesModalShownQueryVariables>;
 export const InnerCircleValueDocument = gql`
     query innerCircleValue {
@@ -3758,8 +4033,13 @@ export function useInnerCircleValueLazyQuery(baseOptions?: Apollo.LazyQueryHookO
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<InnerCircleValueQuery, InnerCircleValueQueryVariables>(InnerCircleValueDocument, options);
         }
+export function useInnerCircleValueSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<InnerCircleValueQuery, InnerCircleValueQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<InnerCircleValueQuery, InnerCircleValueQueryVariables>(InnerCircleValueDocument, options);
+        }
 export type InnerCircleValueQueryHookResult = ReturnType<typeof useInnerCircleValueQuery>;
 export type InnerCircleValueLazyQueryHookResult = ReturnType<typeof useInnerCircleValueLazyQuery>;
+export type InnerCircleValueSuspenseQueryHookResult = ReturnType<typeof useInnerCircleValueSuspenseQuery>;
 export type InnerCircleValueQueryResult = Apollo.QueryResult<InnerCircleValueQuery, InnerCircleValueQueryVariables>;
 export const NetworkDocument = gql`
     query network {
@@ -3792,8 +4072,13 @@ export function useNetworkLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ne
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<NetworkQuery, NetworkQueryVariables>(NetworkDocument, options);
         }
+export function useNetworkSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<NetworkQuery, NetworkQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<NetworkQuery, NetworkQueryVariables>(NetworkDocument, options);
+        }
 export type NetworkQueryHookResult = ReturnType<typeof useNetworkQuery>;
 export type NetworkLazyQueryHookResult = ReturnType<typeof useNetworkLazyQuery>;
+export type NetworkSuspenseQueryHookResult = ReturnType<typeof useNetworkSuspenseQuery>;
 export type NetworkQueryResult = Apollo.QueryResult<NetworkQuery, NetworkQueryVariables>;
 export const LevelDocument = gql`
     query level {
@@ -3830,8 +4115,13 @@ export function useLevelLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Leve
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<LevelQuery, LevelQueryVariables>(LevelDocument, options);
         }
+export function useLevelSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<LevelQuery, LevelQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<LevelQuery, LevelQueryVariables>(LevelDocument, options);
+        }
 export type LevelQueryHookResult = ReturnType<typeof useLevelQuery>;
 export type LevelLazyQueryHookResult = ReturnType<typeof useLevelLazyQuery>;
+export type LevelSuspenseQueryHookResult = ReturnType<typeof useLevelSuspenseQuery>;
 export type LevelQueryResult = Apollo.QueryResult<LevelQuery, LevelQueryVariables>;
 export const DisplayCurrencyDocument = gql`
     query displayCurrency {
@@ -3868,8 +4158,13 @@ export function useDisplayCurrencyLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<DisplayCurrencyQuery, DisplayCurrencyQueryVariables>(DisplayCurrencyDocument, options);
         }
+export function useDisplayCurrencySuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<DisplayCurrencyQuery, DisplayCurrencyQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<DisplayCurrencyQuery, DisplayCurrencyQueryVariables>(DisplayCurrencyDocument, options);
+        }
 export type DisplayCurrencyQueryHookResult = ReturnType<typeof useDisplayCurrencyQuery>;
 export type DisplayCurrencyLazyQueryHookResult = ReturnType<typeof useDisplayCurrencyLazyQuery>;
+export type DisplayCurrencySuspenseQueryHookResult = ReturnType<typeof useDisplayCurrencySuspenseQuery>;
 export type DisplayCurrencyQueryResult = Apollo.QueryResult<DisplayCurrencyQuery, DisplayCurrencyQueryVariables>;
 export const CurrencyListDocument = gql`
     query currencyList {
@@ -3907,8 +4202,13 @@ export function useCurrencyListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<CurrencyListQuery, CurrencyListQueryVariables>(CurrencyListDocument, options);
         }
+export function useCurrencyListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CurrencyListQuery, CurrencyListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CurrencyListQuery, CurrencyListQueryVariables>(CurrencyListDocument, options);
+        }
 export type CurrencyListQueryHookResult = ReturnType<typeof useCurrencyListQuery>;
 export type CurrencyListLazyQueryHookResult = ReturnType<typeof useCurrencyListLazyQuery>;
+export type CurrencyListSuspenseQueryHookResult = ReturnType<typeof useCurrencyListSuspenseQuery>;
 export type CurrencyListQueryResult = Apollo.QueryResult<CurrencyListQuery, CurrencyListQueryVariables>;
 export const CaptchaCreateChallengeDocument = gql`
     mutation captchaCreateChallenge {
@@ -3983,87 +4283,6 @@ export function useUserLogoutMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UserLogoutMutationHookResult = ReturnType<typeof useUserLogoutMutation>;
 export type UserLogoutMutationResult = Apollo.MutationResult<UserLogoutMutation>;
 export type UserLogoutMutationOptions = Apollo.BaseMutationOptions<UserLogoutMutation, UserLogoutMutationVariables>;
-export const SupportChatDocument = gql`
-    query supportChat {
-  me {
-    id
-    supportChat {
-      id
-      message
-      role
-      timestamp
-    }
-  }
-}
-    `;
-
-/**
- * __useSupportChatQuery__
- *
- * To run a query within a React component, call `useSupportChatQuery` and pass it any options that fit your needs.
- * When your component renders, `useSupportChatQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSupportChatQuery({
- *   variables: {
- *   },
- * });
- */
-export function useSupportChatQuery(baseOptions?: Apollo.QueryHookOptions<SupportChatQuery, SupportChatQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<SupportChatQuery, SupportChatQueryVariables>(SupportChatDocument, options);
-      }
-export function useSupportChatLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SupportChatQuery, SupportChatQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<SupportChatQuery, SupportChatQueryVariables>(SupportChatDocument, options);
-        }
-export type SupportChatQueryHookResult = ReturnType<typeof useSupportChatQuery>;
-export type SupportChatLazyQueryHookResult = ReturnType<typeof useSupportChatLazyQuery>;
-export type SupportChatQueryResult = Apollo.QueryResult<SupportChatQuery, SupportChatQueryVariables>;
-export const SupportChatMessageAddDocument = gql`
-    mutation supportChatMessageAdd($input: SupportChatMessageAddInput!) {
-  supportChatMessageAdd(input: $input) {
-    errors {
-      message
-    }
-    supportMessage {
-      id
-      message
-      role
-      timestamp
-    }
-  }
-}
-    `;
-export type SupportChatMessageAddMutationFn = Apollo.MutationFunction<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>;
-
-/**
- * __useSupportChatMessageAddMutation__
- *
- * To run a mutation, you first call `useSupportChatMessageAddMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSupportChatMessageAddMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [supportChatMessageAddMutation, { data, loading, error }] = useSupportChatMessageAddMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useSupportChatMessageAddMutation(baseOptions?: Apollo.MutationHookOptions<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>(SupportChatMessageAddDocument, options);
-      }
-export type SupportChatMessageAddMutationHookResult = ReturnType<typeof useSupportChatMessageAddMutation>;
-export type SupportChatMessageAddMutationResult = Apollo.MutationResult<SupportChatMessageAddMutation>;
-export type SupportChatMessageAddMutationOptions = Apollo.BaseMutationOptions<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>;
 export const ConversionScreenDocument = gql`
     query conversionScreen {
   me {
@@ -4103,8 +4322,13 @@ export function useConversionScreenLazyQuery(baseOptions?: Apollo.LazyQueryHookO
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ConversionScreenQuery, ConversionScreenQueryVariables>(ConversionScreenDocument, options);
         }
+export function useConversionScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ConversionScreenQuery, ConversionScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ConversionScreenQuery, ConversionScreenQueryVariables>(ConversionScreenDocument, options);
+        }
 export type ConversionScreenQueryHookResult = ReturnType<typeof useConversionScreenQuery>;
 export type ConversionScreenLazyQueryHookResult = ReturnType<typeof useConversionScreenLazyQuery>;
+export type ConversionScreenSuspenseQueryHookResult = ReturnType<typeof useConversionScreenSuspenseQuery>;
 export type ConversionScreenQueryResult = Apollo.QueryResult<ConversionScreenQuery, ConversionScreenQueryVariables>;
 export const DebugScreenDocument = gql`
     query debugScreen {
@@ -4140,8 +4364,13 @@ export function useDebugScreenLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<DebugScreenQuery, DebugScreenQueryVariables>(DebugScreenDocument, options);
         }
+export function useDebugScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<DebugScreenQuery, DebugScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<DebugScreenQuery, DebugScreenQueryVariables>(DebugScreenDocument, options);
+        }
 export type DebugScreenQueryHookResult = ReturnType<typeof useDebugScreenQuery>;
 export type DebugScreenLazyQueryHookResult = ReturnType<typeof useDebugScreenLazyQuery>;
+export type DebugScreenSuspenseQueryHookResult = ReturnType<typeof useDebugScreenSuspenseQuery>;
 export type DebugScreenQueryResult = Apollo.QueryResult<DebugScreenQuery, DebugScreenQueryVariables>;
 export const MyQuizQuestionsDocument = gql`
     query myQuizQuestions {
@@ -4185,8 +4414,13 @@ export function useMyQuizQuestionsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<MyQuizQuestionsQuery, MyQuizQuestionsQueryVariables>(MyQuizQuestionsDocument, options);
         }
+export function useMyQuizQuestionsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<MyQuizQuestionsQuery, MyQuizQuestionsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MyQuizQuestionsQuery, MyQuizQuestionsQueryVariables>(MyQuizQuestionsDocument, options);
+        }
 export type MyQuizQuestionsQueryHookResult = ReturnType<typeof useMyQuizQuestionsQuery>;
 export type MyQuizQuestionsLazyQueryHookResult = ReturnType<typeof useMyQuizQuestionsLazyQuery>;
+export type MyQuizQuestionsSuspenseQueryHookResult = ReturnType<typeof useMyQuizQuestionsSuspenseQuery>;
 export type MyQuizQuestionsQueryResult = Apollo.QueryResult<MyQuizQuestionsQuery, MyQuizQuestionsQueryVariables>;
 export const QuizClaimDocument = gql`
     mutation quizClaim($input: QuizClaimInput!) {
@@ -4385,8 +4619,13 @@ export function useFullOnboardingScreenLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<FullOnboardingScreenQuery, FullOnboardingScreenQueryVariables>(FullOnboardingScreenDocument, options);
         }
+export function useFullOnboardingScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<FullOnboardingScreenQuery, FullOnboardingScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<FullOnboardingScreenQuery, FullOnboardingScreenQueryVariables>(FullOnboardingScreenDocument, options);
+        }
 export type FullOnboardingScreenQueryHookResult = ReturnType<typeof useFullOnboardingScreenQuery>;
 export type FullOnboardingScreenLazyQueryHookResult = ReturnType<typeof useFullOnboardingScreenLazyQuery>;
+export type FullOnboardingScreenSuspenseQueryHookResult = ReturnType<typeof useFullOnboardingScreenSuspenseQuery>;
 export type FullOnboardingScreenQueryResult = Apollo.QueryResult<FullOnboardingScreenQuery, FullOnboardingScreenQueryVariables>;
 export const AddressScreenDocument = gql`
     query addressScreen {
@@ -4420,8 +4659,13 @@ export function useAddressScreenLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<AddressScreenQuery, AddressScreenQueryVariables>(AddressScreenDocument, options);
         }
+export function useAddressScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AddressScreenQuery, AddressScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AddressScreenQuery, AddressScreenQueryVariables>(AddressScreenDocument, options);
+        }
 export type AddressScreenQueryHookResult = ReturnType<typeof useAddressScreenQuery>;
 export type AddressScreenLazyQueryHookResult = ReturnType<typeof useAddressScreenLazyQuery>;
+export type AddressScreenSuspenseQueryHookResult = ReturnType<typeof useAddressScreenSuspenseQuery>;
 export type AddressScreenQueryResult = Apollo.QueryResult<AddressScreenQuery, AddressScreenQueryVariables>;
 export const HomeAuthedDocument = gql`
     query homeAuthed {
@@ -4478,8 +4722,13 @@ export function useHomeAuthedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<HomeAuthedQuery, HomeAuthedQueryVariables>(HomeAuthedDocument, options);
         }
+export function useHomeAuthedSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<HomeAuthedQuery, HomeAuthedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<HomeAuthedQuery, HomeAuthedQueryVariables>(HomeAuthedDocument, options);
+        }
 export type HomeAuthedQueryHookResult = ReturnType<typeof useHomeAuthedQuery>;
 export type HomeAuthedLazyQueryHookResult = ReturnType<typeof useHomeAuthedLazyQuery>;
+export type HomeAuthedSuspenseQueryHookResult = ReturnType<typeof useHomeAuthedSuspenseQuery>;
 export type HomeAuthedQueryResult = Apollo.QueryResult<HomeAuthedQuery, HomeAuthedQueryVariables>;
 export const HomeUnauthedDocument = gql`
     query homeUnauthed {
@@ -4519,9 +4768,86 @@ export function useHomeUnauthedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<HomeUnauthedQuery, HomeUnauthedQueryVariables>(HomeUnauthedDocument, options);
         }
+export function useHomeUnauthedSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<HomeUnauthedQuery, HomeUnauthedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<HomeUnauthedQuery, HomeUnauthedQueryVariables>(HomeUnauthedDocument, options);
+        }
 export type HomeUnauthedQueryHookResult = ReturnType<typeof useHomeUnauthedQuery>;
 export type HomeUnauthedLazyQueryHookResult = ReturnType<typeof useHomeUnauthedLazyQuery>;
+export type HomeUnauthedSuspenseQueryHookResult = ReturnType<typeof useHomeUnauthedSuspenseQuery>;
 export type HomeUnauthedQueryResult = Apollo.QueryResult<HomeUnauthedQuery, HomeUnauthedQueryVariables>;
+export const BulletinsDocument = gql`
+    query Bulletins($first: Int!, $after: String) {
+  me {
+    id
+    unacknowledgedStatefulNotificationsWithBulletinEnabled(
+      first: $first
+      after: $after
+    ) {
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+      edges {
+        node {
+          id
+          title
+          body
+          createdAt
+          acknowledgedAt
+          bulletinEnabled
+          icon
+          action {
+            ... on OpenDeepLinkAction {
+              deepLink
+            }
+            ... on OpenExternalLinkAction {
+              url
+            }
+          }
+        }
+        cursor
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useBulletinsQuery__
+ *
+ * To run a query within a React component, call `useBulletinsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBulletinsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBulletinsQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *   },
+ * });
+ */
+export function useBulletinsQuery(baseOptions: Apollo.QueryHookOptions<BulletinsQuery, BulletinsQueryVariables> & ({ variables: BulletinsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BulletinsQuery, BulletinsQueryVariables>(BulletinsDocument, options);
+      }
+export function useBulletinsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BulletinsQuery, BulletinsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BulletinsQuery, BulletinsQueryVariables>(BulletinsDocument, options);
+        }
+export function useBulletinsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BulletinsQuery, BulletinsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BulletinsQuery, BulletinsQueryVariables>(BulletinsDocument, options);
+        }
+export type BulletinsQueryHookResult = ReturnType<typeof useBulletinsQuery>;
+export type BulletinsLazyQueryHookResult = ReturnType<typeof useBulletinsLazyQuery>;
+export type BulletinsSuspenseQueryHookResult = ReturnType<typeof useBulletinsSuspenseQuery>;
+export type BulletinsQueryResult = Apollo.QueryResult<BulletinsQuery, BulletinsQueryVariables>;
 export const BusinessMapMarkersDocument = gql`
     query businessMapMarkers {
   businessMapMarkers {
@@ -4560,9 +4886,113 @@ export function useBusinessMapMarkersLazyQuery(baseOptions?: Apollo.LazyQueryHoo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<BusinessMapMarkersQuery, BusinessMapMarkersQueryVariables>(BusinessMapMarkersDocument, options);
         }
+export function useBusinessMapMarkersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BusinessMapMarkersQuery, BusinessMapMarkersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BusinessMapMarkersQuery, BusinessMapMarkersQueryVariables>(BusinessMapMarkersDocument, options);
+        }
 export type BusinessMapMarkersQueryHookResult = ReturnType<typeof useBusinessMapMarkersQuery>;
 export type BusinessMapMarkersLazyQueryHookResult = ReturnType<typeof useBusinessMapMarkersLazyQuery>;
+export type BusinessMapMarkersSuspenseQueryHookResult = ReturnType<typeof useBusinessMapMarkersSuspenseQuery>;
 export type BusinessMapMarkersQueryResult = Apollo.QueryResult<BusinessMapMarkersQuery, BusinessMapMarkersQueryVariables>;
+export const StatefulNotificationsDocument = gql`
+    query StatefulNotifications($after: String) {
+  me {
+    statefulNotificationsWithoutBulletinEnabled(first: 20, after: $after) {
+      nodes {
+        id
+        title
+        body
+        createdAt
+        acknowledgedAt
+        bulletinEnabled
+        icon
+        action {
+          ... on OpenDeepLinkAction {
+            deepLink
+          }
+          ... on OpenExternalLinkAction {
+            url
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useStatefulNotificationsQuery__
+ *
+ * To run a query within a React component, call `useStatefulNotificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStatefulNotificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStatefulNotificationsQuery({
+ *   variables: {
+ *      after: // value for 'after'
+ *   },
+ * });
+ */
+export function useStatefulNotificationsQuery(baseOptions?: Apollo.QueryHookOptions<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>(StatefulNotificationsDocument, options);
+      }
+export function useStatefulNotificationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>(StatefulNotificationsDocument, options);
+        }
+export function useStatefulNotificationsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>(StatefulNotificationsDocument, options);
+        }
+export type StatefulNotificationsQueryHookResult = ReturnType<typeof useStatefulNotificationsQuery>;
+export type StatefulNotificationsLazyQueryHookResult = ReturnType<typeof useStatefulNotificationsLazyQuery>;
+export type StatefulNotificationsSuspenseQueryHookResult = ReturnType<typeof useStatefulNotificationsSuspenseQuery>;
+export type StatefulNotificationsQueryResult = Apollo.QueryResult<StatefulNotificationsQuery, StatefulNotificationsQueryVariables>;
+export const StatefulNotificationAcknowledgeDocument = gql`
+    mutation StatefulNotificationAcknowledge($input: StatefulNotificationAcknowledgeInput!) {
+  statefulNotificationAcknowledge(input: $input) {
+    notification {
+      acknowledgedAt
+    }
+  }
+}
+    `;
+export type StatefulNotificationAcknowledgeMutationFn = Apollo.MutationFunction<StatefulNotificationAcknowledgeMutation, StatefulNotificationAcknowledgeMutationVariables>;
+
+/**
+ * __useStatefulNotificationAcknowledgeMutation__
+ *
+ * To run a mutation, you first call `useStatefulNotificationAcknowledgeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useStatefulNotificationAcknowledgeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [statefulNotificationAcknowledgeMutation, { data, loading, error }] = useStatefulNotificationAcknowledgeMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useStatefulNotificationAcknowledgeMutation(baseOptions?: Apollo.MutationHookOptions<StatefulNotificationAcknowledgeMutation, StatefulNotificationAcknowledgeMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<StatefulNotificationAcknowledgeMutation, StatefulNotificationAcknowledgeMutationVariables>(StatefulNotificationAcknowledgeDocument, options);
+      }
+export type StatefulNotificationAcknowledgeMutationHookResult = ReturnType<typeof useStatefulNotificationAcknowledgeMutation>;
+export type StatefulNotificationAcknowledgeMutationResult = Apollo.MutationResult<StatefulNotificationAcknowledgeMutation>;
+export type StatefulNotificationAcknowledgeMutationOptions = Apollo.BaseMutationOptions<StatefulNotificationAcknowledgeMutation, StatefulNotificationAcknowledgeMutationVariables>;
 export const CirclesDocument = gql`
     query Circles {
   me {
@@ -4610,8 +5040,13 @@ export function useCirclesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Ci
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<CirclesQuery, CirclesQueryVariables>(CirclesDocument, options);
         }
+export function useCirclesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<CirclesQuery, CirclesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<CirclesQuery, CirclesQueryVariables>(CirclesDocument, options);
+        }
 export type CirclesQueryHookResult = ReturnType<typeof useCirclesQuery>;
 export type CirclesLazyQueryHookResult = ReturnType<typeof useCirclesLazyQuery>;
+export type CirclesSuspenseQueryHookResult = ReturnType<typeof useCirclesSuspenseQuery>;
 export type CirclesQueryResult = Apollo.QueryResult<CirclesQuery, CirclesQueryVariables>;
 export const ContactsDocument = gql`
     query contacts {
@@ -4650,8 +5085,13 @@ export function useContactsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<C
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ContactsQuery, ContactsQueryVariables>(ContactsDocument, options);
         }
+export function useContactsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ContactsQuery, ContactsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ContactsQuery, ContactsQueryVariables>(ContactsDocument, options);
+        }
 export type ContactsQueryHookResult = ReturnType<typeof useContactsQuery>;
 export type ContactsLazyQueryHookResult = ReturnType<typeof useContactsLazyQuery>;
+export type ContactsSuspenseQueryHookResult = ReturnType<typeof useContactsSuspenseQuery>;
 export type ContactsQueryResult = Apollo.QueryResult<ContactsQuery, ContactsQueryVariables>;
 export const TransactionListForContactDocument = gql`
     query transactionListForContact($username: Username!, $first: Int, $after: String, $last: Int, $before: String) {
@@ -4686,7 +5126,7 @@ export const TransactionListForContactDocument = gql`
  *   },
  * });
  */
-export function useTransactionListForContactQuery(baseOptions: Apollo.QueryHookOptions<TransactionListForContactQuery, TransactionListForContactQueryVariables>) {
+export function useTransactionListForContactQuery(baseOptions: Apollo.QueryHookOptions<TransactionListForContactQuery, TransactionListForContactQueryVariables> & ({ variables: TransactionListForContactQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<TransactionListForContactQuery, TransactionListForContactQueryVariables>(TransactionListForContactDocument, options);
       }
@@ -4694,8 +5134,13 @@ export function useTransactionListForContactLazyQuery(baseOptions?: Apollo.LazyQ
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<TransactionListForContactQuery, TransactionListForContactQueryVariables>(TransactionListForContactDocument, options);
         }
+export function useTransactionListForContactSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TransactionListForContactQuery, TransactionListForContactQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TransactionListForContactQuery, TransactionListForContactQueryVariables>(TransactionListForContactDocument, options);
+        }
 export type TransactionListForContactQueryHookResult = ReturnType<typeof useTransactionListForContactQuery>;
 export type TransactionListForContactLazyQueryHookResult = ReturnType<typeof useTransactionListForContactLazyQuery>;
+export type TransactionListForContactSuspenseQueryHookResult = ReturnType<typeof useTransactionListForContactSuspenseQuery>;
 export type TransactionListForContactQueryResult = Apollo.QueryResult<TransactionListForContactQuery, TransactionListForContactQueryVariables>;
 export const ContactsCardDocument = gql`
     query ContactsCard {
@@ -4734,8 +5179,13 @@ export function useContactsCardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ContactsCardQuery, ContactsCardQueryVariables>(ContactsCardDocument, options);
         }
+export function useContactsCardSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ContactsCardQuery, ContactsCardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ContactsCardQuery, ContactsCardQueryVariables>(ContactsCardDocument, options);
+        }
 export type ContactsCardQueryHookResult = ReturnType<typeof useContactsCardQuery>;
 export type ContactsCardLazyQueryHookResult = ReturnType<typeof useContactsCardLazyQuery>;
+export type ContactsCardSuspenseQueryHookResult = ReturnType<typeof useContactsCardSuspenseQuery>;
 export type ContactsCardQueryResult = Apollo.QueryResult<ContactsCardQuery, ContactsCardQueryVariables>;
 export const UserContactUpdateAliasDocument = gql`
     mutation userContactUpdateAlias($input: UserContactUpdateAliasInput!) {
@@ -4967,8 +5417,13 @@ export function useSupportedCountriesLazyQuery(baseOptions?: Apollo.LazyQueryHoo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SupportedCountriesQuery, SupportedCountriesQueryVariables>(SupportedCountriesDocument, options);
         }
+export function useSupportedCountriesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SupportedCountriesQuery, SupportedCountriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SupportedCountriesQuery, SupportedCountriesQueryVariables>(SupportedCountriesDocument, options);
+        }
 export type SupportedCountriesQueryHookResult = ReturnType<typeof useSupportedCountriesQuery>;
 export type SupportedCountriesLazyQueryHookResult = ReturnType<typeof useSupportedCountriesLazyQuery>;
+export type SupportedCountriesSuspenseQueryHookResult = ReturnType<typeof useSupportedCountriesSuspenseQuery>;
 export type SupportedCountriesQueryResult = Apollo.QueryResult<SupportedCountriesQuery, SupportedCountriesQueryVariables>;
 export const UserPhoneRegistrationInitiateDocument = gql`
     mutation userPhoneRegistrationInitiate($input: UserPhoneRegistrationInitiateInput!) {
@@ -5040,8 +5495,13 @@ export function usePriceHistoryScreenLazyQuery(baseOptions?: Apollo.LazyQueryHoo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<PriceHistoryScreenQuery, PriceHistoryScreenQueryVariables>(PriceHistoryScreenDocument, options);
         }
+export function usePriceHistoryScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<PriceHistoryScreenQuery, PriceHistoryScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PriceHistoryScreenQuery, PriceHistoryScreenQueryVariables>(PriceHistoryScreenDocument, options);
+        }
 export type PriceHistoryScreenQueryHookResult = ReturnType<typeof usePriceHistoryScreenQuery>;
 export type PriceHistoryScreenLazyQueryHookResult = ReturnType<typeof usePriceHistoryScreenLazyQuery>;
+export type PriceHistoryScreenSuspenseQueryHookResult = ReturnType<typeof usePriceHistoryScreenSuspenseQuery>;
 export type PriceHistoryScreenQueryResult = Apollo.QueryResult<PriceHistoryScreenQuery, PriceHistoryScreenQueryVariables>;
 export const MyLnUpdatesDocument = gql`
     subscription myLnUpdates {
@@ -5130,8 +5590,13 @@ export function usePaymentRequestLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<PaymentRequestQuery, PaymentRequestQueryVariables>(PaymentRequestDocument, options);
         }
+export function usePaymentRequestSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<PaymentRequestQuery, PaymentRequestQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PaymentRequestQuery, PaymentRequestQueryVariables>(PaymentRequestDocument, options);
+        }
 export type PaymentRequestQueryHookResult = ReturnType<typeof usePaymentRequestQuery>;
 export type PaymentRequestLazyQueryHookResult = ReturnType<typeof usePaymentRequestLazyQuery>;
+export type PaymentRequestSuspenseQueryHookResult = ReturnType<typeof usePaymentRequestSuspenseQuery>;
 export type PaymentRequestQueryResult = Apollo.QueryResult<PaymentRequestQuery, PaymentRequestQueryVariables>;
 export const LnNoAmountInvoiceCreateDocument = gql`
     mutation lnNoAmountInvoiceCreate($input: LnNoAmountInvoiceCreateInput!) {
@@ -5144,6 +5609,7 @@ export const LnNoAmountInvoiceCreateDocument = gql`
       paymentHash
       paymentRequest
       paymentStatus
+      externalId
     }
   }
 }
@@ -5185,6 +5651,7 @@ export const LnInvoiceCreateDocument = gql`
       paymentHash
       paymentRequest
       paymentStatus
+      externalId
       satoshis
     }
   }
@@ -5263,6 +5730,7 @@ export const LnUsdInvoiceCreateDocument = gql`
       paymentHash
       paymentRequest
       paymentStatus
+      externalId
       satoshis
     }
   }
@@ -5338,8 +5806,13 @@ export function useScanningQrCodeScreenLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ScanningQrCodeScreenQuery, ScanningQrCodeScreenQueryVariables>(ScanningQrCodeScreenDocument, options);
         }
+export function useScanningQrCodeScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ScanningQrCodeScreenQuery, ScanningQrCodeScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ScanningQrCodeScreenQuery, ScanningQrCodeScreenQueryVariables>(ScanningQrCodeScreenDocument, options);
+        }
 export type ScanningQrCodeScreenQueryHookResult = ReturnType<typeof useScanningQrCodeScreenQuery>;
 export type ScanningQrCodeScreenLazyQueryHookResult = ReturnType<typeof useScanningQrCodeScreenLazyQuery>;
+export type ScanningQrCodeScreenSuspenseQueryHookResult = ReturnType<typeof useScanningQrCodeScreenSuspenseQuery>;
 export type ScanningQrCodeScreenQueryResult = Apollo.QueryResult<ScanningQrCodeScreenQuery, ScanningQrCodeScreenQueryVariables>;
 export const SendBitcoinConfirmationScreenDocument = gql`
     query sendBitcoinConfirmationScreen {
@@ -5380,8 +5853,13 @@ export function useSendBitcoinConfirmationScreenLazyQuery(baseOptions?: Apollo.L
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SendBitcoinConfirmationScreenQuery, SendBitcoinConfirmationScreenQueryVariables>(SendBitcoinConfirmationScreenDocument, options);
         }
+export function useSendBitcoinConfirmationScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SendBitcoinConfirmationScreenQuery, SendBitcoinConfirmationScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SendBitcoinConfirmationScreenQuery, SendBitcoinConfirmationScreenQueryVariables>(SendBitcoinConfirmationScreenDocument, options);
+        }
 export type SendBitcoinConfirmationScreenQueryHookResult = ReturnType<typeof useSendBitcoinConfirmationScreenQuery>;
 export type SendBitcoinConfirmationScreenLazyQueryHookResult = ReturnType<typeof useSendBitcoinConfirmationScreenLazyQuery>;
+export type SendBitcoinConfirmationScreenSuspenseQueryHookResult = ReturnType<typeof useSendBitcoinConfirmationScreenSuspenseQuery>;
 export type SendBitcoinConfirmationScreenQueryResult = Apollo.QueryResult<SendBitcoinConfirmationScreenQuery, SendBitcoinConfirmationScreenQueryVariables>;
 export const SendBitcoinDestinationDocument = gql`
     query sendBitcoinDestination {
@@ -5429,8 +5907,13 @@ export function useSendBitcoinDestinationLazyQuery(baseOptions?: Apollo.LazyQuer
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SendBitcoinDestinationQuery, SendBitcoinDestinationQueryVariables>(SendBitcoinDestinationDocument, options);
         }
+export function useSendBitcoinDestinationSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SendBitcoinDestinationQuery, SendBitcoinDestinationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SendBitcoinDestinationQuery, SendBitcoinDestinationQueryVariables>(SendBitcoinDestinationDocument, options);
+        }
 export type SendBitcoinDestinationQueryHookResult = ReturnType<typeof useSendBitcoinDestinationQuery>;
 export type SendBitcoinDestinationLazyQueryHookResult = ReturnType<typeof useSendBitcoinDestinationLazyQuery>;
+export type SendBitcoinDestinationSuspenseQueryHookResult = ReturnType<typeof useSendBitcoinDestinationSuspenseQuery>;
 export type SendBitcoinDestinationQueryResult = Apollo.QueryResult<SendBitcoinDestinationQuery, SendBitcoinDestinationQueryVariables>;
 export const AccountDefaultWalletDocument = gql`
     query accountDefaultWallet($walletCurrency: WalletCurrency, $username: Username!) {
@@ -5457,7 +5940,7 @@ export const AccountDefaultWalletDocument = gql`
  *   },
  * });
  */
-export function useAccountDefaultWalletQuery(baseOptions: Apollo.QueryHookOptions<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables>) {
+export function useAccountDefaultWalletQuery(baseOptions: Apollo.QueryHookOptions<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables> & ({ variables: AccountDefaultWalletQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables>(AccountDefaultWalletDocument, options);
       }
@@ -5465,8 +5948,13 @@ export function useAccountDefaultWalletLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables>(AccountDefaultWalletDocument, options);
         }
+export function useAccountDefaultWalletSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables>(AccountDefaultWalletDocument, options);
+        }
 export type AccountDefaultWalletQueryHookResult = ReturnType<typeof useAccountDefaultWalletQuery>;
 export type AccountDefaultWalletLazyQueryHookResult = ReturnType<typeof useAccountDefaultWalletLazyQuery>;
+export type AccountDefaultWalletSuspenseQueryHookResult = ReturnType<typeof useAccountDefaultWalletSuspenseQuery>;
 export type AccountDefaultWalletQueryResult = Apollo.QueryResult<AccountDefaultWalletQuery, AccountDefaultWalletQueryVariables>;
 export const SendBitcoinDetailsScreenDocument = gql`
     query sendBitcoinDetailsScreen {
@@ -5511,8 +5999,13 @@ export function useSendBitcoinDetailsScreenLazyQuery(baseOptions?: Apollo.LazyQu
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SendBitcoinDetailsScreenQuery, SendBitcoinDetailsScreenQueryVariables>(SendBitcoinDetailsScreenDocument, options);
         }
+export function useSendBitcoinDetailsScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SendBitcoinDetailsScreenQuery, SendBitcoinDetailsScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SendBitcoinDetailsScreenQuery, SendBitcoinDetailsScreenQueryVariables>(SendBitcoinDetailsScreenDocument, options);
+        }
 export type SendBitcoinDetailsScreenQueryHookResult = ReturnType<typeof useSendBitcoinDetailsScreenQuery>;
 export type SendBitcoinDetailsScreenLazyQueryHookResult = ReturnType<typeof useSendBitcoinDetailsScreenLazyQuery>;
+export type SendBitcoinDetailsScreenSuspenseQueryHookResult = ReturnType<typeof useSendBitcoinDetailsScreenSuspenseQuery>;
 export type SendBitcoinDetailsScreenQueryResult = Apollo.QueryResult<SendBitcoinDetailsScreenQuery, SendBitcoinDetailsScreenQueryVariables>;
 export const SendBitcoinWithdrawalLimitsDocument = gql`
     query sendBitcoinWithdrawalLimits {
@@ -5555,8 +6048,13 @@ export function useSendBitcoinWithdrawalLimitsLazyQuery(baseOptions?: Apollo.Laz
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SendBitcoinWithdrawalLimitsQuery, SendBitcoinWithdrawalLimitsQueryVariables>(SendBitcoinWithdrawalLimitsDocument, options);
         }
+export function useSendBitcoinWithdrawalLimitsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SendBitcoinWithdrawalLimitsQuery, SendBitcoinWithdrawalLimitsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SendBitcoinWithdrawalLimitsQuery, SendBitcoinWithdrawalLimitsQueryVariables>(SendBitcoinWithdrawalLimitsDocument, options);
+        }
 export type SendBitcoinWithdrawalLimitsQueryHookResult = ReturnType<typeof useSendBitcoinWithdrawalLimitsQuery>;
 export type SendBitcoinWithdrawalLimitsLazyQueryHookResult = ReturnType<typeof useSendBitcoinWithdrawalLimitsLazyQuery>;
+export type SendBitcoinWithdrawalLimitsSuspenseQueryHookResult = ReturnType<typeof useSendBitcoinWithdrawalLimitsSuspenseQuery>;
 export type SendBitcoinWithdrawalLimitsQueryResult = Apollo.QueryResult<SendBitcoinWithdrawalLimitsQuery, SendBitcoinWithdrawalLimitsQueryVariables>;
 export const SendBitcoinInternalLimitsDocument = gql`
     query sendBitcoinInternalLimits {
@@ -5599,8 +6097,13 @@ export function useSendBitcoinInternalLimitsLazyQuery(baseOptions?: Apollo.LazyQ
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SendBitcoinInternalLimitsQuery, SendBitcoinInternalLimitsQueryVariables>(SendBitcoinInternalLimitsDocument, options);
         }
+export function useSendBitcoinInternalLimitsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SendBitcoinInternalLimitsQuery, SendBitcoinInternalLimitsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SendBitcoinInternalLimitsQuery, SendBitcoinInternalLimitsQueryVariables>(SendBitcoinInternalLimitsDocument, options);
+        }
 export type SendBitcoinInternalLimitsQueryHookResult = ReturnType<typeof useSendBitcoinInternalLimitsQuery>;
 export type SendBitcoinInternalLimitsLazyQueryHookResult = ReturnType<typeof useSendBitcoinInternalLimitsLazyQuery>;
+export type SendBitcoinInternalLimitsSuspenseQueryHookResult = ReturnType<typeof useSendBitcoinInternalLimitsSuspenseQuery>;
 export type SendBitcoinInternalLimitsQueryResult = Apollo.QueryResult<SendBitcoinInternalLimitsQuery, SendBitcoinInternalLimitsQueryVariables>;
 export const FeedbackSubmitDocument = gql`
     mutation feedbackSubmit($input: FeedbackSubmitInput!) {
@@ -5810,7 +6313,7 @@ export const OnChainTxFeeDocument = gql`
  *   },
  * });
  */
-export function useOnChainTxFeeQuery(baseOptions: Apollo.QueryHookOptions<OnChainTxFeeQuery, OnChainTxFeeQueryVariables>) {
+export function useOnChainTxFeeQuery(baseOptions: Apollo.QueryHookOptions<OnChainTxFeeQuery, OnChainTxFeeQueryVariables> & ({ variables: OnChainTxFeeQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<OnChainTxFeeQuery, OnChainTxFeeQueryVariables>(OnChainTxFeeDocument, options);
       }
@@ -5818,8 +6321,13 @@ export function useOnChainTxFeeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<OnChainTxFeeQuery, OnChainTxFeeQueryVariables>(OnChainTxFeeDocument, options);
         }
+export function useOnChainTxFeeSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OnChainTxFeeQuery, OnChainTxFeeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OnChainTxFeeQuery, OnChainTxFeeQueryVariables>(OnChainTxFeeDocument, options);
+        }
 export type OnChainTxFeeQueryHookResult = ReturnType<typeof useOnChainTxFeeQuery>;
 export type OnChainTxFeeLazyQueryHookResult = ReturnType<typeof useOnChainTxFeeLazyQuery>;
+export type OnChainTxFeeSuspenseQueryHookResult = ReturnType<typeof useOnChainTxFeeSuspenseQuery>;
 export type OnChainTxFeeQueryResult = Apollo.QueryResult<OnChainTxFeeQuery, OnChainTxFeeQueryVariables>;
 export const OnChainUsdTxFeeDocument = gql`
     query onChainUsdTxFee($walletId: WalletId!, $address: OnChainAddress!, $amount: CentAmount!) {
@@ -5847,7 +6355,7 @@ export const OnChainUsdTxFeeDocument = gql`
  *   },
  * });
  */
-export function useOnChainUsdTxFeeQuery(baseOptions: Apollo.QueryHookOptions<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables>) {
+export function useOnChainUsdTxFeeQuery(baseOptions: Apollo.QueryHookOptions<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables> & ({ variables: OnChainUsdTxFeeQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables>(OnChainUsdTxFeeDocument, options);
       }
@@ -5855,8 +6363,13 @@ export function useOnChainUsdTxFeeLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables>(OnChainUsdTxFeeDocument, options);
         }
+export function useOnChainUsdTxFeeSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables>(OnChainUsdTxFeeDocument, options);
+        }
 export type OnChainUsdTxFeeQueryHookResult = ReturnType<typeof useOnChainUsdTxFeeQuery>;
 export type OnChainUsdTxFeeLazyQueryHookResult = ReturnType<typeof useOnChainUsdTxFeeLazyQuery>;
+export type OnChainUsdTxFeeSuspenseQueryHookResult = ReturnType<typeof useOnChainUsdTxFeeSuspenseQuery>;
 export type OnChainUsdTxFeeQueryResult = Apollo.QueryResult<OnChainUsdTxFeeQuery, OnChainUsdTxFeeQueryVariables>;
 export const OnChainUsdTxFeeAsBtcDenominatedDocument = gql`
     query onChainUsdTxFeeAsBtcDenominated($walletId: WalletId!, $address: OnChainAddress!, $amount: SatAmount!) {
@@ -5888,7 +6401,7 @@ export const OnChainUsdTxFeeAsBtcDenominatedDocument = gql`
  *   },
  * });
  */
-export function useOnChainUsdTxFeeAsBtcDenominatedQuery(baseOptions: Apollo.QueryHookOptions<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables>) {
+export function useOnChainUsdTxFeeAsBtcDenominatedQuery(baseOptions: Apollo.QueryHookOptions<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables> & ({ variables: OnChainUsdTxFeeAsBtcDenominatedQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables>(OnChainUsdTxFeeAsBtcDenominatedDocument, options);
       }
@@ -5896,8 +6409,13 @@ export function useOnChainUsdTxFeeAsBtcDenominatedLazyQuery(baseOptions?: Apollo
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables>(OnChainUsdTxFeeAsBtcDenominatedDocument, options);
         }
+export function useOnChainUsdTxFeeAsBtcDenominatedSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables>(OnChainUsdTxFeeAsBtcDenominatedDocument, options);
+        }
 export type OnChainUsdTxFeeAsBtcDenominatedQueryHookResult = ReturnType<typeof useOnChainUsdTxFeeAsBtcDenominatedQuery>;
 export type OnChainUsdTxFeeAsBtcDenominatedLazyQueryHookResult = ReturnType<typeof useOnChainUsdTxFeeAsBtcDenominatedLazyQuery>;
+export type OnChainUsdTxFeeAsBtcDenominatedSuspenseQueryHookResult = ReturnType<typeof useOnChainUsdTxFeeAsBtcDenominatedSuspenseQuery>;
 export type OnChainUsdTxFeeAsBtcDenominatedQueryResult = Apollo.QueryResult<OnChainUsdTxFeeAsBtcDenominatedQuery, OnChainUsdTxFeeAsBtcDenominatedQueryVariables>;
 export const IntraLedgerPaymentSendDocument = gql`
     mutation intraLedgerPaymentSend($input: IntraLedgerPaymentSendInput!) {
@@ -6391,8 +6909,13 @@ export function useWarningSecureAccountLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<WarningSecureAccountQuery, WarningSecureAccountQueryVariables>(WarningSecureAccountDocument, options);
         }
+export function useWarningSecureAccountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<WarningSecureAccountQuery, WarningSecureAccountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<WarningSecureAccountQuery, WarningSecureAccountQueryVariables>(WarningSecureAccountDocument, options);
+        }
 export type WarningSecureAccountQueryHookResult = ReturnType<typeof useWarningSecureAccountQuery>;
 export type WarningSecureAccountLazyQueryHookResult = ReturnType<typeof useWarningSecureAccountLazyQuery>;
+export type WarningSecureAccountSuspenseQueryHookResult = ReturnType<typeof useWarningSecureAccountSuspenseQuery>;
 export type WarningSecureAccountQueryResult = Apollo.QueryResult<WarningSecureAccountQuery, WarningSecureAccountQueryVariables>;
 export const AccountUpdateDefaultWalletIdDocument = gql`
     mutation accountUpdateDefaultWalletId($input: AccountUpdateDefaultWalletIdInput!) {
@@ -6473,8 +6996,13 @@ export function useSetDefaultWalletScreenLazyQuery(baseOptions?: Apollo.LazyQuer
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SetDefaultWalletScreenQuery, SetDefaultWalletScreenQueryVariables>(SetDefaultWalletScreenDocument, options);
         }
+export function useSetDefaultWalletScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SetDefaultWalletScreenQuery, SetDefaultWalletScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SetDefaultWalletScreenQuery, SetDefaultWalletScreenQueryVariables>(SetDefaultWalletScreenDocument, options);
+        }
 export type SetDefaultWalletScreenQueryHookResult = ReturnType<typeof useSetDefaultWalletScreenQuery>;
 export type SetDefaultWalletScreenLazyQueryHookResult = ReturnType<typeof useSetDefaultWalletScreenLazyQuery>;
+export type SetDefaultWalletScreenSuspenseQueryHookResult = ReturnType<typeof useSetDefaultWalletScreenSuspenseQuery>;
 export type SetDefaultWalletScreenQueryResult = Apollo.QueryResult<SetDefaultWalletScreenQuery, SetDefaultWalletScreenQueryVariables>;
 export const AccountUpdateDisplayCurrencyDocument = gql`
     mutation accountUpdateDisplayCurrency($input: AccountUpdateDisplayCurrencyInput!) {
@@ -6547,8 +7075,13 @@ export function useLanguageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<L
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<LanguageQuery, LanguageQueryVariables>(LanguageDocument, options);
         }
+export function useLanguageSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<LanguageQuery, LanguageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<LanguageQuery, LanguageQueryVariables>(LanguageDocument, options);
+        }
 export type LanguageQueryHookResult = ReturnType<typeof useLanguageQuery>;
 export type LanguageLazyQueryHookResult = ReturnType<typeof useLanguageLazyQuery>;
+export type LanguageSuspenseQueryHookResult = ReturnType<typeof useLanguageSuspenseQuery>;
 export type LanguageQueryResult = Apollo.QueryResult<LanguageQuery, LanguageQueryVariables>;
 export const UserUpdateLanguageDocument = gql`
     mutation userUpdateLanguage($input: UserUpdateLanguageInput!) {
@@ -6629,8 +7162,13 @@ export function useNotificationSettingsLazyQuery(baseOptions?: Apollo.LazyQueryH
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<NotificationSettingsQuery, NotificationSettingsQueryVariables>(NotificationSettingsDocument, options);
         }
+export function useNotificationSettingsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<NotificationSettingsQuery, NotificationSettingsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<NotificationSettingsQuery, NotificationSettingsQueryVariables>(NotificationSettingsDocument, options);
+        }
 export type NotificationSettingsQueryHookResult = ReturnType<typeof useNotificationSettingsQuery>;
 export type NotificationSettingsLazyQueryHookResult = ReturnType<typeof useNotificationSettingsLazyQuery>;
+export type NotificationSettingsSuspenseQueryHookResult = ReturnType<typeof useNotificationSettingsSuspenseQuery>;
 export type NotificationSettingsQueryResult = Apollo.QueryResult<NotificationSettingsQuery, NotificationSettingsQueryVariables>;
 export const AccountEnableNotificationChannelDocument = gql`
     mutation accountEnableNotificationChannel($input: AccountEnableNotificationChannelInput!) {
@@ -6808,6 +7346,46 @@ export function useAccountDisableNotificationCategoryMutation(baseOptions?: Apol
 export type AccountDisableNotificationCategoryMutationHookResult = ReturnType<typeof useAccountDisableNotificationCategoryMutation>;
 export type AccountDisableNotificationCategoryMutationResult = Apollo.MutationResult<AccountDisableNotificationCategoryMutation>;
 export type AccountDisableNotificationCategoryMutationOptions = Apollo.BaseMutationOptions<AccountDisableNotificationCategoryMutation, AccountDisableNotificationCategoryMutationVariables>;
+export const UnacknowledgedNotificationCountDocument = gql`
+    query UnacknowledgedNotificationCount {
+  me {
+    id
+    unacknowledgedStatefulNotificationsWithoutBulletinEnabledCount
+  }
+}
+    `;
+
+/**
+ * __useUnacknowledgedNotificationCountQuery__
+ *
+ * To run a query within a React component, call `useUnacknowledgedNotificationCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUnacknowledgedNotificationCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUnacknowledgedNotificationCountQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUnacknowledgedNotificationCountQuery(baseOptions?: Apollo.QueryHookOptions<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>(UnacknowledgedNotificationCountDocument, options);
+      }
+export function useUnacknowledgedNotificationCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>(UnacknowledgedNotificationCountDocument, options);
+        }
+export function useUnacknowledgedNotificationCountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>(UnacknowledgedNotificationCountDocument, options);
+        }
+export type UnacknowledgedNotificationCountQueryHookResult = ReturnType<typeof useUnacknowledgedNotificationCountQuery>;
+export type UnacknowledgedNotificationCountLazyQueryHookResult = ReturnType<typeof useUnacknowledgedNotificationCountLazyQuery>;
+export type UnacknowledgedNotificationCountSuspenseQueryHookResult = ReturnType<typeof useUnacknowledgedNotificationCountSuspenseQuery>;
+export type UnacknowledgedNotificationCountQueryResult = Apollo.QueryResult<UnacknowledgedNotificationCountQuery, UnacknowledgedNotificationCountQueryVariables>;
 export const SettingsScreenDocument = gql`
     query SettingsScreen {
   me {
@@ -6856,8 +7434,13 @@ export function useSettingsScreenLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<SettingsScreenQuery, SettingsScreenQueryVariables>(SettingsScreenDocument, options);
         }
+export function useSettingsScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SettingsScreenQuery, SettingsScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SettingsScreenQuery, SettingsScreenQueryVariables>(SettingsScreenDocument, options);
+        }
 export type SettingsScreenQueryHookResult = ReturnType<typeof useSettingsScreenQuery>;
 export type SettingsScreenLazyQueryHookResult = ReturnType<typeof useSettingsScreenLazyQuery>;
+export type SettingsScreenSuspenseQueryHookResult = ReturnType<typeof useSettingsScreenSuspenseQuery>;
 export type SettingsScreenQueryResult = Apollo.QueryResult<SettingsScreenQuery, SettingsScreenQueryVariables>;
 export const ExportCsvSettingDocument = gql`
     query ExportCsvSetting($walletIds: [WalletId!]!) {
@@ -6887,7 +7470,7 @@ export const ExportCsvSettingDocument = gql`
  *   },
  * });
  */
-export function useExportCsvSettingQuery(baseOptions: Apollo.QueryHookOptions<ExportCsvSettingQuery, ExportCsvSettingQueryVariables>) {
+export function useExportCsvSettingQuery(baseOptions: Apollo.QueryHookOptions<ExportCsvSettingQuery, ExportCsvSettingQueryVariables> & ({ variables: ExportCsvSettingQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<ExportCsvSettingQuery, ExportCsvSettingQueryVariables>(ExportCsvSettingDocument, options);
       }
@@ -6895,8 +7478,13 @@ export function useExportCsvSettingLazyQuery(baseOptions?: Apollo.LazyQueryHookO
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<ExportCsvSettingQuery, ExportCsvSettingQueryVariables>(ExportCsvSettingDocument, options);
         }
+export function useExportCsvSettingSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ExportCsvSettingQuery, ExportCsvSettingQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ExportCsvSettingQuery, ExportCsvSettingQueryVariables>(ExportCsvSettingDocument, options);
+        }
 export type ExportCsvSettingQueryHookResult = ReturnType<typeof useExportCsvSettingQuery>;
 export type ExportCsvSettingLazyQueryHookResult = ReturnType<typeof useExportCsvSettingLazyQuery>;
+export type ExportCsvSettingSuspenseQueryHookResult = ReturnType<typeof useExportCsvSettingSuspenseQuery>;
 export type ExportCsvSettingQueryResult = Apollo.QueryResult<ExportCsvSettingQuery, ExportCsvSettingQueryVariables>;
 export const UserTotpDeleteDocument = gql`
     mutation userTotpDelete {
@@ -6992,9 +7580,132 @@ export function useAccountLimitsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<AccountLimitsQuery, AccountLimitsQueryVariables>(AccountLimitsDocument, options);
         }
+export function useAccountLimitsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AccountLimitsQuery, AccountLimitsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AccountLimitsQuery, AccountLimitsQueryVariables>(AccountLimitsDocument, options);
+        }
 export type AccountLimitsQueryHookResult = ReturnType<typeof useAccountLimitsQuery>;
 export type AccountLimitsLazyQueryHookResult = ReturnType<typeof useAccountLimitsLazyQuery>;
+export type AccountLimitsSuspenseQueryHookResult = ReturnType<typeof useAccountLimitsSuspenseQuery>;
 export type AccountLimitsQueryResult = Apollo.QueryResult<AccountLimitsQuery, AccountLimitsQueryVariables>;
+export const SupportChatDocument = gql`
+    query supportChat {
+  me {
+    id
+    supportChat {
+      id
+      message
+      role
+      timestamp
+    }
+  }
+}
+    `;
+
+/**
+ * __useSupportChatQuery__
+ *
+ * To run a query within a React component, call `useSupportChatQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSupportChatQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSupportChatQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSupportChatQuery(baseOptions?: Apollo.QueryHookOptions<SupportChatQuery, SupportChatQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SupportChatQuery, SupportChatQueryVariables>(SupportChatDocument, options);
+      }
+export function useSupportChatLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SupportChatQuery, SupportChatQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SupportChatQuery, SupportChatQueryVariables>(SupportChatDocument, options);
+        }
+export function useSupportChatSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SupportChatQuery, SupportChatQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SupportChatQuery, SupportChatQueryVariables>(SupportChatDocument, options);
+        }
+export type SupportChatQueryHookResult = ReturnType<typeof useSupportChatQuery>;
+export type SupportChatLazyQueryHookResult = ReturnType<typeof useSupportChatLazyQuery>;
+export type SupportChatSuspenseQueryHookResult = ReturnType<typeof useSupportChatSuspenseQuery>;
+export type SupportChatQueryResult = Apollo.QueryResult<SupportChatQuery, SupportChatQueryVariables>;
+export const SupportChatMessageAddDocument = gql`
+    mutation supportChatMessageAdd($input: SupportChatMessageAddInput!) {
+  supportChatMessageAdd(input: $input) {
+    errors {
+      message
+    }
+    supportMessage {
+      id
+      message
+      role
+      timestamp
+    }
+  }
+}
+    `;
+export type SupportChatMessageAddMutationFn = Apollo.MutationFunction<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>;
+
+/**
+ * __useSupportChatMessageAddMutation__
+ *
+ * To run a mutation, you first call `useSupportChatMessageAddMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSupportChatMessageAddMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [supportChatMessageAddMutation, { data, loading, error }] = useSupportChatMessageAddMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSupportChatMessageAddMutation(baseOptions?: Apollo.MutationHookOptions<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>(SupportChatMessageAddDocument, options);
+      }
+export type SupportChatMessageAddMutationHookResult = ReturnType<typeof useSupportChatMessageAddMutation>;
+export type SupportChatMessageAddMutationResult = Apollo.MutationResult<SupportChatMessageAddMutation>;
+export type SupportChatMessageAddMutationOptions = Apollo.BaseMutationOptions<SupportChatMessageAddMutation, SupportChatMessageAddMutationVariables>;
+export const SupportChatResetDocument = gql`
+    mutation supportChatReset {
+  supportChatReset {
+    success
+  }
+}
+    `;
+export type SupportChatResetMutationFn = Apollo.MutationFunction<SupportChatResetMutation, SupportChatResetMutationVariables>;
+
+/**
+ * __useSupportChatResetMutation__
+ *
+ * To run a mutation, you first call `useSupportChatResetMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSupportChatResetMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [supportChatResetMutation, { data, loading, error }] = useSupportChatResetMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSupportChatResetMutation(baseOptions?: Apollo.MutationHookOptions<SupportChatResetMutation, SupportChatResetMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SupportChatResetMutation, SupportChatResetMutationVariables>(SupportChatResetDocument, options);
+      }
+export type SupportChatResetMutationHookResult = ReturnType<typeof useSupportChatResetMutation>;
+export type SupportChatResetMutationResult = Apollo.MutationResult<SupportChatResetMutation>;
+export type SupportChatResetMutationOptions = Apollo.BaseMutationOptions<SupportChatResetMutation, SupportChatResetMutationVariables>;
 export const TotpRegistrationScreenDocument = gql`
     query totpRegistrationScreen {
   me {
@@ -7027,8 +7738,13 @@ export function useTotpRegistrationScreenLazyQuery(baseOptions?: Apollo.LazyQuer
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<TotpRegistrationScreenQuery, TotpRegistrationScreenQueryVariables>(TotpRegistrationScreenDocument, options);
         }
+export function useTotpRegistrationScreenSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TotpRegistrationScreenQuery, TotpRegistrationScreenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TotpRegistrationScreenQuery, TotpRegistrationScreenQueryVariables>(TotpRegistrationScreenDocument, options);
+        }
 export type TotpRegistrationScreenQueryHookResult = ReturnType<typeof useTotpRegistrationScreenQuery>;
 export type TotpRegistrationScreenLazyQueryHookResult = ReturnType<typeof useTotpRegistrationScreenLazyQuery>;
+export type TotpRegistrationScreenSuspenseQueryHookResult = ReturnType<typeof useTotpRegistrationScreenSuspenseQuery>;
 export type TotpRegistrationScreenQueryResult = Apollo.QueryResult<TotpRegistrationScreenQuery, TotpRegistrationScreenQueryVariables>;
 export const UserTotpRegistrationInitiateDocument = gql`
     mutation userTotpRegistrationInitiate {
@@ -7155,8 +7871,13 @@ export function useTransactionListForDefaultAccountLazyQuery(baseOptions?: Apoll
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<TransactionListForDefaultAccountQuery, TransactionListForDefaultAccountQueryVariables>(TransactionListForDefaultAccountDocument, options);
         }
+export function useTransactionListForDefaultAccountSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<TransactionListForDefaultAccountQuery, TransactionListForDefaultAccountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TransactionListForDefaultAccountQuery, TransactionListForDefaultAccountQueryVariables>(TransactionListForDefaultAccountDocument, options);
+        }
 export type TransactionListForDefaultAccountQueryHookResult = ReturnType<typeof useTransactionListForDefaultAccountQuery>;
 export type TransactionListForDefaultAccountLazyQueryHookResult = ReturnType<typeof useTransactionListForDefaultAccountLazyQuery>;
+export type TransactionListForDefaultAccountSuspenseQueryHookResult = ReturnType<typeof useTransactionListForDefaultAccountSuspenseQuery>;
 export type TransactionListForDefaultAccountQueryResult = Apollo.QueryResult<TransactionListForDefaultAccountQuery, TransactionListForDefaultAccountQueryVariables>;
 export const DeviceNotificationTokenCreateDocument = gql`
     mutation deviceNotificationTokenCreate($input: DeviceNotificationTokenCreateInput!) {
@@ -7232,8 +7953,13 @@ export function useWalletsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Wa
           const options = {...defaultOptions, ...baseOptions}
           return Apollo.useLazyQuery<WalletsQuery, WalletsQueryVariables>(WalletsDocument, options);
         }
+export function useWalletsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<WalletsQuery, WalletsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<WalletsQuery, WalletsQueryVariables>(WalletsDocument, options);
+        }
 export type WalletsQueryHookResult = ReturnType<typeof useWalletsQuery>;
 export type WalletsLazyQueryHookResult = ReturnType<typeof useWalletsLazyQuery>;
+export type WalletsSuspenseQueryHookResult = ReturnType<typeof useWalletsSuspenseQuery>;
 export type WalletsQueryResult = Apollo.QueryResult<WalletsQuery, WalletsQueryVariables>;
 
 
@@ -7305,6 +8031,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of union types */
 export type ResolversUnionTypes<RefType extends Record<string, unknown>> = {
   InitiationVia: ( InitiationViaIntraLedger ) | ( InitiationViaLn ) | ( InitiationViaOnChain );
+  NotificationAction: ( OpenDeepLinkAction ) | ( OpenExternalLinkAction );
   SettlementVia: ( SettlementViaIntraLedger ) | ( SettlementViaLn ) | ( SettlementViaOnChain );
   UserUpdate: ( IntraLedgerUpdate ) | ( LnUpdate ) | ( OnChainUpdate ) | ( Price ) | ( RealtimePrice );
 };
@@ -7383,6 +8110,7 @@ export type ResolversTypes = {
   Globals: ResolverTypeWrapper<Globals>;
   GraphQLApplicationError: ResolverTypeWrapper<GraphQlApplicationError>;
   Hex32Bytes: ResolverTypeWrapper<Scalars['Hex32Bytes']['output']>;
+  Icon: Icon;
   InitiationVia: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['InitiationVia']>;
   InitiationViaIntraLedger: ResolverTypeWrapper<InitiationViaIntraLedger>;
   InitiationViaLn: ResolverTypeWrapper<InitiationViaLn>;
@@ -7439,6 +8167,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   MyUpdatesPayload: ResolverTypeWrapper<Omit<MyUpdatesPayload, 'update'> & { update?: Maybe<ResolversTypes['UserUpdate']> }>;
   Network: Network;
+  NotificationAction: ResolverTypeWrapper<ResolversUnionTypes<ResolversTypes>['NotificationAction']>;
   NotificationCategory: ResolverTypeWrapper<Scalars['NotificationCategory']['output']>;
   NotificationChannel: NotificationChannel;
   NotificationChannelSettings: ResolverTypeWrapper<NotificationChannelSettings>;
@@ -7460,6 +8189,8 @@ export type ResolversTypes = {
   OnboardingStatus: OnboardingStatus;
   OneDayAccountLimit: ResolverTypeWrapper<OneDayAccountLimit>;
   OneTimeAuthCode: ResolverTypeWrapper<Scalars['OneTimeAuthCode']['output']>;
+  OpenDeepLinkAction: ResolverTypeWrapper<OpenDeepLinkAction>;
+  OpenExternalLinkAction: ResolverTypeWrapper<OpenExternalLinkAction>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PaymentHash: ResolverTypeWrapper<Scalars['PaymentHash']['output']>;
   PaymentSendPayload: ResolverTypeWrapper<PaymentSendPayload>;
@@ -7496,6 +8227,11 @@ export type ResolversTypes = {
   SettlementViaOnChain: ResolverTypeWrapper<SettlementViaOnChain>;
   SignedAmount: ResolverTypeWrapper<Scalars['SignedAmount']['output']>;
   SignedDisplayMajorAmount: ResolverTypeWrapper<Scalars['SignedDisplayMajorAmount']['output']>;
+  StatefulNotification: ResolverTypeWrapper<Omit<StatefulNotification, 'action'> & { action?: Maybe<ResolversTypes['NotificationAction']> }>;
+  StatefulNotificationAcknowledgeInput: StatefulNotificationAcknowledgeInput;
+  StatefulNotificationAcknowledgePayload: ResolverTypeWrapper<StatefulNotificationAcknowledgePayload>;
+  StatefulNotificationConnection: ResolverTypeWrapper<StatefulNotificationConnection>;
+  StatefulNotificationEdge: ResolverTypeWrapper<StatefulNotificationEdge>;
   Subscription: ResolverTypeWrapper<{}>;
   SuccessPayload: ResolverTypeWrapper<SuccessPayload>;
   SupportChatMessageAddInput: SupportChatMessageAddInput;
@@ -7510,6 +8246,7 @@ export type ResolversTypes = {
   TransactionConnection: ResolverTypeWrapper<TransactionConnection>;
   TransactionEdge: ResolverTypeWrapper<TransactionEdge>;
   TxDirection: TxDirection;
+  TxExternalId: ResolverTypeWrapper<Scalars['TxExternalId']['output']>;
   TxNotificationType: TxNotificationType;
   TxStatus: TxStatus;
   UpgradePayload: ResolverTypeWrapper<UpgradePayload>;
@@ -7664,6 +8401,7 @@ export type ResolversParentTypes = {
   MobileVersions: MobileVersions;
   Mutation: {};
   MyUpdatesPayload: Omit<MyUpdatesPayload, 'update'> & { update?: Maybe<ResolversParentTypes['UserUpdate']> };
+  NotificationAction: ResolversUnionTypes<ResolversParentTypes>['NotificationAction'];
   NotificationCategory: Scalars['NotificationCategory']['output'];
   NotificationChannelSettings: NotificationChannelSettings;
   NotificationSettings: NotificationSettings;
@@ -7683,6 +8421,8 @@ export type ResolversParentTypes = {
   OnboardingFlowStartResult: OnboardingFlowStartResult;
   OneDayAccountLimit: OneDayAccountLimit;
   OneTimeAuthCode: Scalars['OneTimeAuthCode']['output'];
+  OpenDeepLinkAction: OpenDeepLinkAction;
+  OpenExternalLinkAction: OpenExternalLinkAction;
   PageInfo: PageInfo;
   PaymentHash: Scalars['PaymentHash']['output'];
   PaymentSendPayload: PaymentSendPayload;
@@ -7714,6 +8454,11 @@ export type ResolversParentTypes = {
   SettlementViaOnChain: SettlementViaOnChain;
   SignedAmount: Scalars['SignedAmount']['output'];
   SignedDisplayMajorAmount: Scalars['SignedDisplayMajorAmount']['output'];
+  StatefulNotification: Omit<StatefulNotification, 'action'> & { action?: Maybe<ResolversParentTypes['NotificationAction']> };
+  StatefulNotificationAcknowledgeInput: StatefulNotificationAcknowledgeInput;
+  StatefulNotificationAcknowledgePayload: StatefulNotificationAcknowledgePayload;
+  StatefulNotificationConnection: StatefulNotificationConnection;
+  StatefulNotificationEdge: StatefulNotificationEdge;
   Subscription: {};
   SuccessPayload: SuccessPayload;
   SupportChatMessageAddInput: SupportChatMessageAddInput;
@@ -7726,6 +8471,7 @@ export type ResolversParentTypes = {
   Transaction: Omit<Transaction, 'initiationVia' | 'settlementVia'> & { initiationVia: ResolversParentTypes['InitiationVia'], settlementVia: ResolversParentTypes['SettlementVia'] };
   TransactionConnection: TransactionConnection;
   TransactionEdge: TransactionEdge;
+  TxExternalId: Scalars['TxExternalId']['output'];
   UpgradePayload: UpgradePayload;
   UsdWallet: UsdWallet;
   User: User;
@@ -7771,6 +8517,7 @@ export type AccountResolvers<ContextType = any, ParentType extends ResolversPare
   __resolveType: TypeResolveFn<'ConsumerAccount', ParentType, ContextType>;
   btcWallet?: Resolver<Maybe<ResolversTypes['BTCWallet']>, ParentType, ContextType>;
   callbackEndpoints?: Resolver<ReadonlyArray<ResolversTypes['CallbackEndpoint']>, ParentType, ContextType>;
+  callbackPortalUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   csvTransactions?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<AccountCsvTransactionsArgs, 'walletIds'>>;
   defaultWallet?: Resolver<ResolversTypes['PublicWallet'], ParentType, ContextType>;
   defaultWalletId?: Resolver<ResolversTypes['WalletId'], ParentType, ContextType>;
@@ -7929,6 +8676,7 @@ export type CentAmountPayloadResolvers<ContextType = any, ParentType extends Res
 export type ConsumerAccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['ConsumerAccount'] = ResolversParentTypes['ConsumerAccount']> = {
   btcWallet?: Resolver<Maybe<ResolversTypes['BTCWallet']>, ParentType, ContextType>;
   callbackEndpoints?: Resolver<ReadonlyArray<ResolversTypes['CallbackEndpoint']>, ParentType, ContextType>;
+  callbackPortalUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   csvTransactions?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<ConsumerAccountCsvTransactionsArgs, 'walletIds'>>;
   defaultWallet?: Resolver<ResolversTypes['PublicWallet'], ParentType, ContextType>;
   defaultWalletId?: Resolver<ResolversTypes['WalletId'], ParentType, ContextType>;
@@ -8099,6 +8847,7 @@ export type IntraLedgerUpdateResolvers<ContextType = any, ParentType extends Res
 export type InvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Invoice'] = ResolversParentTypes['Invoice']> = {
   __resolveType: TypeResolveFn<'LnInvoice' | 'LnNoAmountInvoice', ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  externalId?: Resolver<ResolversTypes['TxExternalId'], ParentType, ContextType>;
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   paymentRequest?: Resolver<ResolversTypes['LnPaymentRequest'], ParentType, ContextType>;
   paymentSecret?: Resolver<ResolversTypes['LnPaymentSecret'], ParentType, ContextType>;
@@ -8140,6 +8889,7 @@ export interface LeaderboardNameScalarConfig extends GraphQLScalarTypeConfig<Res
 
 export type LnInvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['LnInvoice'] = ResolversParentTypes['LnInvoice']> = {
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  externalId?: Resolver<ResolversTypes['TxExternalId'], ParentType, ContextType>;
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   paymentRequest?: Resolver<ResolversTypes['LnPaymentRequest'], ParentType, ContextType>;
   paymentSecret?: Resolver<ResolversTypes['LnPaymentSecret'], ParentType, ContextType>;
@@ -8171,6 +8921,7 @@ export type LnInvoicePaymentStatusPayloadResolvers<ContextType = any, ParentType
 
 export type LnNoAmountInvoiceResolvers<ContextType = any, ParentType extends ResolversParentTypes['LnNoAmountInvoice'] = ResolversParentTypes['LnNoAmountInvoice']> = {
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  externalId?: Resolver<ResolversTypes['TxExternalId'], ParentType, ContextType>;
   paymentHash?: Resolver<ResolversTypes['PaymentHash'], ParentType, ContextType>;
   paymentRequest?: Resolver<ResolversTypes['LnPaymentRequest'], ParentType, ContextType>;
   paymentSecret?: Resolver<ResolversTypes['LnPaymentSecret'], ParentType, ContextType>;
@@ -8291,7 +9042,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   onChainUsdPaymentSendAsBtcDenominated?: Resolver<ResolversTypes['PaymentSendPayload'], ParentType, ContextType, RequireFields<MutationOnChainUsdPaymentSendAsBtcDenominatedArgs, 'input'>>;
   onboardingFlowStart?: Resolver<ResolversTypes['OnboardingFlowStartResult'], ParentType, ContextType, RequireFields<MutationOnboardingFlowStartArgs, 'input'>>;
   quizClaim?: Resolver<ResolversTypes['QuizClaimPayload'], ParentType, ContextType, RequireFields<MutationQuizClaimArgs, 'input'>>;
+  statefulNotificationAcknowledge?: Resolver<ResolversTypes['StatefulNotificationAcknowledgePayload'], ParentType, ContextType, RequireFields<MutationStatefulNotificationAcknowledgeArgs, 'input'>>;
   supportChatMessageAdd?: Resolver<ResolversTypes['SupportChatMessageAddPayload'], ParentType, ContextType, RequireFields<MutationSupportChatMessageAddArgs, 'input'>>;
+  supportChatReset?: Resolver<ResolversTypes['SuccessPayload'], ParentType, ContextType>;
   userContactUpdateAlias?: Resolver<ResolversTypes['UserContactUpdateAliasPayload'], ParentType, ContextType, RequireFields<MutationUserContactUpdateAliasArgs, 'input'>>;
   userEmailDelete?: Resolver<ResolversTypes['UserEmailDeletePayload'], ParentType, ContextType>;
   userEmailRegistrationInitiate?: Resolver<ResolversTypes['UserEmailRegistrationInitiatePayload'], ParentType, ContextType, RequireFields<MutationUserEmailRegistrationInitiateArgs, 'input'>>;
@@ -8314,6 +9067,10 @@ export type MyUpdatesPayloadResolvers<ContextType = any, ParentType extends Reso
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   update?: Resolver<Maybe<ResolversTypes['UserUpdate']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type NotificationActionResolvers<ContextType = any, ParentType extends ResolversParentTypes['NotificationAction'] = ResolversParentTypes['NotificationAction']> = {
+  __resolveType: TypeResolveFn<'OpenDeepLinkAction' | 'OpenExternalLinkAction', ParentType, ContextType>;
 };
 
 export interface NotificationCategoryScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NotificationCategory'], any> {
@@ -8384,6 +9141,16 @@ export type OneDayAccountLimitResolvers<ContextType = any, ParentType extends Re
 export interface OneTimeAuthCodeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['OneTimeAuthCode'], any> {
   name: 'OneTimeAuthCode';
 }
+
+export type OpenDeepLinkActionResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpenDeepLinkAction'] = ResolversParentTypes['OpenDeepLinkAction']> = {
+  deepLink?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type OpenExternalLinkActionResolvers<ContextType = any, ParentType extends ResolversParentTypes['OpenExternalLinkAction'] = ResolversParentTypes['OpenExternalLinkAction']> = {
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type PageInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = {
   endCursor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -8585,6 +9352,37 @@ export interface SignedDisplayMajorAmountScalarConfig extends GraphQLScalarTypeC
   name: 'SignedDisplayMajorAmount';
 }
 
+export type StatefulNotificationResolvers<ContextType = any, ParentType extends ResolversParentTypes['StatefulNotification'] = ResolversParentTypes['StatefulNotification']> = {
+  acknowledgedAt?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
+  action?: Resolver<Maybe<ResolversTypes['NotificationAction']>, ParentType, ContextType>;
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  bulletinEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  deepLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  icon?: Resolver<Maybe<ResolversTypes['Icon']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StatefulNotificationAcknowledgePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['StatefulNotificationAcknowledgePayload'] = ResolversParentTypes['StatefulNotificationAcknowledgePayload']> = {
+  notification?: Resolver<ResolversTypes['StatefulNotification'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StatefulNotificationConnectionResolvers<ContextType = any, ParentType extends ResolversParentTypes['StatefulNotificationConnection'] = ResolversParentTypes['StatefulNotificationConnection']> = {
+  edges?: Resolver<ReadonlyArray<ResolversTypes['StatefulNotificationEdge']>, ParentType, ContextType>;
+  nodes?: Resolver<ReadonlyArray<ResolversTypes['StatefulNotification']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type StatefulNotificationEdgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['StatefulNotificationEdge'] = ResolversParentTypes['StatefulNotificationEdge']> = {
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['StatefulNotification'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
   lnInvoicePaymentStatus?: SubscriptionResolver<ResolversTypes['LnInvoicePaymentStatusPayload'], "lnInvoicePaymentStatus", ParentType, ContextType, RequireFields<SubscriptionLnInvoicePaymentStatusArgs, 'input'>>;
   lnInvoicePaymentStatusByHash?: SubscriptionResolver<ResolversTypes['LnInvoicePaymentStatusPayload'], "lnInvoicePaymentStatusByHash", ParentType, ContextType, RequireFields<SubscriptionLnInvoicePaymentStatusByHashArgs, 'input'>>;
@@ -8633,6 +9431,7 @@ export interface TotpSecretScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export type TransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = {
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   direction?: Resolver<ResolversTypes['TxDirection'], ParentType, ContextType>;
+  externalId?: Resolver<Maybe<ResolversTypes['TxExternalId']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   initiationVia?: Resolver<ResolversTypes['InitiationVia'], ParentType, ContextType>;
   memo?: Resolver<Maybe<ResolversTypes['Memo']>, ParentType, ContextType>;
@@ -8659,6 +9458,10 @@ export type TransactionEdgeResolvers<ContextType = any, ParentType extends Resol
   node?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface TxExternalIdScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['TxExternalId'], any> {
+  name: 'TxExternalId';
+}
 
 export type UpgradePayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpgradePayload'] = ResolversParentTypes['UpgradePayload']> = {
   authToken?: Resolver<Maybe<ResolversTypes['AuthToken']>, ParentType, ContextType>;
@@ -8695,8 +9498,12 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   language?: Resolver<ResolversTypes['Language'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['Phone']>, ParentType, ContextType>;
+  statefulNotifications?: Resolver<ResolversTypes['StatefulNotificationConnection'], ParentType, ContextType, RequireFields<UserStatefulNotificationsArgs, 'first'>>;
+  statefulNotificationsWithoutBulletinEnabled?: Resolver<ResolversTypes['StatefulNotificationConnection'], ParentType, ContextType, RequireFields<UserStatefulNotificationsWithoutBulletinEnabledArgs, 'first'>>;
   supportChat?: Resolver<ReadonlyArray<ResolversTypes['SupportMessage']>, ParentType, ContextType>;
   totpEnabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  unacknowledgedStatefulNotificationsWithBulletinEnabled?: Resolver<ResolversTypes['StatefulNotificationConnection'], ParentType, ContextType, RequireFields<UserUnacknowledgedStatefulNotificationsWithBulletinEnabledArgs, 'first'>>;
+  unacknowledgedStatefulNotificationsWithoutBulletinEnabledCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['Username']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -8895,6 +9702,7 @@ export type Resolvers<ContextType = any> = {
   MobileVersions?: MobileVersionsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   MyUpdatesPayload?: MyUpdatesPayloadResolvers<ContextType>;
+  NotificationAction?: NotificationActionResolvers<ContextType>;
   NotificationCategory?: GraphQLScalarType;
   NotificationChannelSettings?: NotificationChannelSettingsResolvers<ContextType>;
   NotificationSettings?: NotificationSettingsResolvers<ContextType>;
@@ -8907,6 +9715,8 @@ export type Resolvers<ContextType = any> = {
   OnboardingFlowStartResult?: OnboardingFlowStartResultResolvers<ContextType>;
   OneDayAccountLimit?: OneDayAccountLimitResolvers<ContextType>;
   OneTimeAuthCode?: GraphQLScalarType;
+  OpenDeepLinkAction?: OpenDeepLinkActionResolvers<ContextType>;
+  OpenExternalLinkAction?: OpenExternalLinkActionResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PaymentHash?: GraphQLScalarType;
   PaymentSendPayload?: PaymentSendPayloadResolvers<ContextType>;
@@ -8935,6 +9745,10 @@ export type Resolvers<ContextType = any> = {
   SettlementViaOnChain?: SettlementViaOnChainResolvers<ContextType>;
   SignedAmount?: GraphQLScalarType;
   SignedDisplayMajorAmount?: GraphQLScalarType;
+  StatefulNotification?: StatefulNotificationResolvers<ContextType>;
+  StatefulNotificationAcknowledgePayload?: StatefulNotificationAcknowledgePayloadResolvers<ContextType>;
+  StatefulNotificationConnection?: StatefulNotificationConnectionResolvers<ContextType>;
+  StatefulNotificationEdge?: StatefulNotificationEdgeResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SuccessPayload?: SuccessPayloadResolvers<ContextType>;
   SupportChatMessageAddPayload?: SupportChatMessageAddPayloadResolvers<ContextType>;
@@ -8946,6 +9760,7 @@ export type Resolvers<ContextType = any> = {
   Transaction?: TransactionResolvers<ContextType>;
   TransactionConnection?: TransactionConnectionResolvers<ContextType>;
   TransactionEdge?: TransactionEdgeResolvers<ContextType>;
+  TxExternalId?: GraphQLScalarType;
   UpgradePayload?: UpgradePayloadResolvers<ContextType>;
   UsdWallet?: UsdWalletResolvers<ContextType>;
   User?: UserResolvers<ContextType>;

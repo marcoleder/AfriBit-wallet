@@ -24,6 +24,7 @@ gql`
 
 export const PriceHistoryScreen: React.FC = () => {
   const styles = useStyles()
+
   return (
     <Screen preset="scroll" style={styles.screen}>
       <PriceHistory />

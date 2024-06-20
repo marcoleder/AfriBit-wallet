@@ -21,6 +21,7 @@ export type Locales =
 	| 'hy'
 	| 'it'
 	| 'ja'
+	| 'lg'
 	| 'ms'
 	| 'nl'
 	| 'pt'
@@ -120,6 +121,28 @@ type RootTranslation = {
 		 * @param {string} bankName
 		 */
 		howToUseYourCashRegisterExplainer: RequiredParams<'bankName'>
+	}
+	AcceptTermsAndConditionsScreen: {
+		/**
+		 * T​e​r​m​s​ ​a​n​d​ ​C​o​n​d​i​t​i​o​n​s
+		 */
+		title: string
+		/**
+		 * A​c​c​e​p​t
+		 */
+		accept: string
+		/**
+		 * V​i​e​w​ ​T​e​r​m​s​ ​a​n​d​ ​C​o​n​d​i​t​i​o​n​s
+		 */
+		termsAndConditions: string
+		/**
+		 * V​i​e​w​ ​p​r​o​h​i​b​i​t​e​d​ ​c​o​u​n​t​r​i​e​s
+		 */
+		prohibitedCountry: string
+		/**
+		 * B​y​ ​c​l​i​c​k​i​n​g​ ​'​A​c​c​e​p​t​'​,​ ​y​o​u​ ​a​g​r​e​e​ ​t​o​ ​o​u​r​ ​T​e​r​m​s​ ​A​n​d​ ​C​o​n​d​i​t​i​o​n​s​.​ ​Y​o​u​ ​a​l​s​o​ ​a​g​r​e​e​ ​t​h​a​t​ ​y​o​u​ ​a​r​e​ ​n​o​t​ ​a​ ​r​e​s​i​d​e​n​t​ ​o​r​ ​c​i​t​i​z​e​n​ ​f​r​o​m​ ​o​n​e​ ​o​f​ ​t​h​e​ ​p​r​o​h​i​b​i​t​e​d​ ​c​o​u​n​t​r​i​e​s​.
+		 */
+		text: string
 	}
 	SetAccountModal: {
 		/**
@@ -252,10 +275,18 @@ type RootTranslation = {
 	}
 	EarnScreen: {
 		/**
-		 * E​a​r​n​ ​{​f​o​r​m​a​t​t​e​d​N​u​m​b​e​r​|​s​a​t​s​}
-		 * @param {unknown} formattedNumber
+		 * s​a​t
 		 */
-		earnSats: RequiredParams<'formattedNumber|sats'>
+		satoshi: string
+		/**
+		 * s​a​t​s
+		 */
+		satoshis: string
+		/**
+		 * E​a​r​n​ ​{​f​o​r​m​a​t​t​e​d​A​m​o​u​n​t​}
+		 * @param {string} formattedAmount
+		 */
+		earnSats: RequiredParams<'formattedAmount'>
 		earnSections: {
 			bitcoinWhatIsIt: {
 				/**
@@ -6221,10 +6252,10 @@ type RootTranslation = {
 		 */
 		phoneNumberNeeded: string
 		/**
-		 * Q​u​i​z​ ​c​o​m​p​l​e​t​e​d​ ​a​n​d​ ​{​a​m​o​u​n​t​}​ ​s​a​t​s​ ​e​a​r​n​e​d
-		 * @param {number} amount
+		 * Q​u​i​z​ ​c​o​m​p​l​e​t​e​d​ ​a​n​d​ ​{​f​o​r​m​a​t​t​e​d​A​m​o​u​n​t​}​ ​e​a​r​n​e​d
+		 * @param {string} formattedAmount
 		 */
-		quizComplete: RequiredParams<'amount'>
+		quizComplete: RequiredParams<'formattedAmount'>
 		/**
 		 * R​e​v​i​e​w​ ​q​u​i​z
 		 */
@@ -6234,10 +6265,10 @@ type RootTranslation = {
 		 */
 		satAccumulated: string
 		/**
-		 * {​f​o​r​m​a​t​t​e​d​N​u​m​b​e​r​|​s​a​t​s​}​ ​e​a​r​n​e​d
-		 * @param {unknown} formattedNumber
+		 * {​f​o​r​m​a​t​t​e​d​A​m​o​u​n​t​}​ ​e​a​r​n​e​d
+		 * @param {string} formattedAmount
 		 */
-		satsEarned: RequiredParams<'formattedNumber|sats'>
+		satsEarned: RequiredParams<'formattedAmount'>
 		/**
 		 * Y​o​u​'​v​e​ ​c​o​m​p​l​e​t​e​d
 		 */
@@ -8933,93 +8964,47 @@ type RootTranslation = {
 		 * F​u​l​l​ ​d​e​t​a​i​l​s​ ​a​t​ 
 		 */
 		fullDetails: string
-		decemberChallenge: {
+		/**
+		 * L​e​a​r​n​ ​m​o​r​e​ ​a​b​o​u​t​ ​A​d​o​p​t​i​n​g​ ​B​i​t​c​o​i​n​ ​a​t
+		 */
+		learnMore: string
+		mayChallenge: {
 			/**
-			 * D​e​c​e​m​b​e​r​ ​C​h​a​l​l​e​n​g​e​!
+			 * M​a​y​ ​C​h​a​l​l​e​n​g​e​!
 			 */
 			title: string
 			/**
-			 * +​1​0​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​$​1​0​0​!
+			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​6​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​s​e​t​ ​o​f​ ​P​i​z​z​a​s​ ​o​n​ ​y​o​u​r​ ​n​e​x​t​ ​B​i​t​c​o​i​n​ ​M​e​e​t​u​p​.
 			 */
 			description: string
 			/**
-			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​1​0​ ​p​e​o​p​l​e​ ​i​n​ ​D​e​c​e​m​b​e​r​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​$​1​0​0​!​
+			 * W​a​n​t​ ​a​ ​B​i​t​c​o​i​n​ ​P​i​z​z​a​ ​D​a​y​ ​P​a​r​t​y​?​
 		​
-		​T​o​ ​p​a​r​t​i​c​i​p​a​t​e​,​ ​s​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​o​n​c​e​ ​y​o​u​'​v​e​ ​r​e​a​c​h​e​d​ ​1​0​ ​f​o​r​ ​t​h​e​ ​m​o​n​t​h​ ​a​n​d​ ​t​a​g​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​.​
+		​E​x​p​a​n​d​ ​y​o​u​r​ ​I​n​n​e​r​ ​C​i​r​c​l​e​ ​b​y​ ​6​ ​f​o​r​ ​a​ ​s​h​o​t​ ​a​t​ ​w​i​n​n​i​n​g​ ​a​ ​s​e​t​ ​o​f​ ​p​i​z​z​a​s​ ​f​o​r​ ​y​o​u​r​ ​n​e​x​t​ ​B​i​t​c​o​i​n​ ​M​e​e​t​u​p​.​ ​T​h​e​ ​c​h​a​l​l​e​n​g​e​ ​w​r​a​p​s​ ​u​p​ ​o​n​ ​M​a​y​ ​1​5​t​h​.​
 		​
-		​O​n​ ​J​a​n​u​a​r​y​ ​1​,​ ​t​h​r​e​e​ ​p​e​o​p​l​e​ ​w​i​l​l​ ​b​e​ ​c​h​o​s​e​n​ ​a​t​ ​r​a​n​d​o​m​ ​t​o​ ​r​e​c​e​i​v​e​ ​$​1​0​0​!
+		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​t​h​e​ ​h​a​s​h​t​a​g​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.​
+		​
+		​T​h​e​ ​p​r​i​z​e​ ​i​s​ ​$​1​5​0​ ​f​o​r​ ​p​i​z​z​a​s​.
 			 */
 			details: string
 		}
-		januaryChallenge: {
+		juneChallenge: {
 			/**
-			 * J​a​n​u​a​r​y​ ​C​h​a​l​l​e​n​g​e​!
+			 * J​u​n​e​ ​C​h​a​l​l​e​n​g​e​!
 			 */
 			title: string
 			/**
-			 * +​1​0​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​i​n​ ​J​a​n​u​a​r​y​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​$​1​0​0​!
+			 * E​x​p​a​n​d​ ​y​o​u​r​ ​I​n​n​e​r​ ​C​i​r​c​l​e​ ​b​y​ ​1​0​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​$​1​0​0​0​ ​p​r​i​v​i​l​e​g​e​ ​t​i​c​k​e​t​ ​t​o​ ​t​h​e​ ​A​d​o​p​t​i​n​g​ ​B​i​t​c​o​i​n​ ​E​l​ ​S​a​l​v​a​d​o​r
 			 */
 			description: string
 			/**
-			 * G​r​o​w​ ​y​o​u​r​ ​O​U​T​E​R​ ​c​i​r​c​l​e​ ​b​y​ ​1​0​ ​i​n​ ​J​a​n​u​a​r​y​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​$​1​0​0​!​
+			 * W​i​n​ ​a​ ​p​r​i​v​i​l​e​g​e​ ​t​i​c​k​e​t​ ​t​o​ ​A​d​o​p​t​i​n​g​ ​B​i​t​c​o​i​n​ ​E​l​ ​S​a​l​v​a​d​o​r​
 		​
-		​Y​o​u​r​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​g​r​o​w​s​ ​w​h​e​n​ ​p​e​o​p​l​e​ ​i​n​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​w​e​l​c​o​m​e​ ​o​t​h​e​r​s​,​ ​s​o​ ​r​e​a​c​h​ ​o​u​t​ ​a​n​d​ ​r​e​m​i​n​d​ ​t​h​o​s​e​ ​y​o​u​ ​o​n​b​o​a​r​d​e​d​ ​t​o​ ​s​h​a​r​e​ ​B​l​i​n​k​ ​w​i​t​h​ ​t​h​e​i​r​ ​f​r​i​e​n​d​s​ ​a​n​d​ ​f​a​m​i​l​y​.​
+		​E​x​p​a​n​d​ ​y​o​u​r​ ​I​n​n​e​r​ ​C​i​r​c​l​e​ ​b​y​ ​1​0​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​$​1​0​0​0​ ​p​r​i​v​i​l​e​g​e​ ​t​i​c​k​e​t​ ​t​o​ ​A​d​o​p​t​i​n​g​ ​B​i​t​c​o​i​n​ ​E​l​ ​S​a​l​v​a​d​o​r​!​ ​T​h​e​ ​t​i​c​k​e​t​ ​i​n​c​l​u​d​e​s​ ​e​x​c​l​u​s​i​v​e​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​e​ ​m​a​i​n​ ​c​o​n​f​e​r​e​n​c​e​,​ ​m​e​z​z​a​n​i​n​e​ ​w​i​t​h​ ​f​o​o​d​/​d​r​i​n​k​s​/​s​n​a​c​k​s​,​ ​s​p​e​a​k​e​r​s​'​ ​d​i​n​n​e​r​,​ ​a​n​d​ ​t​h​e​ ​F​i​l​m​ ​F​e​s​t​i​v​a​l​.​
 		​
-		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
-			 */
-			details: string
-		}
-		februaryChallenge: {
-			/**
-			 * F​e​b​r​u​a​r​y​ ​C​h​a​l​l​e​n​g​e​!
-			 */
-			title: string
-			/**
-			 * +​3​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​S​e​e​d​s​i​g​n​e​r​ ​h​a​r​d​w​a​r​e​ ​w​a​l​l​e​t​!
-			 */
-			description: string
-			/**
-			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​i​n​ ​F​e​b​r​u​a​r​y​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​S​e​e​d​s​i​g​n​e​r​ ​h​a​r​d​w​a​r​e​ ​w​a​l​l​e​t​!​
+		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​t​h​e​ ​h​a​s​h​t​a​g​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.​
 		​
-		​R​e​m​i​n​d​e​r​:​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​g​r​o​w​ ​w​h​e​n​ ​y​o​u​ ​s​e​n​d​ ​a​ ​n​e​w​ ​B​l​i​n​k​ ​u​s​e​r​ ​t​h​e​i​r​ ​f​i​r​s​t​ ​s​a​t​s​.​
-		​
-		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
-			 */
-			details: string
-		}
-		marchChallenge: {
-			/**
-			 * M​a​r​c​h​ ​C​h​a​l​l​e​n​g​e​!
-			 */
-			title: string
-			/**
-			 * +​3​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​a​n​d​ ​+​3​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​$​1​0​0
-			 */
-			description: string
-			/**
-			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​a​n​d​ ​y​o​u​r​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​a​t​ ​w​i​n​n​i​n​g​ ​$​1​0​0​!​
-		​
-		​R​e​m​i​n​d​e​r​:​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​g​r​o​w​ ​w​h​e​n​ ​y​o​u​ ​s​e​n​d​ ​a​ ​n​e​w​ ​B​l​i​n​k​ ​u​s​e​r​ ​t​h​e​i​r​ ​f​i​r​s​t​ ​s​a​t​s​.​
-		​
-		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
-			 */
-			details: string
-		}
-		aprilChallenge: {
-			/**
-			 * A​p​r​i​l​ ​C​h​a​l​l​e​n​g​e​!
-			 */
-			title: string
-			/**
-			 * G​r​o​w​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​1​2​ ​a​n​d​ ​y​o​u​r​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​B​i​t​b​o​x​0​2​ ​h​a​r​d​w​a​r​e​ ​w​a​l​l​e​t​.
-			 */
-			description: string
-			/**
-			 * D​u​r​i​n​g​ ​t​h​e​ ​h​a​l​v​i​n​g​ ​m​o​n​t​h​,​ ​e​x​p​a​n​d​ ​y​o​u​r​ ​i​n​n​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​1​2​ ​a​n​d​ ​y​o​u​r​ ​o​u​t​e​r​ ​c​i​r​c​l​e​ ​b​y​ ​3​ ​f​o​r​ ​a​ ​c​h​a​n​c​e​ ​t​o​ ​w​i​n​ ​a​ ​B​i​t​b​o​x​0​2​ ​h​a​r​d​w​a​r​e​ ​w​a​l​l​e​t​!​
-		​
-		​R​e​m​i​n​d​e​r​:​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​g​r​o​w​ ​w​h​e​n​ ​y​o​u​ ​s​e​n​d​ ​a​ ​n​e​w​ ​B​l​i​n​k​ ​u​s​e​r​ ​t​h​e​i​r​ ​f​i​r​s​t​ ​s​a​t​s​.​
-		​
-		​S​h​a​r​e​ ​y​o​u​r​ ​c​i​r​c​l​e​s​ ​o​n​ ​s​o​c​i​a​l​ ​w​i​t​h​ ​#​b​l​i​n​k​c​i​r​c​l​e​s​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​.
+		​T​h​i​s​ ​t​i​m​e​,​ ​t​h​e​r​e​ ​w​i​l​l​ ​b​e​ ​t​w​o​ ​w​i​n​n​e​r​s​!
 			 */
 			details: string
 		}
@@ -9093,6 +9078,30 @@ type RootTranslation = {
 		 * R​e​v​i​e​w
 		 */
 		REVIEW: string
+	}
+	NotificationHistory: {
+		/**
+		 * N​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		title: string
+		/**
+		 * Y​o​u​ ​d​o​n​'​t​ ​h​a​v​e​ ​a​n​y​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​ ​r​i​g​h​t​ ​n​o​w
+		 */
+		noNotifications: string
+	}
+	SupportChat: {
+		/**
+		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​s​e​n​d​i​n​g​ ​t​h​e​ ​m​e​s​s​a​g​e
+		 */
+		errorSendingMessage: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​s​e​t​ ​t​h​e​ ​c​h​a​t​?
+		 */
+		confirmChatReset: string
+		/**
+		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​r​e​s​e​t​t​i​n​g​ ​t​h​e​ ​c​h​a​t
+		 */
+		errorResettingChat: string
 	}
 }
 
@@ -9178,6 +9187,28 @@ export type TranslationFunctions = {
 	They can create invoices and payments will be sent directly to your {bankName} Wallet.
 		 */
 		howToUseYourCashRegisterExplainer: (arg: { bankName: string }) => LocalizedString
+	}
+	AcceptTermsAndConditionsScreen: {
+		/**
+		 * Terms and Conditions
+		 */
+		title: () => LocalizedString
+		/**
+		 * Accept
+		 */
+		accept: () => LocalizedString
+		/**
+		 * View Terms and Conditions
+		 */
+		termsAndConditions: () => LocalizedString
+		/**
+		 * View prohibited countries
+		 */
+		prohibitedCountry: () => LocalizedString
+		/**
+		 * By clicking 'Accept', you agree to our Terms And Conditions. You also agree that you are not a resident or citizen from one of the prohibited countries.
+		 */
+		text: () => LocalizedString
 	}
 	SetAccountModal: {
 		/**
@@ -9309,9 +9340,17 @@ export type TranslationFunctions = {
 	}
 	EarnScreen: {
 		/**
-		 * Earn {formattedNumber|sats}
+		 * sat
 		 */
-		earnSats: (arg: { formattedNumber: unknown }) => LocalizedString
+		satoshi: () => LocalizedString
+		/**
+		 * sats
+		 */
+		satoshis: () => LocalizedString
+		/**
+		 * Earn {formattedAmount}
+		 */
+		earnSats: (arg: { formattedAmount: string }) => LocalizedString
 		earnSections: {
 			bitcoinWhatIsIt: {
 				/**
@@ -15277,9 +15316,9 @@ export type TranslationFunctions = {
 		 */
 		phoneNumberNeeded: () => LocalizedString
 		/**
-		 * Quiz completed and {amount} sats earned
+		 * Quiz completed and {formattedAmount} earned
 		 */
-		quizComplete: (arg: { amount: number }) => LocalizedString
+		quizComplete: (arg: { formattedAmount: string }) => LocalizedString
 		/**
 		 * Review quiz
 		 */
@@ -15289,9 +15328,9 @@ export type TranslationFunctions = {
 		 */
 		satAccumulated: () => LocalizedString
 		/**
-		 * {formattedNumber|sats} earned
+		 * {formattedAmount} earned
 		 */
-		satsEarned: (arg: { formattedNumber: unknown }) => LocalizedString
+		satsEarned: (arg: { formattedAmount: string }) => LocalizedString
 		/**
 		 * You've completed
 		 */
@@ -17913,93 +17952,47 @@ export type TranslationFunctions = {
 		 * Full details at 
 		 */
 		fullDetails: () => LocalizedString
-		decemberChallenge: {
+		/**
+		 * Learn more about Adopting Bitcoin at
+		 */
+		learnMore: () => LocalizedString
+		mayChallenge: {
 			/**
-			 * December Challenge!
+			 * May Challenge!
 			 */
 			title: () => LocalizedString
 			/**
-			 * +10 inner circle for a chance at $100!
+			 * Grow your inner circle by 6 for a chance to win a set of Pizzas on your next Bitcoin Meetup.
 			 */
 			description: () => LocalizedString
 			/**
-			 * Grow your inner circle by 10 people in December for a chance at $100!
+			 * Want a Bitcoin Pizza Day Party?
 	
-		To participate, share your circles on social once you've reached 10 for the month and tag #blinkcircles.
+		Expand your Inner Circle by 6 for a shot at winning a set of pizzas for your next Bitcoin Meetup. The challenge wraps up on May 15th.
 	
-		On January 1, three people will be chosen at random to receive $100!
+		Share your circles on social with the hashtag #blinkcircles to participate.
+	
+		The prize is $150 for pizzas.
 			 */
 			details: () => LocalizedString
 		}
-		januaryChallenge: {
+		juneChallenge: {
 			/**
-			 * January Challenge!
+			 * June Challenge!
 			 */
 			title: () => LocalizedString
 			/**
-			 * +10 outer circle in January for a chance at $100!
+			 * Expand your Inner Circle by 10 for a chance to win a $1000 privilege ticket to the Adopting Bitcoin El Salvador
 			 */
 			description: () => LocalizedString
 			/**
-			 * Grow your OUTER circle by 10 in January for a chance at $100!
+			 * Win a privilege ticket to Adopting Bitcoin El Salvador
 	
-		Your outer circle grows when people in your inner circle welcome others, so reach out and remind those you onboarded to share Blink with their friends and family.
+		Expand your Inner Circle by 10 for a chance to win a $1000 privilege ticket to Adopting Bitcoin El Salvador! The ticket includes exclusive access to the main conference, mezzanine with food/drinks/snacks, speakers' dinner, and the Film Festival.
 	
-		Share your circles on social with #blinkcircles to participate.
-			 */
-			details: () => LocalizedString
-		}
-		februaryChallenge: {
-			/**
-			 * February Challenge!
-			 */
-			title: () => LocalizedString
-			/**
-			 * +3 inner circle for a chance to win a Seedsigner hardware wallet!
-			 */
-			description: () => LocalizedString
-			/**
-			 * Grow your inner circle by 3 in February for a chance to win a Seedsigner hardware wallet!
+		Share your circles on social with the hashtag #blinkcircles to participate.
 	
-		Reminder: your circles grow when you send a new Blink user their first sats.
-	
-		Share your circles on social with #blinkcircles to participate.
-			 */
-			details: () => LocalizedString
-		}
-		marchChallenge: {
-			/**
-			 * March Challenge!
-			 */
-			title: () => LocalizedString
-			/**
-			 * +3 inner circle and +3 outer circle for a chance to win $100
-			 */
-			description: () => LocalizedString
-			/**
-			 * Grow your inner circle by 3 and your outer circle by 3 for a chance at winning $100!
-	
-		Reminder: your circles grow when you send a new Blink user their first sats.
-	
-		Share your circles on social with #blinkcircles to participate.
-			 */
-			details: () => LocalizedString
-		}
-		aprilChallenge: {
-			/**
-			 * April Challenge!
-			 */
-			title: () => LocalizedString
-			/**
-			 * Grow your inner circle by 12 and your outer circle by 3 for a chance to win a Bitbox02 hardware wallet.
-			 */
-			description: () => LocalizedString
-			/**
-			 * During the halving month, expand your inner circle by 12 and your outer circle by 3 for a chance to win a Bitbox02 hardware wallet!
-	
-		Reminder: your circles grow when you send a new Blink user their first sats.
-	
-		Share your circles on social with #blinkcircles to participate.
+		This time, there will be two winners!
 			 */
 			details: () => LocalizedString
 		}
@@ -18072,8 +18065,30 @@ export type TranslationFunctions = {
 		 */
 		REVIEW: () => LocalizedString
 	}
+	NotificationHistory: {
+		/**
+		 * Notifications
+		 */
+		title: () => LocalizedString
+		/**
+		 * You don't have any notifications right now
+		 */
+		noNotifications: () => LocalizedString
+	}
+	SupportChat: {
+		/**
+		 * An error occurred while sending the message
+		 */
+		errorSendingMessage: () => LocalizedString
+		/**
+		 * Are you sure you want to reset the chat?
+		 */
+		confirmChatReset: () => LocalizedString
+		/**
+		 * An error occurred while resetting the chat
+		 */
+		errorResettingChat: () => LocalizedString
+	}
 }
 
-export type Formatters = {
-	sats: (value: unknown) => unknown
-}
+export type Formatters = {}

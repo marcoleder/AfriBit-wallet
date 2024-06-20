@@ -88,6 +88,7 @@ export type RootStackParamList = {
   accountScreen: undefined
   notificationSettingsScreen: undefined
   transactionLimitsScreen: undefined
+  acceptTermsAndConditions: NewAccountFlowParamsList
   emailRegistrationInitiate: undefined
   emailRegistrationValidate: { email: string; emailRegistrationId: string }
   emailLoginInitiate: undefined
@@ -97,7 +98,8 @@ export type RootStackParamList = {
   totpLoginValidate: { authToken: string }
   webView: { url: string; initialTitle?: string }
   fullOnboardingFlow: undefined
-  chatbot: undefined
+  supportChat: undefined
+  notificationHistory: undefined
 }
 
 export type PeopleStackParamList = {
@@ -131,3 +133,5 @@ export type PrimaryStackParamList = {
   Earn: undefined
   Web: undefined
 }
+
+export type NewAccountFlowParamsList = { flow: "phone" | "trial" }

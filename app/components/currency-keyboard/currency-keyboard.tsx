@@ -1,5 +1,5 @@
-import React from "react"
-import { Dimensions, Pressable, StyleProp, View, ViewStyle } from "react-native"
+import React, { useEffect, useState } from "react"
+import { Pressable, StyleProp, View, ViewStyle } from "react-native"
 
 import { testProps } from "@app/utils/testProps"
 import { makeStyles, useTheme, Text } from "@rneui/themed"
@@ -95,11 +95,39 @@ const Key = ({
     return baseStyle
   }
 
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null)
+
+  const handleBackSpacePressIn = (numberPadKey: KeyType) => {
+    const id = setInterval(() => {
+      if (numberPadKey === KeyType.Backspace) {
+        handleKeyPress(numberPadKey)
+      }
+    }, 300)
+    setTimerId(id)
+  }
+
+  const handleBackSpacePressOut = () => {
+    if (timerId) {
+      clearInterval(timerId)
+      setTimerId(null)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (timerId) {
+        clearInterval(timerId)
+      }
+    }
+  }, [timerId])
+
   return (
     <Pressable
       style={pressableStyle}
-      hitSlop={10}
+      hitSlop={20}
+      onPressIn={() => handleBackSpacePressIn(numberPadKey)}
       onPress={() => handleKeyPress(numberPadKey)}
+      onPressOut={handleBackSpacePressOut}
       {...testProps(`Key ${numberPadKey}`)}
     >
       {({ pressed }) => {

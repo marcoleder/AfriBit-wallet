@@ -544,6 +544,61 @@ const SendBitcoinDetailsScreen: React.FC<Props> = ({ route }) => {
         </View>
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldTitleText}>{LL.common.from()}</Text>
+          <TouchableWithoutFeedback
+            {...testProps("choose-wallet-to-send-from")}
+            onPress={toggleModal}
+            accessible={false}
+          >
+            <View style={styles.fieldBackground}>
+              <View style={styles.walletSelectorTypeContainer}>
+                <View
+                  style={
+                    sendingWalletDescriptor.currency === WalletCurrency.Btc
+                      ? styles.walletSelectorTypeLabelBitcoin
+                      : styles.walletSelectorTypeLabelUsd
+                  }
+                >
+                  {sendingWalletDescriptor.currency === WalletCurrency.Btc ? (
+                    <Text style={styles.walletSelectorTypeLabelBtcText}>BTC</Text>
+                  ) : (
+                    <Text style={styles.walletSelectorTypeLabelUsdText}>USD</Text>
+                  )}
+                </View>
+              </View>
+              <View style={styles.walletSelectorInfoContainer}>
+                <View style={styles.walletSelectorTypeTextContainer}>
+                  {sendingWalletDescriptor.currency === WalletCurrency.Btc ? (
+                    <>
+                      <Text style={styles.walletCurrencyText}>
+                        {LL.common.btcAccount()}
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.walletCurrencyText}>
+                        {LL.common.usdAccount()}
+                      </Text>
+                    </>
+                  )}
+                </View>
+                <View style={styles.walletSelectorBalanceContainer}>
+                  <Text
+                    {...testProps(`${sendingWalletDescriptor.currency} Wallet Balance`)}
+                  >
+                    {hideAmount
+                      ? "****"
+                      : sendingWalletDescriptor.currency === WalletCurrency.Btc
+                        ? btcWalletText
+                        : usdWalletText}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.pickWalletIcon}>
+                <Icon name={"chevron-down"} size={24} color={colors.black} />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
           {ChooseWalletModal}
         </View>
         <View style={styles.fieldContainer}>
