@@ -434,11 +434,6 @@ export const RootStack = () => {
           title: LL.support.chatbot(),
         }}
       />
-      <RootNavigator.Screen
-        name="notificationHistory"
-        component={NotificationHistoryScreen}
-        options={{ title: LL.NotificationHistory.title() }}
-      />
     </RootNavigator.Navigator>
   )
 }

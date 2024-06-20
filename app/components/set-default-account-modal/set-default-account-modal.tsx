@@ -4,7 +4,9 @@ import { ScrollView } from "react-native-gesture-handler"
 import Modal from "react-native-modal"
 
 import { gql, useApolloClient } from "@apollo/client"
+import { setHasPromptedSetDefaultAccount } from "@app/graphql/client-only-query"
 import {
+  WalletCurrency,
   useAccountUpdateDefaultWalletIdMutation,
   useSetDefaultAccountModalQuery,
 } from "@app/graphql/generated"
@@ -42,6 +44,9 @@ export const SetDefaultAccountModal = ({
   isVisible,
   toggleModal,
 }: SetDefaultAccountModalProps) => {
+  const [btcLoading, setBtcLoading] = React.useState(false)
+  const [usdLoading, setUsdLoading] = React.useState(false)
+
   const [accountUpdateDefaultWallet] = useAccountUpdateDefaultWalletIdMutation()
 
   const { data } = useSetDefaultAccountModalQuery({
