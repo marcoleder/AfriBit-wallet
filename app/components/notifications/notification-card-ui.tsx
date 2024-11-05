@@ -23,7 +23,7 @@ export const NotificationCardUI: React.FC<NotificationCardUIProps> = ({
   loading,
   dismissAction,
 }) => {
-  const iconName = icon || "pencil"
+  const iconName = icon || "pencil" // TODO add default notification icon
   const styles = useStyles()
   const {
     theme: { colors },

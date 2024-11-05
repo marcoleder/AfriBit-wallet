@@ -127,11 +127,12 @@ const wrapWithMocks =
 
 
     (mocks) =>
-    ({ children }: PropsWithChildren) => (
-      <IsAuthedContextProvider value={true}>
-        <MockedProvider mocks={mocks}>{children}</MockedProvider>
-      </IsAuthedContextProvider>
-    )
+    ({ children }: PropsWithChildren) =>
+      (
+        <IsAuthedContextProvider value={true}>
+          <MockedProvider mocks={mocks}>{children}</MockedProvider>
+        </IsAuthedContextProvider>
+      )
 
 describe("usePriceConversion", () => {
   describe("testing moneyAmountToMajorUnitOrSats", () => {

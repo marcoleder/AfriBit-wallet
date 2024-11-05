@@ -66,17 +66,21 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>714</string>
+	<string>683</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Activate your camera to scan QR codes</string>
@@ -85,11 +89,13 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Find merchants who accept bitcoin near you</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app includes a component that requires background location access, but your location is only used while in app to find merchants near you.</string>
+	<string>Find merchants who accept bitcoin near you</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Import a screenshot with a QR code</string>
 	<key>NFCReaderUsageDescription</key>
 	<string>Receive payments over NFC</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app includes a component that requires background location access, but your location is only used while in app to find merchants near you.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Ionicons.ttf</string>
@@ -106,12 +112,12 @@
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>BootSplash</string>
+	<string>BootSplash.storyboard</string>
 	<key>UIMainStoryboardFile</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>arm64</string>
+		<string>armv7</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

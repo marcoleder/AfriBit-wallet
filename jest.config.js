@@ -1,12 +1,15 @@
 module.exports = {
   preset: "react-native",
-  setupFiles: ["./node_modules/react-native-gesture-handler/jestSetup.js"],
+  setupFiles: [
+    "<rootDir>/jest-ts-auto-mock-config.ts",
+    "./node_modules/react-native-gesture-handler/jestSetup.js",
+  ],
   setupFilesAfterEnv: ["@testing-library/jest-native/extend-expect"],
   transform: {
     "\\.(ts|tsx)$": [
       "ts-jest",
       {
-        compiler: "ttsc",
+        compiler: "ttypescript",
         tsconfig: "tsconfig.jest.json",
       },
     ],

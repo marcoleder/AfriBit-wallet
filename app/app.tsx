@@ -32,7 +32,6 @@ import { ErrorScreen } from "./screens/error-screen"
 import { PersistentStateProvider } from "./store/persistent-state"
 import { detectDefaultLocale } from "./utils/locale-detector"
 import "./utils/logs"
-import { ActionModals, ActionsProvider } from "./components/actions"
 
 // FIXME should we only load the currently used local?
 // this would help to make the app load faster
@@ -53,22 +52,19 @@ export const App = () => (
         <GaloyClient>
           <GaloyThemeProvider>
             <FeatureFlagContextProvider>
-              <ActionsProvider>
-                <NavigationContainerWrapper>
-                  <ErrorBoundary FallbackComponent={ErrorScreen}>
-                    <RootSiblingParent>
-                      <NotificationsProvider>
-                        <AppStateWrapper />
-                        <PushNotificationComponent />
-                        <RootStack />
-                        <NetworkErrorComponent />
-                        <ActionModals />
-                      </NotificationsProvider>
-                      <GaloyToast />
-                    </RootSiblingParent>
-                  </ErrorBoundary>
-                </NavigationContainerWrapper>
-              </ActionsProvider>
+              <NavigationContainerWrapper>
+                <ErrorBoundary FallbackComponent={ErrorScreen}>
+                  <RootSiblingParent>
+                    <NotificationsProvider>
+                      <AppStateWrapper />
+                      <PushNotificationComponent />
+                      <RootStack />
+                      <NetworkErrorComponent />
+                    </NotificationsProvider>
+                    <GaloyToast />
+                  </RootSiblingParent>
+                </ErrorBoundary>
+              </NavigationContainerWrapper>
             </FeatureFlagContextProvider>
           </GaloyThemeProvider>
         </GaloyClient>

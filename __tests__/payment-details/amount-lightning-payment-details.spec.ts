@@ -8,6 +8,8 @@ import {
   createGetFeeMocks,
   createSendPaymentMocks,
   expectDestinationSpecifiedMemoCannotSetMemo,
+  getTestSetMemo,
+  getTestSetSendingWalletDescriptor,
   usdSendingWalletDescriptor,
 } from "./helpers"
 
@@ -19,8 +21,14 @@ const defaultParams: PaymentDetails.CreateAmountLightningPaymentDetailsParams<Wa
     sendingWalletDescriptor: btcSendingWalletDescriptor,
   }
 
+const spy = jest.spyOn(PaymentDetails, "createAmountLightningPaymentDetails")
+
 describe("amount lightning payment details", () => {
   const { createAmountLightningPaymentDetails } = PaymentDetails
+
+  beforeEach(() => {
+    spy.mockClear()
+  })
 
   it("properly sets fields with all arguments provided", () => {
     const paymentDetails = createAmountLightningPaymentDetails(defaultParams)
@@ -160,23 +168,20 @@ describe("amount lightning payment details", () => {
   })
 
   it("can set memo if no memo provided", () => {
-    const paymentDetails = createAmountLightningPaymentDetails(defaultParams)
-    const senderSpecifiedMemo = "sender memo"
-    if (!paymentDetails.canSetMemo) throw new Error("Memo is unable to be set")
-
-    const newPaymentDetails = paymentDetails.setMemo(senderSpecifiedMemo)
-    expect(newPaymentDetails.memo).toEqual(senderSpecifiedMemo)
+    const testSetMemo = getTestSetMemo()
+    testSetMemo({
+      defaultParams,
+      spy,
+      creatorFunction: createAmountLightningPaymentDetails,
+    })
   })
 
   it("can set sending wallet descriptor", () => {
-    const paymentDetails = createAmountLightningPaymentDetails(defaultParams)
-    const sendingWalletDescriptor = {
-      currency: WalletCurrency.Btc,
-      id: "newtestwallet",
-    }
-    const newPaymentDetails = paymentDetails.setSendingWalletDescriptor(
-      sendingWalletDescriptor,
-    )
-    expect(newPaymentDetails.sendingWalletDescriptor).toEqual(sendingWalletDescriptor)
+    const testSetSendingWalletDescriptor = getTestSetSendingWalletDescriptor()
+    testSetSendingWalletDescriptor({
+      defaultParams,
+      spy,
+      creatorFunction: createAmountLightningPaymentDetails,
+    })
   })
 })

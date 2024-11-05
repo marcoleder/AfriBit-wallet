@@ -1,4 +1,5 @@
 import { LnUrlPayServiceResponse, Satoshis } from "lnurl-pay/dist/types/types"
+import { createMock } from "ts-auto-mock"
 
 import { WalletCurrency } from "@app/graphql/generated"
 import * as PaymentDetails from "@app/screens/send-bitcoin-screen/payment-details/lightning"
@@ -9,33 +10,18 @@ import {
   convertMoneyAmountMock,
   createGetFeeMocks,
   createSendPaymentMocks,
+  getTestSetAmount,
+  getTestSetSendingWalletDescriptor,
   testAmount,
   usdSendingWalletDescriptor,
 } from "./helpers"
 
-const mockLnUrlPayServiceResponse = (
-  min: Satoshis,
-  max: Satoshis,
-): LnUrlPayServiceResponse => ({
-  callback: "mockCallbackUrl",
-  fixed: false,
-  min,
-  max,
-  domain: "mockDomain",
-  metadata: [["mockMetadata"]],
-  metadataHash: "mockMetadataHash",
-  identifier: "mockIdentifier",
-  description: "mockDescription",
-  image: "mockImageUrl",
-  commentAllowed: 0,
-  rawData: {
-    mockKey: "mockValue",
-  },
-})
-
 const defaultParamsWithoutInvoice = {
   lnurl: "testlnurl",
-  lnurlParams: mockLnUrlPayServiceResponse(1 as Satoshis, 1000 as Satoshis),
+  lnurlParams: createMock<LnUrlPayServiceResponse>({
+    min: 1 as Satoshis,
+    max: 1000 as Satoshis,
+  }),
   convertMoneyAmount: convertMoneyAmountMock,
   sendingWalletDescriptor: btcSendingWalletDescriptor,
   unitOfAccountAmount: testAmount,
@@ -49,11 +35,20 @@ const defaultParamsWithInvoice = {
 
 const defaultParamsWithEqualMinMaxAmount = {
   ...defaultParamsWithoutInvoice,
-  lnurlParams: mockLnUrlPayServiceResponse(100 as Satoshis, 100 as Satoshis),
+  lnurlParams: createMock<LnUrlPayServiceResponse>({
+    min: 100 as Satoshis,
+    max: 100 as Satoshis,
+  }),
 }
+
+const spy = jest.spyOn(PaymentDetails, "createLnurlPaymentDetails")
 
 describe("lnurl payment details", () => {
   const { createLnurlPaymentDetails } = PaymentDetails
+
+  beforeEach(() => {
+    spy.mockClear()
+  })
 
   it("properly sets fields if min and max amount is equal", () => {
     const paymentDetails = createLnurlPaymentDetails(defaultParamsWithEqualMinMaxAmount)
@@ -221,27 +216,20 @@ describe("lnurl payment details", () => {
   })
 
   it("can set amount", () => {
-    const paymentDetails = createLnurlPaymentDetails(defaultParamsWithoutInvoice)
-    const unitOfAccountAmount = {
-      amount: 100,
-      currency: WalletCurrency.Btc,
-      currencyCode: "BTC",
-    }
-    if (!paymentDetails.canSetAmount) throw new Error("Amount is unable to be set")
-    const newPaymentDetails = paymentDetails.setAmount(unitOfAccountAmount)
-
-    expect(newPaymentDetails.unitOfAccountAmount).toEqual(unitOfAccountAmount)
+    const testSetAmount = getTestSetAmount()
+    testSetAmount({
+      defaultParams: defaultParamsWithoutInvoice,
+      spy,
+      creatorFunction: createLnurlPaymentDetails,
+    })
   })
 
   it("can set sending wallet descriptor", () => {
-    const paymentDetails = createLnurlPaymentDetails(defaultParamsWithoutInvoice)
-    const sendingWalletDescriptor = {
-      currency: WalletCurrency.Btc,
-      id: "newtestwallet",
-    }
-    const newPaymentDetails = paymentDetails.setSendingWalletDescriptor(
-      sendingWalletDescriptor,
-    )
-    expect(newPaymentDetails.sendingWalletDescriptor).toEqual(sendingWalletDescriptor)
+    const testSetSendingWalletDescriptor = getTestSetSendingWalletDescriptor()
+    testSetSendingWalletDescriptor({
+      defaultParams: defaultParamsWithoutInvoice,
+      spy,
+      creatorFunction: createLnurlPaymentDetails,
+    })
   })
 })

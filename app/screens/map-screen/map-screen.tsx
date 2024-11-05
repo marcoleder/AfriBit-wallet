@@ -23,6 +23,7 @@ import countryCodes from "../../../utils/countryInfo.json"
 import { Screen } from "../../components/screen"
 import { RootStackParamList } from "../../navigation/stack-param-lists"
 import { toastShow } from "../../utils/toast"
+import { PhoneLoginInitiateType } from "../phone-auth-screen"
 import { LOCATION_PERMISSION, getUserRegion } from "./functions"
 
 const EL_ZONTE_COORDS = {
@@ -165,7 +166,12 @@ export const MapScreen: React.FC<Props> = ({ navigation }) => {
     if (isAuthed) {
       navigation.navigate("sendBitcoinDestination", { username: item.username })
     } else {
-      navigation.navigate("acceptTermsAndConditions", { flow: "phone" })
+      navigation.navigate("phoneFlow", {
+        screen: "phoneLoginInitiate",
+        params: {
+          type: PhoneLoginInitiateType.CreateAccount,
+        },
+      })
     }
   }
 

@@ -4,6 +4,7 @@ import DeviceInfo from "react-native-device-info"
 import ReactNativeModal from "react-native-modal"
 
 import { gql } from "@apollo/client"
+import { openWhatsAppAction } from "@app/components/contact-modal"
 import { VersionComponent } from "@app/components/version"
 import { APP_STORE_LINK, PLAY_STORE_LINK } from "@app/config"
 import { useMobileUpdateQuery } from "@app/graphql/generated"
@@ -12,6 +13,7 @@ import { Text, makeStyles, useTheme } from "@rneui/themed"
 
 import { isIos } from "../../utils/helper"
 import { GaloyPrimaryButton } from "../atomic/galoy-primary-button"
+import { GaloySecondaryButton } from "../atomic/galoy-secondary-button"
 import { isUpdateAvailableOrRequired } from "./app-update.logic"
 
 gql`
@@ -95,6 +97,10 @@ export const AppUpdateModal = ({
 
   const { LL } = useI18nContext()
 
+  const message = LL.AppUpdate.needToUpdateSupportMessage({
+    os: isIos ? "iOS" : "Android",
+    version: DeviceInfo.getReadableVersion(),
+  })
   const styles = useStyles()
 
   return (
@@ -110,6 +116,11 @@ export const AppUpdateModal = ({
           buttonStyle={styles.button}
           onPress={linkUpgrade}
           title={LL.AppUpdate.tapHereUpdate()}
+        />
+        <GaloySecondaryButton
+          buttonStyle={styles.button}
+          onPress={() => openWhatsAppAction(message)}
+          title={LL.AppUpdate.contactSupport()}
         />
       </View>
       <View style={styles.versionComponent}>

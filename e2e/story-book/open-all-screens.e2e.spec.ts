@@ -28,7 +28,7 @@ const openAndCloseStory = async (story: WebdriverIO.Element) => {
 
 const openAllStoriesOnScreen = async (lastSeenStory: string | null) => {
   const visibleStories = await $$(`//*[contains(@content-desc,"Storybook.ListItem")]`)
-  const lastSeenStoryIndex = await visibleStories.findIndex(
+  const lastSeenStoryIndex = visibleStories.findIndex(
     (story) => story.elementId === lastSeenStory,
   )
   const newStories = visibleStories.slice(lastSeenStoryIndex + 1)

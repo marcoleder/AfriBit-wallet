@@ -74,16 +74,6 @@ fragment TransactionList on TransactionConnection {
   __typename
 }
 
-mutation StatefulNotificationAcknowledge($input: StatefulNotificationAcknowledgeInput!) {
-  statefulNotificationAcknowledge(input: $input) {
-    notification {
-      acknowledgedAt
-      __typename
-    }
-    __typename
-  }
-}
-
 mutation accountDelete {
   accountDelete {
     errors {
@@ -297,7 +287,6 @@ mutation lnInvoiceCreate($input: LnInvoiceCreateInput!) {
       paymentHash
       paymentRequest
       paymentStatus
-      externalId
       satoshis
       __typename
     }
@@ -338,7 +327,6 @@ mutation lnNoAmountInvoiceCreate($input: LnNoAmountInvoiceCreateInput!) {
       paymentHash
       paymentRequest
       paymentStatus
-      externalId
       __typename
     }
     __typename
@@ -400,7 +388,6 @@ mutation lnUsdInvoiceCreate($input: LnUsdInvoiceCreateInput!) {
       paymentHash
       paymentRequest
       paymentStatus
-      externalId
       satoshis
       __typename
     }
@@ -522,13 +509,6 @@ mutation supportChatMessageAdd($input: SupportChatMessageAddInput!) {
       timestamp
       __typename
     }
-    __typename
-  }
-}
-
-mutation supportChatReset {
-  supportChatReset {
-    success
     __typename
   }
 }
@@ -778,51 +758,6 @@ mutation userUpdateUsername($input: UserUpdateUsernameInput!) {
   }
 }
 
-query Bulletins($first: Int!, $after: String) {
-  me {
-    id
-    unacknowledgedStatefulNotificationsWithBulletinEnabled(
-      first: $first
-      after: $after
-    ) {
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        __typename
-      }
-      edges {
-        node {
-          id
-          title
-          body
-          createdAt
-          acknowledgedAt
-          bulletinEnabled
-          icon
-          action {
-            ... on OpenDeepLinkAction {
-              deepLink
-              __typename
-            }
-            ... on OpenExternalLinkAction {
-              url
-              __typename
-            }
-            __typename
-          }
-          __typename
-        }
-        cursor
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-}
-
 query Circles {
   me {
     id
@@ -898,51 +833,6 @@ query SettingsScreen {
       verified
       __typename
     }
-    __typename
-  }
-}
-
-query StatefulNotifications($after: String) {
-  me {
-    statefulNotificationsWithoutBulletinEnabled(first: 20, after: $after) {
-      nodes {
-        id
-        title
-        body
-        createdAt
-        acknowledgedAt
-        bulletinEnabled
-        icon
-        action {
-          ... on OpenDeepLinkAction {
-            deepLink
-            __typename
-          }
-          ... on OpenExternalLinkAction {
-            url
-            __typename
-          }
-          __typename
-        }
-        __typename
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-}
-
-query UnacknowledgedNotificationCount {
-  me {
-    id
-    unacknowledgedStatefulNotificationsWithoutBulletinEnabledCount
     __typename
   }
 }

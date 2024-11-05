@@ -5,6 +5,7 @@ import { testProps } from "@app/utils/testProps"
 import { makeStyles } from "@rneui/themed"
 
 import { SettingsGroup } from "../group"
+import { TotpSetting } from "../totp"
 import { AccountDeleteContextProvider } from "./account-delete-context"
 import { AccountBanner } from "./banner"
 import { AccountId } from "./id"
@@ -25,7 +26,7 @@ export const AccountScreen: React.FC = () => {
           <AccountBanner />
           <AccountId />
           <UpgradeTrialAccount />
-          <SettingsGroup items={[UpgradeAccountLevelOne]} />
+          <SettingsGroup items={[TotpSetting, UpgradeAccountLevelOne]} />
           <DangerZoneSettings />
         </ScrollView>
       </Screen>

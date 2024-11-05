@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { ActivityIndicator, TouchableOpacity, View } from "react-native"
-import { PanGestureHandler } from "react-native-gesture-handler"
 import ReactNativeHapticFeedback from "react-native-haptic-feedback"
 
 import { gql } from "@apollo/client"
@@ -352,8 +351,8 @@ const SendBitcoinConfirmationScreen: React.FC<Props> = ({ route }) => {
                   {hideAmount
                     ? "****"
                     : sendingWalletDescriptor.currency === WalletCurrency.Btc
-                      ? btcWalletText
-                      : usdWalletText}
+                    ? btcWalletText
+                    : usdWalletText}
                 </Text>
               </View>
               <View />
@@ -423,18 +422,13 @@ const SendBitcoinConfirmationScreen: React.FC<Props> = ({ route }) => {
           </View>
         ) : null}
         <View style={styles.buttonContainer}>
-          {/* disable slide gestures in area around the slider button */}
-          <PanGestureHandler>
-            <View style={styles.sliderContainer}>
-              <GaloySliderButton
-                isLoading={sendPaymentLoading}
-                initialText={LL.SendBitcoinConfirmationScreen.slideToConfirm()}
-                loadingText={LL.SendBitcoinConfirmationScreen.slideConfirming()}
-                onSwipe={handleSendPayment}
-                disabled={!validAmount || hasAttemptedSend}
-              />
-            </View>
-          </PanGestureHandler>
+          <GaloySliderButton
+            isLoading={sendPaymentLoading}
+            initialText={LL.SendBitcoinConfirmationScreen.slideToConfirm()}
+            loadingText={LL.SendBitcoinConfirmationScreen.slideConfirming()}
+            onSwipe={handleSendPayment}
+            disabled={!validAmount || hasAttemptedSend}
+          />
         </View>
       </View>
     </Screen>
@@ -448,7 +442,6 @@ const useStyles = makeStyles(({ colors }) => ({
     flex: 1,
   },
   fieldContainer: {
-    paddingHorizontal: 20,
     marginBottom: 12,
   },
   noteText: {
@@ -544,7 +537,7 @@ const useStyles = makeStyles(({ colors }) => ({
     alignItems: "center",
   },
   screenStyle: {
-    paddingTop: 20,
+    padding: 20,
     flexGrow: 1,
   },
   iconContainer: {
@@ -566,8 +559,5 @@ const useStyles = makeStyles(({ colors }) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  sliderContainer: {
-    padding: 20,
   },
 }))

@@ -1,6 +1,7 @@
-import { LNURLResponse, LNURLWithdrawParams, getParams } from "js-lnurl"
+import { LNURLPayParams, LNURLResponse, LNURLWithdrawParams, getParams } from "js-lnurl"
 import { requestPayServiceParams } from "lnurl-pay"
-import { LnUrlPayServiceResponse, Satoshis } from "lnurl-pay/dist/types/types"
+import { LnUrlPayServiceResponse } from "lnurl-pay/dist/types/types"
+import { createMock } from "ts-auto-mock"
 
 import {
   createLnurlPaymentDestination,
@@ -13,17 +14,23 @@ import { PaymentType } from "@galoymoney/client"
 
 import { defaultPaymentDetailParams } from "./helpers"
 
-jest.mock("lnurl-pay", () => ({
-  requestPayServiceParams: jest.fn(),
-}))
+jest.mock("lnurl-pay", () => {
+  return {
+    requestPayServiceParams: jest.fn(),
+  }
+})
 
-jest.mock("js-lnurl", () => ({
-  getParams: jest.fn(),
-}))
+jest.mock("js-lnurl", () => {
+  return {
+    getParams: jest.fn(),
+  }
+})
 
-jest.mock("@app/screens/send-bitcoin-screen/payment-details", () => ({
-  createLnurlPaymentDetails: jest.fn(),
-}))
+jest.mock("@app/screens/send-bitcoin-screen/payment-details", () => {
+  return {
+    createLnurlPaymentDetails: jest.fn(),
+  }
+})
 
 const mockRequestPayServiceParams = requestPayServiceParams as jest.MockedFunction<
   typeof requestPayServiceParams
@@ -36,46 +43,6 @@ const mockCreateLnurlPaymentDetail = createLnurlPaymentDetails as jest.MockedFun
 const throwError = () => {
   throw new Error("test error")
 }
-
-// Manual mocks for LnUrlPayServiceResponse and LNURLResponse
-const manualMockLnUrlPayServiceResponse = (
-  identifier: string,
-): LnUrlPayServiceResponse => ({
-  callback: "mocked_callback",
-  fixed: true,
-  min: 0 as Satoshis,
-  max: 2000 as Satoshis,
-  domain: "example.com",
-  metadata: [
-    ["text/plain", "description"],
-    ["image/png;base64", "base64EncodedImage"],
-  ],
-  metadataHash: "mocked_metadata_hash",
-  identifier,
-  description: "mocked_description",
-  image: "mocked_image_url",
-  commentAllowed: 140,
-  rawData: {},
-})
-
-const manualMockLNURLResponse = (): LNURLResponse => ({
-  status: "string",
-  reason: "string",
-  domain: "string",
-  url: "string",
-})
-
-const manualMockLNURLWithdrawParams = (): LNURLWithdrawParams => ({
-  // Example structure. Adjust according to your actual LNURLWithdrawParams type
-  tag: "withdrawRequest",
-  k1: "some_random_string",
-  callback: "http://example.com/callback",
-  domain: "example.com",
-  maxWithdrawable: 2000,
-  minWithdrawable: 0,
-  defaultDescription: "Test withdraw",
-  // ... add other required properties
-})
 
 describe("resolve lnurl destination", () => {
   describe("with ln address", () => {
@@ -91,12 +58,11 @@ describe("resolve lnurl destination", () => {
     }
 
     it("creates lnurl pay destination", async () => {
-      const lnurlPayParams = manualMockLnUrlPayServiceResponse(
-        lnurlPaymentDestinationParams.parsedLnurlDestination.lnurl,
-      )
-
+      const lnurlPayParams = createMock<LnUrlPayServiceResponse>({
+        identifier: lnurlPaymentDestinationParams.parsedLnurlDestination.lnurl,
+      })
       mockRequestPayServiceParams.mockResolvedValue(lnurlPayParams)
-      mockGetParams.mockResolvedValue(manualMockLNURLResponse())
+      mockGetParams.mockResolvedValue(createMock<LNURLResponse>())
 
       const destination = await resolveLnurlDestination(lnurlPaymentDestinationParams)
 
@@ -127,11 +93,11 @@ describe("resolve lnurl destination", () => {
     }
 
     it("creates lnurl pay destination", async () => {
-      const lnurlPayParams = manualMockLnUrlPayServiceResponse(
-        lnurlPaymentDestinationParams.parsedLnurlDestination.lnurl,
-      )
+      const lnurlPayParams = createMock<LnUrlPayServiceResponse>({
+        identifier: lnurlPaymentDestinationParams.parsedLnurlDestination.lnurl,
+      })
       mockRequestPayServiceParams.mockResolvedValue(lnurlPayParams)
-      mockGetParams.mockResolvedValue(manualMockLNURLResponse())
+      mockGetParams.mockResolvedValue(createMock<LNURLPayParams>())
 
       const destination = await resolveLnurlDestination(lnurlPaymentDestinationParams)
 
@@ -163,7 +129,7 @@ describe("resolve lnurl destination", () => {
 
     it("creates lnurl withdraw destination", async () => {
       mockRequestPayServiceParams.mockImplementation(throwError)
-      const mockLnurlWithdrawParams = manualMockLNURLWithdrawParams()
+      const mockLnurlWithdrawParams = createMock<LNURLWithdrawParams>()
       mockGetParams.mockResolvedValue(mockLnurlWithdrawParams)
 
       const destination = await resolveLnurlDestination(lnurlPaymentDestinationParams)
@@ -200,29 +166,11 @@ describe("resolve lnurl destination", () => {
 
 describe("create lnurl destination", () => {
   it("correctly creates payment detail", () => {
-    const manualMockLnUrlPayServiceResponse = {
-      callback: "mocked_callback",
-      fixed: true,
-      min: 0 as Satoshis,
-      max: 2000 as Satoshis,
-      domain: "example.com",
-      metadata: [
-        ["text/plain", "description"],
-        ["image/png;base64", "base64EncodedImage"],
-      ],
-      metadataHash: "mocked_metadata_hash",
-      identifier: "testlnurl",
-      description: "mocked_description",
-      image: "mocked_image_url",
-      commentAllowed: 140,
-      rawData: {},
-    }
-
     const lnurlPaymentDestinationParams = {
       paymentType: "lnurl",
       valid: true,
       lnurl: "testlnurl",
-      lnurlParams: manualMockLnUrlPayServiceResponse,
+      lnurlParams: createMock<LnUrlPayServiceResponse>(),
     } as const
 
     const lnurlPayDestination = createLnurlPaymentDestination(

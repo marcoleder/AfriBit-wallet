@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import { Linking } from "react-native"
 import RNBootSplash from "react-native-bootsplash"
 
@@ -16,7 +16,6 @@ import { useTheme } from "@rneui/themed"
 
 import { useIsAuthed } from "../graphql/is-authed-context"
 import { RootStackParamList } from "./stack-param-lists"
-import { Action, useActionsContext } from "@app/components/actions"
 
 export type AuthenticationContextType = {
   isAppLocked: boolean
@@ -33,47 +32,30 @@ export const AuthenticationContextProvider = AuthenticationContext.Provider
 
 export const useAuthenticationContext = () => React.useContext(AuthenticationContext)
 
-const processLinkForAction = (url: string): Action | null => {
-  // grab action query param
-  const urlObj = new URL(url)
-  const action = urlObj.searchParams.get("action")
-
-  switch ((action || "").toLocaleLowerCase()) {
-    case "set-ln-address":
-      return Action.SetLnAddress
-    case "set-default-account":
-      return Action.SetDefaultAccount
-    case "upgrade-account":
-      return Action.UpgradeAccount
-  }
-  return null
-}
-
 export const NavigationContainerWrapper: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const isAuthed = useIsAuthed()
-  const [isAppLocked, setIsAppLocked] = React.useState(true)
-  const [urlAfterUnlockAndAuth, setUrlAfterUnlockAndAuth] = React.useState<string | null>(
-    null,
-  )
-  const { setActiveAction } = useActionsContext()
 
-  useEffect(() => {
-    if (isAuthed && !isAppLocked && urlAfterUnlockAndAuth) {
-      Linking.openURL(urlAfterUnlockAndAuth)
-      setUrlAfterUnlockAndAuth(null)
-    }
-  }, [isAuthed, isAppLocked, urlAfterUnlockAndAuth])
+  const processLink = useRef<((url: string) => void) | null>(() => {
+    return undefined
+  })
 
   const setAppUnlocked = React.useMemo(
     () => async () => {
       setIsAppLocked(false)
+      const url = await Linking.getInitialURL()
+
+      if (url && isAuthed && processLink.current) {
+        return processLink.current(url)
+      }
     },
-    [],
+    [isAuthed],
   )
 
   const setAppLocked = React.useMemo(() => () => setIsAppLocked(true), [])
+
+  const [isAppLocked, setIsAppLocked] = React.useState(true)
 
   const routeName = useRef("Initial")
 
@@ -119,18 +101,6 @@ export const NavigationContainerWrapper: React.FC<React.PropsWithChildren> = ({
         receiveBitcoin: "receive",
         conversionDetails: "convert",
         scanningQRCode: "scan-qr",
-        supportChat: "chat",
-        totpRegistrationInitiate: "settings/2fa",
-        currency: "settings/display-currency",
-        defaultWallet: "settings/default-account",
-        language: "settings/language",
-        theme: "settings/theme",
-        security: "settings/security",
-        accountScreen: "settings/account",
-        transactionLimitsScreen: "settings/tx-limits",
-        notificationSettingsScreen: "settings/notifications",
-        emailRegistrationInitiate: "settings/email",
-        settings: "settings",
         transactionDetail: {
           path: "transaction/:txid",
         },
@@ -139,20 +109,17 @@ export const NavigationContainerWrapper: React.FC<React.PropsWithChildren> = ({
     },
     getInitialURL: async () => {
       const url = await Linking.getInitialURL()
-      setUrlAfterUnlockAndAuth(url)
+      console.log("getInitialURL", url)
+      if (Boolean(url) && isAuthed && !isAppLocked) {
+        return url
+      }
       return null
     },
     subscribe: (listener) => {
+      processLink.current = listener
       const onReceiveURL = ({ url }: { url: string }) => {
-        if (!isAppLocked && isAuthed) {
-          const maybeAction = processLinkForAction(url)
-          if (maybeAction) {
-            setActiveAction(maybeAction)
-          }
-          listener(url)
-        } else {
-          setUrlAfterUnlockAndAuth(url)
-        }
+        console.log("onReceiveURL", url)
+        listener(url)
       }
       // Listen to incoming links from deep linking
       const subscription = Linking.addEventListener("url", onReceiveURL)
@@ -160,6 +127,7 @@ export const NavigationContainerWrapper: React.FC<React.PropsWithChildren> = ({
       return () => {
         // Clean up the event listeners
         subscription.remove()
+        processLink.current = null
       }
     },
   }
@@ -170,7 +138,7 @@ export const NavigationContainerWrapper: React.FC<React.PropsWithChildren> = ({
         {...(mode === "dark" ? { theme: DarkTheme } : {})}
         linking={linking}
         onReady={() => {
-          RNBootSplash.hide({ fade: true })
+          RNBootSplash.hide({ fade: true, duration: 220 })
           console.log("NavigationContainer onReady")
         }}
         onStateChange={(state) => {

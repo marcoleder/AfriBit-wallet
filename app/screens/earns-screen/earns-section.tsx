@@ -17,6 +17,7 @@ import { makeStyles, useTheme } from "@rneui/themed"
 import { Screen } from "../../components/screen"
 import type { RootStackParamList } from "../../navigation/stack-param-lists"
 import { useQuizServer } from "../earns-map-screen/use-quiz-server"
+import { PhoneLoginInitiateType } from "../phone-auth-screen"
 import { SVGs } from "./earn-svg-factory"
 import {
   augmentCardWithGqlData,
@@ -58,7 +59,6 @@ const svgWidth = screenWidth
 const useStyles = makeStyles(({ colors }) => ({
   container: {
     alignItems: "center",
-    flex: 1,
   },
   buttonStyleDisabled: {
     backgroundColor: colors._white,
@@ -219,19 +219,16 @@ export const EarnSection = ({ route }: Props) => {
         {
           text: "OK",
           onPress: () =>
-            navigation.navigate("acceptTermsAndConditions", { flow: "phone" }),
+            navigation.navigate("phoneFlow", {
+              screen: "phoneLoginInitiate",
+              params: { type: PhoneLoginInitiateType.CreateAccount },
+            }),
         },
       ])
       return
     }
 
     navigation.navigate("earnsQuiz", { id })
-  }
-
-  const formatAmount = (amount: number): string => {
-    return amount === 1
-      ? `${amount} ${LL.EarnScreen.satoshi()}`
-      : `${amount} ${LL.EarnScreen.satoshis()}`
   }
 
   const CardItem = ({ item }: { item: QuizQuestionForSectionScreen }) => {
@@ -262,10 +259,8 @@ export const EarnSection = ({ route }: Props) => {
               titleStyle={item.completed ? styles.titleStyleFulfilled : styles.titleStyle}
               title={
                 item.completed
-                  ? LL.EarnScreen.satsEarned({
-                      formattedAmount: formatAmount(item.amount),
-                    })
-                  : LL.EarnScreen.earnSats({ formattedAmount: formatAmount(item.amount) })
+                  ? LL.EarnScreen.satsEarned({ formattedNumber: item.amount })
+                  : LL.EarnScreen.earnSats({ formattedNumber: item.amount })
               }
               icon={
                 item.completed ? (

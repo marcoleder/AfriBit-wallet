@@ -39,7 +39,6 @@ export const setLocalEnvironment = async () => {
 
 export const loginAs = (phone: string, LL: TranslationFunctions) => async () => {
   await tap(by.id(LL.GetStartedScreen.createAccount()))
-  await tap(by.id(LL.AcceptTermsAndConditionsScreen.accept()))
 
   const telephoneInput = element(by.id("telephoneNumber"))
   await waitFor(telephoneInput).toBeVisible().withTimeout(timeout)

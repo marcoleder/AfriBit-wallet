@@ -1,3 +1,6 @@
+import { createMock } from "ts-auto-mock"
+
+import { LnInvoice } from "@app/graphql/generated"
 import {
   GeneratePaymentRequestMutations,
   Invoice,
@@ -17,93 +20,62 @@ const btcAmountInvoice =
   "lnbc23690n1p3l2qugpp5jeflfqjpxhe0hg3tzttc325j5l6czs9vq9zqx5edpt0yf7k6cypsdqqcqzpuxqyz5vqsp5lteanmnwddszwut839etrgjenfr3dv5tnvz2d2ww2mvggq7zn46q9qyyssqzcz0rvt7r30q7jul79xqqwpr4k2e8mgd23fkjm422sdgpndwql93d4wh3lap9yfwahue9n7ju80ynkqly0lrqqd2978dr8srkrlrjvcq2v5s6k"
 const mockOnChainAddress = "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"
 
-// Manually created mock objects
-const mockLnInvoice = {
-  __typename: "LnInvoice",
+const mockLnInvoice = createMock<LnInvoice>({
   paymentRequest: btcAmountInvoice,
-  // Add other necessary properties here
-}
+})
 
-const mockLnUsdInvoice = {
-  __typename: "LnInvoice",
+const mockLnInvoiceCreate = jest.fn().mockResolvedValue({
+  data: {
+    lnInvoiceCreate: {
+      invoice: mockLnInvoice,
+      errors: [],
+    },
+  },
+  errors: [],
+})
+
+const mockLnUsdInvoice = createMock<LnInvoice>({
   paymentRequest: usdAmountInvoice,
-  // Add other necessary properties here
-}
+})
 
-const mockLnNoAmountInvoice = {
-  __typename: "LnInvoice",
+const mockLnUsdInvoiceCreate = jest.fn().mockResolvedValue({
+  data: {
+    lnUsdInvoiceCreate: {
+      invoice: mockLnUsdInvoice,
+      errors: [],
+    },
+  },
+  errors: [],
+})
+
+const mockLnNoAmountInvoice = createMock<LnInvoice>({
   paymentRequest: noAmountInvoice,
-  // Add other necessary properties here
-}
+})
 
-const mockLnInvoiceCreate = jest.fn(() =>
-  Promise.resolve({
-    data: {
-      __typename: "Mutation", // Correct placement according to your schema
-      lnInvoiceCreate: {
-        __typename: "LnInvoicePayload",
-        invoice: mockLnInvoice,
-        errors: [],
-      },
+const mockLnNoAmountInvoiceCreate = jest.fn().mockResolvedValue({
+  data: {
+    lnNoAmountInvoiceCreate: {
+      invoice: mockLnNoAmountInvoice,
+      errors: [],
     },
-    errors: [],
-  }),
-)
+  },
+  errors: [],
+})
 
-const mockLnUsdInvoiceCreate = jest.fn(() =>
-  Promise.resolve({
-    data: {
-      __typename: "Mutation", // Correct placement according to your schema
-      lnUsdInvoiceCreate: {
-        __typename: "LnInvoicePayload",
-        invoice: mockLnUsdInvoice,
-        errors: [],
-      },
+const mockOnChainAddressCurrent = jest.fn().mockResolvedValue({
+  data: {
+    onChainAddressCurrent: {
+      address: mockOnChainAddress,
+      errors: [],
     },
-    errors: [],
-  }),
-)
-
-const mockLnNoAmountInvoiceCreate = jest.fn(() =>
-  Promise.resolve({
-    data: {
-      __typename: "Mutation", // Correct placement according to your schema
-      lnNoAmountInvoiceCreate: {
-        __typename: "LnNoAmountInvoicePayload",
-        invoice: mockLnNoAmountInvoice,
-        errors: [],
-      },
-    },
-    errors: [],
-  }),
-)
-
-const mockOnChainAddressCurrent = jest.fn(() =>
-  Promise.resolve({
-    data: {
-      __typename: "Mutation", // Correct placement according to your schema
-      onChainAddressCurrent: {
-        __typename: "OnChainAddressPayload",
-        address: mockOnChainAddress,
-        errors: [],
-      },
-    },
-    errors: [],
-  }),
-)
+  },
+  errors: [],
+})
 
 export const mutations: GeneratePaymentRequestMutations = {
-  // eslint-disable-next-line
-  // @ts-ignore type mismatch, but we don't care because it's a mock
   lnInvoiceCreate: mockLnInvoiceCreate,
-  // eslint-disable-next-line
-  // @ts-ignore type mismatch, but we don't care because it's a mock
   lnUsdInvoiceCreate: mockLnUsdInvoiceCreate,
-  // eslint-disable-next-line
-  // @ts-ignore type mismatch, but we don't care because it's a mock
   lnNoAmountInvoiceCreate: mockLnNoAmountInvoiceCreate,
-  // eslint-disable-next-line
-  // @ts-ignore type mismatch, but we don't care because it's a mock
   onChainAddressCurrent: mockOnChainAddressCurrent,
 }
 
