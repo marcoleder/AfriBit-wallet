@@ -72,6 +72,7 @@
             android-sdk
             nodejs
             ruby
+            scrcpy
           ]
           ++ lib.optionals stdenv.isDarwin [
             pkgsStable.cocoapods
@@ -89,12 +90,14 @@
                 emulator
                 platform-tools
                 platforms-android-34
-                ndk-23-1-7779620
+                ndk-25-1-8937393
+                ndk-26-1-10909125
                 cmake-3-22-1
 
                 # Some dependencies we use are on old versions
                 # TODO: Update these obsolete dependencies
                 build-tools-30-0-3
+                build-tools-33-0-1
                 platforms-android-33
               ]
               ++ lib.optionals (system == "aarch64-darwin") [
@@ -126,13 +129,21 @@
               echo no | avdmanager create avd --force -n Pixel_API_34 --abi "google_apis_playstore/$ARCH" --package "system-images;android-34;google_apis_playstore;$ARCH" --device 'pixel_6a'
             fi
 
-            XCODE_VERSION="15.3"
-            XCODE_BUILD="15E204a" # When updating xcode version, get it by running xcodes installed
+            XCODE_VERSION_OLD="15.3"
+            XCODE_VERSION="16.1"
+            XCODE_BUILD_OLD="15E204a" # When updating xcode version, get it by running xcodes installed
+            XCODE_BUILD="16B40"
             if [[ $(uname) == "Darwin" ]] && [ -z "$CI" ]; then
-              if ! xcodes installed | grep "$XCODE_VERSION ($XCODE_BUILD) (Selected)" -q; then
+              if ! (xcodes installed | grep "$XCODE_VERSION ($XCODE_BUILD) (Selected)" -q || xcodes installed | grep "$XCODE_VERSION_OLD ($XCODE_BUILD_OLD) (Selected)" -q); then
                 echo -e "\e[1;33m================================================\e[0m"
                 echo -e "\e[1;33mXCode $XCODE_VERSION was not found or is not selected\e[0m"
                 echo -e "\e[1;33mYou can install it with \e[0m\e[1;32mxcodes install $XCODE_VERSION\e[0m\e[1;33m and select it with \e[0m\e[1;32mxcodes select $XCODE_VERSION\e[0m\e[1;33m\e[0m"
+                echo -e "\e[1;33miOS Builds might not work as expected if the right XCode Version is not being used\e[0m"
+                echo -e "\e[1;33m================================================\e[0m"
+
+                echo -e "\e[1;33m================================================\e[0m"
+                echo -e "\e[1;33mXCode Alternatively you can use $XCODE_VERSION_OLD\e[0m"
+                echo -e "\e[1;33mYou can install it with \e[0m\e[1;32mxcodes install $XCODE_VERSION_OLD\e[0m\e[1;33m and select it with \e[0m\e[1;32mxcodes select $XCODE_VERSION\e[0m\e[1;33m\e[0m"
                 echo -e "\e[1;33miOS Builds might not work as expected if the right XCode Version is not being used\e[0m"
                 echo -e "\e[1;33m================================================\e[0m"
               fi
@@ -145,6 +156,31 @@
 
             # Fix clang for XCode builds
             export PATH=$(echo $PATH | tr ':' '\n' | grep -v clang | paste -sd ':' -)
+
+            # Check and install Rosetta 2 on macOS to enable emulator support
+            if [[ $(uname) == "Darwin" ]]; then
+              processor_brand=$(/usr/sbin/sysctl -n machdep.cpu.brand_string)
+              if [[ "$processor_brand" == *"Apple"* ]]; then
+                echo "Apple Processor is present..."
+                check_rosetta_status=$(/usr/bin/pgrep oahd)
+                rosetta_folder="/Library/Apple/usr/share/rosetta"
+
+                if [[ -n $check_rosetta_status ]] && [[ -e $rosetta_folder ]]; then
+                  echo "Rosetta is installed... no action needed"
+                else
+                  echo "Rosetta is not installed... installing now - It is needed for running the application in a virtual emulator on your MacOS with Apple Silicon, read more here: https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment"
+                  sudo /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+                  if /usr/bin/pgrep oahd >/dev/null 2>&1 ; then
+                      echo "Rosetta is now installed"
+                  else
+                      echo "Rosetta installation failed"
+                      exit 1
+                  fi
+                fi
+              else
+                echo "Apple Processor is not present... Rosetta is not needed"
+              fi
+            fi
           '';
         };
       }
